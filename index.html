@@ -430,7 +430,7 @@
             position: fixed;
             top: 50%;
             left: 50%;
-            transform: translate(calc(-50% + var(--clock-x, 0px)), calc(-50% + var(--clock-y, -140px))) scale(var(--clock-scale, 1.35));
+            transform: translate(calc(-50% + var(--clock-x, -280px)), calc(-50% + var(--clock-y, -100px))) scale(var(--clock-scale, 1.35));
             transform-origin: center center;
             z-index: 60;
             background: transparent !important;
@@ -812,8 +812,8 @@
 
     <canvas id="canvas"></canvas>
 
-    <!-- Z64 賽博時鐘掛件 (純透明無背景、大字體、用戶可直接拖曳位置、滾輪/拉桿調大小) -->
-    <div class="chrono-clock-stage" id="chronoClockStage" title="拖曳可移動時鐘位置 / 滾輪可調整大小">
+    <!-- Z64 賽博時鐘掛件 (預設開啟 Liquid Glass 液態玻璃、SQUIRCLE 方圓、06 SIGNET 錶盤、左上偏中位置) -->
+    <div class="chrono-clock-stage liquid-glass glass-shape-squircle" id="chronoClockStage" title="拖曳可移動時鐘位置 / 滾輪可調整大小">
         <div class="clock-drag-hint">✢ DRAG TO MOVE &middot; SCROLL TO SCALE</div>
         <div class="clock-stage-body" id="clockStageBody">
             <!-- 由 JS 動態渲染時鐘樣式 (MAGNA, VECTOR, SYNCRO, ORBIT, ARRAY, SIGNET) -->
@@ -821,7 +821,7 @@
         <div class="clock-stage-ft-minimal" id="clockFootMinimal">
             <span id="clockDateLine">UTC+8 // LOCAL TIME</span>
             <span style="opacity:0.6">&middot;</span>
-            <span id="clockFaceTagMini">01 MAGNA</span>
+            <span id="clockFaceTagMini">06 SIGNET</span>
         </div>
     </div>
 
@@ -847,7 +847,7 @@
             </li>
             <li>
                 <button class="chrono-btn" id="btnCycleClock">
-                    <span id="clockStyleLabel">CLOCK: 01 MAGNA</span>
+                    <span id="clockStyleLabel">CLOCK: 06 SIGNET</span>
                     <span class="shortcut">[W/S]</span>
                 </button>
             </li>
@@ -879,8 +879,8 @@
                 <span id="clockScaleValue">1.35×</span>
             </div>
             <li>
-                <button class="chrono-btn" id="btnToggleGlassBlur" style="font-size:11px;padding:8px 18px;">
-                    <span id="glassBlurLabel">LIQUID GLASS: OFF</span>
+                <button class="chrono-btn active" id="btnToggleGlassBlur" style="font-size:11px;padding:8px 18px;">
+                    <span id="glassBlurLabel">LIQUID GLASS: ON</span>
                     <span class="shortcut">B [開關]</span>
                 </button>
             </li>
