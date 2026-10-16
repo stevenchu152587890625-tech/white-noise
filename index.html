@@ -1,0 +1,995 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>RKRINT // HYDRO CHRONO - 水境水聲多場景模擬</title>
+    <!-- Google Fonts 科技等寬字體，同時提供本機 Consolas / Monospace 降級保障離線可用 -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --chrono-pink: #52e59b;
+            --chrono-pink-glow: rgba(82, 229, 155, 0.38);
+            --chrono-pink-dim: rgba(82, 229, 155, 0.36);
+            --chrono-pink-faint: rgba(82, 229, 155, 0.08);
+            --chrono-badge-bg: rgba(82, 229, 155, 0.20);
+            --chrono-badge-text: #d4ffea;
+            --chrono-bg: rgba(7, 18, 13, 0.93);
+            --chrono-text: #e2e8f0;
+            --chrono-text-muted: #8bb8a2;
+            --chrono-border: #52e59b;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+
+        html, body {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background-color: #07090e;
+            font-family: 'Share Tech Mono', 'Consolas', 'Courier New', monospace;
+            color: var(--chrono-text);
+        }
+
+        #canvas {
+            display: block;
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+        }
+
+        /* ==================== 截圖原版風格：賽博科技切角 HUD 菜單 (全面升級 Liquid Glass 半透流體玻璃 + 光學折射) ==================== */
+        .chrono-hud {
+            position: absolute;
+            top: 24px;
+            left: 24px;
+            z-index: 100;
+            width: 320px;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, rgba(8, 20, 15, 0.38) 38%, rgba(4, 10, 8, 0.52) 100%) !important;
+            border: 1px solid rgba(255, 255, 255, 0.42);
+            /* 精確實現截圖中的右上角切角 (45度 Chamfer) 與左下角微切角 */
+            clip-path: polygon(
+                0 0,
+                calc(100% - 20px) 0,
+                100% 20px,
+                100% 100%,
+                14px 100%,
+                0 calc(100% - 14px)
+            );
+            box-shadow:
+                inset 1px 1.5px 1.5px rgba(255, 255, 255, 0.75),
+                inset 5px 8px 14px -5px rgba(255, 255, 255, 0.25),
+                inset -1px -1.5px 1.5px rgba(255, 255, 255, 0.35),
+                inset -5px -8px 14px -5px rgba(var(--chrono-rgb, 82, 229, 155), 0.32),
+                0 20px 50px rgba(0, 0, 0, 0.65),
+                0 0 26px rgba(var(--chrono-rgb, 82, 229, 155), 0.24);
+            letter-spacing: 2.2px;
+            backdrop-filter: url(#hudLiquidFilter) blur(5px) saturate(165%) contrast(112%);
+            -webkit-backdrop-filter: url(#hudLiquidFilter) blur(5px) saturate(165%) contrast(112%);
+            transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.25s ease, border-color 0.4s ease, box-shadow 0.4s ease, background 0.4s ease;
+        }
+
+        /* 介面邊緣光學色散高光 (Refractive Sheen Rim - 僅保留清透邊緣反光，不泛白) */
+        .chrono-hud::before,
+        .scene-selector-hud::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 22%;
+            background: linear-gradient(165deg, rgba(255, 255, 255, 0.12) 0%, rgba(255, 255, 255, 0.02) 45%, rgba(255, 255, 255, 0) 75%);
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .chrono-hud.hidden {
+            transform: translateY(-20px);
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .chrono-header {
+            padding: 13px 18px 11px 18px;
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--chrono-pink);
+            letter-spacing: 3px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: linear-gradient(90deg, rgba(var(--chrono-rgb, 82, 229, 155), 0.2) 0%, rgba(255, 255, 255, 0.08) 100%);
+            backdrop-filter: contrast(120%);
+            text-shadow: 0 0 10px var(--chrono-pink-glow);
+            transition: color 0.35s ease, border-color 0.35s ease, background 0.35s ease;
+            position: relative;
+            z-index: 2;
+        }
+
+        .chrono-header .title-badge {
+            display: inline-block;
+            font-size: 10px;
+            padding: 2px 7px;
+            background: rgba(var(--chrono-rgb, 82, 229, 155), 0.28);
+            border: 1px solid rgba(255, 255, 255, 0.35);
+            border-radius: 3px;
+            color: #ffffff;
+            box-shadow: 0 0 8px rgba(var(--chrono-rgb, 82, 229, 155), 0.4);
+            transition: background-color 0.35s ease, color 0.35s ease;
+        }
+
+        .chrono-menu-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            position: relative;
+            z-index: 2;
+        }
+
+        .chrono-btn {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            padding: 11px 18px;
+            font-size: 12.5px;
+            color: var(--chrono-text);
+            cursor: pointer;
+            transition: background 0.15s ease, color 0.15s ease, box-shadow 0.15s ease;
+            border: none;
+            background: rgba(255, 255, 255, 0.03);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            font-family: inherit;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            text-align: left;
+            position: relative;
+        }
+
+        /* 主題高亮底色 + 純黑粗體字 + 透光高亮效果 */
+        .chrono-btn:hover,
+        .chrono-btn.active {
+            background: var(--chrono-pink) !important;
+            color: #000000 !important;
+            font-weight: 700;
+            box-shadow: inset 0 1px 2px rgba(255, 255, 255, 0.8), 0 0 16px var(--chrono-pink-glow);
+        }
+
+        .chrono-btn .shortcut {
+            font-size: 12px;
+            color: var(--chrono-text-muted);
+            letter-spacing: 1px;
+            margin-left: 8px;
+            white-space: nowrap;
+            transition: color 0.25s ease;
+        }
+
+        .chrono-btn:hover .shortcut,
+        .chrono-btn.active .shortcut {
+            color: #000000 !important;
+        }
+
+        .chrono-divider {
+            height: 1px;
+            background: linear-gradient(90deg, rgba(255,255,255,0.05) 0%, rgba(var(--chrono-rgb, 82, 229, 155), 0.4) 50%, rgba(255,255,255,0.05) 100%);
+            margin: 2px 0;
+            transition: background-color 0.35s ease;
+        }
+
+        /* 音量拉桿容器 (半透液態玻璃底板) */
+        .chrono-slider-box {
+            padding: 10px 18px 12px 18px;
+            background: rgba(0, 0, 0, 0.22);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            font-size: 11px;
+            color: var(--chrono-text-muted);
+            transition: color 0.35s ease;
+            position: relative;
+            z-index: 2;
+        }
+
+        .chrono-slider {
+            -webkit-appearance: none;
+            appearance: none;
+            flex: 1;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.2);
+            outline: none;
+            border-radius: 2px;
+        }
+
+        .chrono-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 13px;
+            height: 13px;
+            background: var(--chrono-pink);
+            cursor: pointer;
+            border-radius: 2px;
+            border: 1px solid rgba(255, 255, 255, 0.7);
+            box-shadow: 0 0 10px var(--chrono-pink);
+            transition: background-color 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        /* ==================== 場景切換子菜單 (液態玻璃半透質感) ==================== */
+        .scene-selector-hud {
+            position: absolute;
+            top: 24px;
+            left: 360px;
+            z-index: 100;
+            width: 320px;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, rgba(8, 20, 15, 0.38) 38%, rgba(4, 10, 8, 0.52) 100%) !important;
+            border: 1px solid rgba(255, 255, 255, 0.42);
+            clip-path: polygon(
+                0 0,
+                calc(100% - 20px) 0,
+                100% 20px,
+                100% 100%,
+                14px 100%,
+                0 calc(100% - 14px)
+            );
+            box-shadow:
+                inset 1px 1.5px 1.5px rgba(255, 255, 255, 0.75),
+                inset 5px 8px 14px -5px rgba(255, 255, 255, 0.25),
+                inset -1px -1.5px 1.5px rgba(255, 255, 255, 0.35),
+                inset -5px -8px 14px -5px rgba(var(--chrono-rgb, 82, 229, 155), 0.32),
+                0 20px 50px rgba(0, 0, 0, 0.65),
+                0 0 26px rgba(var(--chrono-rgb, 82, 229, 155), 0.24);
+            letter-spacing: 2px;
+            backdrop-filter: url(#hudLiquidFilter) blur(5px) saturate(165%) contrast(112%);
+            -webkit-backdrop-filter: url(#hudLiquidFilter) blur(5px) saturate(165%) contrast(112%);
+            transition: all 0.35s ease;
+        }
+
+        .scene-selector-hud.collapsed {
+            display: none;
+        }
+
+        /* 頂部資訊與切換提示 HUD (右上方：液態玻璃半透質感) */
+        .status-hud {
+            position: absolute;
+            top: 24px;
+            right: 24px;
+            z-index: 90;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, rgba(8, 20, 15, 0.40) 40%, rgba(4, 10, 8, 0.55) 100%) !important;
+            border: 1px solid rgba(255, 255, 255, 0.42);
+            clip-path: polygon(
+                0 0,
+                calc(100% - 14px) 0,
+                100% 14px,
+                100% 100%,
+                0 100%
+            );
+            padding: 12px 18px;
+            font-size: 11px;
+            line-height: 1.6;
+            letter-spacing: 1.5px;
+            color: var(--chrono-text-muted);
+            pointer-events: none;
+            box-shadow:
+                inset 1px 1.5px 1.5px rgba(255, 255, 255, 0.7),
+                inset -1px -1.5px 1.5px rgba(var(--chrono-rgb, 82, 229, 155), 0.35),
+                0 10px 30px rgba(0, 0, 0, 0.55),
+                0 0 20px rgba(var(--chrono-rgb, 82, 229, 155), 0.22);
+            transform: translateY(-16px) scale(0.96);
+            opacity: 0;
+            backdrop-filter: url(#hudLiquidFilter) blur(4px) saturate(165%) contrast(112%);
+            -webkit-backdrop-filter: url(#hudLiquidFilter) blur(4px) saturate(165%) contrast(112%);
+            transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.25s ease, border-color 0.4s ease, background 0.4s ease, box-shadow 0.4s ease, color 0.35s ease;
+        }
+
+        .status-hud.active {
+            transform: translateY(0) scale(1);
+            opacity: 1;
+        }
+
+        .status-hud .val {
+            color: var(--chrono-pink);
+            font-weight: bold;
+            transition: color 0.35s ease;
+        }
+
+        /* 快捷鍵開關浮動按鈕（液態玻璃半透質感） */
+        .hud-toggle-btn {
+            position: absolute;
+            bottom: 24px;
+            left: 24px;
+            z-index: 100;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.06) 0%, rgba(8, 20, 15, 0.40) 45%, rgba(4, 10, 8, 0.55) 100%);
+            border: 1px solid rgba(255, 255, 255, 0.45);
+            color: var(--chrono-pink);
+            padding: 9px 18px;
+            font-size: 11px;
+            letter-spacing: 2px;
+            cursor: pointer;
+            box-shadow:
+                inset 1px 1.5px 1.5px rgba(255, 255, 255, 0.75),
+                inset -1px -1.5px 1.5px rgba(var(--chrono-rgb, 82, 229, 155), 0.35),
+                0 6px 20px rgba(0,0,0,0.55),
+                0 0 16px rgba(var(--chrono-rgb, 82, 229, 155), 0.25);
+            font-family: inherit;
+            clip-path: polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 0 100%);
+            backdrop-filter: url(#hudLiquidFilter) blur(4px) saturate(165%) contrast(112%);
+            -webkit-backdrop-filter: url(#hudLiquidFilter) blur(4px) saturate(165%) contrast(112%);
+            transition: all 0.25s ease;
+        }
+        .hud-toggle-btn:hover {
+            background: var(--chrono-pink);
+            color: #000;
+            font-weight: bold;
+            box-shadow: 0 0 20px var(--chrono-pink);
+        }
+
+        /* 日夜循環面板與 10 段週期按鈕網格 */
+        .chrono-solar-panel {
+            padding: 10px 18px 12px 18px;
+            background: rgba(0, 0, 0, 0.32);
+        }
+
+        .chrono-solar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 11px;
+            color: var(--chrono-text-muted);
+            margin-bottom: 7px;
+            letter-spacing: 1.5px;
+            transition: color 0.35s ease;
+        }
+
+        .chrono-solar-header .solar-val {
+            color: var(--chrono-pink);
+            font-weight: 700;
+            transition: color 0.35s ease;
+        }
+
+        .chrono-solar-ticks {
+            display: flex;
+            justify-content: space-between;
+            font-size: 9.5px;
+            color: rgba(226, 232, 240, 0.45);
+            margin-top: 5px;
+            margin-bottom: 9px;
+            letter-spacing: 1px;
+        }
+
+        .chrono-cycle-label {
+            font-size: 10px;
+            color: var(--chrono-text-muted);
+            margin-bottom: 6px;
+            letter-spacing: 1.5px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: color 0.35s ease;
+        }
+
+        .chrono-cycle-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 4px;
+        }
+
+        .chrono-cycle-btn {
+            background: var(--chrono-pink-faint);
+            border: 1px solid var(--chrono-pink-dim);
+            color: var(--chrono-text);
+            font-family: inherit;
+            font-size: 10px;
+            padding: 5px 2px;
+            cursor: pointer;
+            text-align: center;
+            letter-spacing: 0.5px;
+            transition: all 0.15s ease;
+        }
+
+        .chrono-cycle-btn:hover,
+        .chrono-cycle-btn.active {
+            background: var(--chrono-pink) !important;
+            color: #000000 !important;
+            border-color: var(--chrono-pink) !important;
+            font-weight: 700;
+            box-shadow: 0 0 8px var(--chrono-pink-glow);
+        }
+
+        /* 底部交互指引 */
+        .bottom-hint {
+            position: absolute;
+            bottom: 24px;
+            right: 24px;
+            z-index: 20;
+            font-size: 11px;
+            letter-spacing: 2px;
+            color: rgba(255, 255, 255, 0.4);
+            pointer-events: none;
+            text-align: right;
+        }
+        /* ===== 防溢出：HUD 在小螢幕不超出視窗 ===== */
+        .chrono-hud, .scene-selector-hud { max-height: calc(100vh - 48px); overflow-y: auto; scrollbar-width: none; }
+        .chrono-hud::-webkit-scrollbar, .scene-selector-hud::-webkit-scrollbar { display: none; }
+
+        /* ==================== Z64 賽博時鐘掛件 (隨場景與日照動態變色) ==================== */
+        /* ==================== Z64 賽博時鐘掛件 (無背景、大字體、用戶自由拖曳位置與縮放大小) ==================== */
+        .chrono-clock-stage {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(calc(-50% + var(--clock-x, 0px)), calc(-50% + var(--clock-y, -140px))) scale(var(--clock-scale, 1.35));
+            transform-origin: center center;
+            z-index: 60;
+            background: transparent !important;
+            border: none !important;
+            box-shadow: none !important;
+            clip-path: none !important;
+            padding: 12px 18px;
+            letter-spacing: 2px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            pointer-events: auto;
+            cursor: grab;
+            user-select: none;
+            -webkit-user-select: none;
+            touch-action: none;
+            transition: color 0.35s ease, filter 0.35s ease, background 0.35s ease, border-color 0.35s ease, box-shadow 0.35s ease, backdrop-filter 0.35s ease;
+        }
+
+        .chrono-clock-stage:active {
+            cursor: grabbing;
+        }
+
+        /* 液態玻璃模式 (Apple WWDC25 Liquid Glass 流體玻璃質感 - 增強光學折射與稜鏡色散)
+           - 真實微晶光學折射 (SVG Displacement Map 濾鏡 + 背景透光扭曲)
+           - 多層極限菲涅爾反射 (Extreme Fresnel Specular Inset Highlights)
+           - 多種幾何形狀 (拒絕妥圓形)：賽博切角菱鏡、極簡微弧方圓(Squircle)、八角切面寶石、棱鏡裝甲塊
+           - 棱鏡色散光斑 (Prismatic Caustic Sheen & Rainbow Chromatic Aberration)
+        */
+        .chrono-clock-stage.liquid-glass {
+            position: fixed;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.07) 0%, rgba(255, 255, 255, 0.015) 40%, rgba(0, 0, 0, 0.10) 100%) !important;
+            backdrop-filter: url(#liquidRefractFilter) blur(1px) saturate(170%) contrast(110%) !important;
+            -webkit-backdrop-filter: url(#liquidRefractFilter) blur(1px) saturate(170%) contrast(110%) !important;
+            border: 1.5px solid rgba(255, 255, 255, 0.5) !important;
+            box-shadow:
+                /* 銳利細邊高光 (只在邊緣，不蓋住中心) */
+                inset 1px 2px 1.5px rgba(255, 255, 255, 0.85),
+                inset 0 0 0 1px rgba(255, 255, 255, 0.12),
+                inset -1px -2px 1.5px rgba(255, 255, 255, 0.45),
+                /* 邊緣內側窄帶光暈，向中心快速衰減 */
+                inset 6px 8px 14px -6px rgba(255, 255, 255, 0.35),
+                inset -6px -8px 14px -6px rgba(var(--chrono-rgb, 82, 229, 155), 0.45),
+                /* 外部投影 */
+                0 22px 55px rgba(0, 0, 0, 0.55),
+                0 0 30px rgba(var(--chrono-rgb, 82, 229, 155), 0.3) !important;
+            padding: 20px 42px 18px 42px !important;
+            overflow: hidden;
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        /* 1. SQUIRCLE 微弧方圓 (現代精工超橢圓方角，告別普通橢圓) */
+        .chrono-clock-stage.liquid-glass.glass-shape-squircle {
+            border-radius: 26px !important;
+            clip-path: none !important;
+        }
+        .chrono-clock-stage.liquid-glass.glass-shape-squircle::before {
+            border-radius: 25px 25px 0 0;
+        }
+        .chrono-clock-stage.liquid-glass.glass-shape-squircle::after {
+            border-radius: 25px;
+        }
+
+        /* 2. CYBER CHAMFER 賽博切角棱鏡 (硬朗斜切角 Cyberpunk 玻璃裝甲板) */
+        .chrono-clock-stage.liquid-glass.glass-shape-chamfer {
+            border-radius: 0px !important;
+            clip-path: polygon(20px 0, calc(100% - 20px) 0, 100% 20px, 100% calc(100% - 20px), calc(100% - 20px) 100%, 20px 100%, 0 calc(100% - 20px), 0 20px) !important;
+            border: 1.5px solid rgba(255, 255, 255, 0.75) !important;
+        }
+        .chrono-clock-stage.liquid-glass.glass-shape-chamfer::before {
+            border-radius: 0;
+            clip-path: polygon(20px 0, calc(100% - 20px) 0, 100% 20px, 100% 100%, 0 100%, 0 20px);
+        }
+        .chrono-clock-stage.liquid-glass.glass-shape-chamfer::after {
+            border-radius: 0;
+            clip-path: polygon(20px 0, calc(100% - 20px) 0, 100% 20px, 100% calc(100% - 20px), calc(100% - 20px) 100%, 20px 100%, 0 calc(100% - 20px), 0 20px);
+        }
+
+        /* 3. FACETED GEM 八角鑽石寶石切面 (立體晶格玻璃琢面) */
+        .chrono-clock-stage.liquid-glass.glass-shape-gem {
+            border-radius: 0px !important;
+            clip-path: polygon(30px 0, calc(100% - 30px) 0, 100% 50%, calc(100% - 30px) 100%, 30px 100%, 0 50%) !important;
+            border: 1.5px solid rgba(255, 255, 255, 0.8) !important;
+            padding: 20px 50px 18px 50px !important;
+        }
+        .chrono-clock-stage.liquid-glass.glass-shape-gem::before {
+            border-radius: 0;
+            clip-path: polygon(30px 0, calc(100% - 30px) 0, 100% 50%, 0 50%);
+        }
+        .chrono-clock-stage.liquid-glass.glass-shape-gem::after {
+            border-radius: 0;
+            clip-path: polygon(30px 0, calc(100% - 30px) 0, 100% 50%, calc(100% - 30px) 100%, 30px 100%, 0 50%);
+        }
+
+        /* 4. TECH SLAB 機甲平切矩陣板 (右上與左下切角戰術 HUD 板) */
+        .chrono-clock-stage.liquid-glass.glass-shape-slab {
+            border-radius: 8px !important;
+            clip-path: polygon(0 0, calc(100% - 24px) 0, 100% 24px, 100% 100%, 24px 100%, 0 calc(100% - 24px)) !important;
+            border: 1.5px solid rgba(255, 255, 255, 0.7) !important;
+            padding: 20px 42px 18px 42px !important;
+        }
+        .chrono-clock-stage.liquid-glass.glass-shape-slab::before {
+            border-radius: 0;
+            clip-path: polygon(0 0, calc(100% - 24px) 0, 100% 24px, 100% 100%, 0 100%);
+        }
+        .chrono-clock-stage.liquid-glass.glass-shape-slab::after {
+            border-radius: 0;
+            clip-path: polygon(0 0, calc(100% - 24px) 0, 100% 24px, 100% 100%, 24px 100%, 0 calc(100% - 24px));
+        }
+
+        /* 液態玻璃頂部流動弧面光澤 + 動態斜角透鏡折射光斑 (Caustic Sheen) */
+        .chrono-clock-stage.liquid-glass::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 30%;
+            background: linear-gradient(160deg, rgba(255, 255, 255, 0.16) 0%, rgba(255, 255, 255, 0.04) 40%, rgba(255, 255, 255, 0) 70%);
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        /* 液態玻璃邊緣色散色差高光微環 (Prismatic Edge / Rainbow Dispersion Rim) */
+        .chrono-clock-stage.liquid-glass::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            box-shadow:
+                inset 0 0 0 1px rgba(255, 255, 255, 0.3),
+                inset 1px 1px 6px rgba(255, 120, 160, 0.25),
+                inset -1px -1px 8px rgba(90, 200, 255, 0.35),
+                inset 0 0 20px rgba(var(--chrono-rgb, 82, 229, 155), 0.35);
+            pointer-events: none;
+            z-index: 2;
+        }
+
+        /* 拖曳握柄提示 (懸停時淡入微弱引導) */
+        .clock-drag-hint {
+            font-size: 9.5px;
+            letter-spacing: 2.5px;
+            color: var(--chrono-pink);
+            opacity: 0;
+            margin-bottom: 6px;
+            text-transform: uppercase;
+            font-weight: bold;
+            transition: opacity 0.2s ease;
+            pointer-events: none;
+            text-shadow: 0 0 10px var(--chrono-pink-glow);
+        }
+        .chrono-clock-stage:hover .clock-drag-hint {
+            opacity: 0.85;
+        }
+
+        .clock-stage-body {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: auto;
+            background: transparent;
+        }
+
+        .clock-stage-ft-minimal {
+            font-size: 11px;
+            letter-spacing: 3px;
+            color: var(--chrono-text-muted);
+            text-transform: uppercase;
+            margin-top: 8px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            transition: color 0.35s ease;
+        }
+        .clock-stage-ft-minimal b {
+            color: var(--chrono-pink);
+            font-weight: 700;
+        }
+
+        /* 時鐘字體及公用樣式 */
+        .ck {
+            width: auto;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            text-align: center;
+            background: transparent;
+        }
+        .ck-sub {
+            font-size: 12px;
+            letter-spacing: 2.8px;
+            text-transform: uppercase;
+            color: var(--chrono-text-muted);
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            justify-content: center;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.9);
+        }
+        .ck-sub b {
+            color: var(--chrono-pink);
+            font-weight: 700;
+        }
+        .colon {
+            transition: opacity 0.16s linear;
+        }
+        body.ck-blink .colon {
+            opacity: 0.2;
+        }
+
+        /* 01 MAGNA 巨幅電子鐘 (大字體、無背景) */
+        .mega-time {
+            font-size: clamp(68px, 12vw, 150px);
+            line-height: 0.92;
+            letter-spacing: 0.05em;
+            display: flex;
+            align-items: baseline;
+            justify-content: center;
+            gap: 4px;
+            color: #ffffff;
+            text-shadow: 0 0 35px var(--chrono-pink-glow), 0 0 65px var(--chrono-pink-glow), 0 4px 18px rgba(0, 0, 0, 0.9);
+            font-variant-numeric: tabular-nums;
+            font-weight: 700;
+        }
+        .mega-time .sec {
+            font-size: 0.44em;
+            opacity: 0.92;
+            color: var(--chrono-pink);
+            text-shadow: 0 0 24px var(--chrono-pink);
+        }
+        .mega-time .ap {
+            font-size: 0.22em;
+            letter-spacing: 2.5px;
+            color: var(--chrono-pink);
+            margin-left: 8px;
+            font-weight: 700;
+        }
+
+        /* 02 VECTOR 終端監控儀 (無背景、大字體、雙層幽靈數字) */
+        .mono-wrap {
+            position: relative;
+            font-size: clamp(60px, 10.5vw, 130px);
+            line-height: 1;
+            letter-spacing: 0.06em;
+            display: inline-block;
+        }
+        .mono-wrap .ghost {
+            color: rgba(255, 255, 255, 0.08);
+            user-select: none;
+            font-variant-numeric: tabular-nums;
+        }
+        .mono-wrap .real {
+            position: absolute;
+            inset: 0;
+            color: var(--chrono-pink);
+            text-shadow: 0 0 32px var(--chrono-pink-glow), 0 0 55px var(--chrono-pink), 0 4px 16px rgba(0, 0, 0, 0.9);
+            font-variant-numeric: tabular-nums;
+            font-weight: 700;
+        }
+        .mono-rule {
+            display: flex;
+            gap: 16px;
+            align-items: center;
+            font-size: 11px;
+            letter-spacing: 3px;
+            color: var(--chrono-text-muted);
+            text-transform: uppercase;
+            margin-top: 6px;
+            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.9);
+        }
+        .mono-rule .dash {
+            width: 44px;
+            height: 1.5px;
+            background: var(--chrono-pink);
+            box-shadow: 0 0 8px var(--chrono-pink);
+        }
+
+        /* 03 SYNCRO 圓形指針鐘 (無背景、通透鏤空指針) */
+        .an-svg {
+            width: clamp(200px, 32vh, 320px);
+            height: auto;
+            overflow: visible;
+            filter: drop-shadow(0 0 20px rgba(0, 0, 0, 0.85)) drop-shadow(0 0 16px var(--chrono-pink-glow));
+        }
+        .an-face { fill: none; stroke: var(--chrono-pink-dim); stroke-width: 1.8; }
+        .an-inner { fill: none; stroke: var(--chrono-pink-faint); stroke-width: 1.2; stroke-dasharray: 4 4; }
+        .an-tick { stroke: var(--chrono-pink-dim); stroke-width: 1.5; stroke-linecap: round; }
+        .an-tick.maj { stroke: var(--chrono-pink); stroke-width: 3; }
+        .an-num { font-size: 11px; fill: var(--chrono-text); text-anchor: middle; font-family: inherit; font-weight: bold; }
+        .an-h { stroke: #ffffff; stroke-width: 5; stroke-linecap: round; }
+        .an-m { stroke: #ffffff; stroke-width: 3.5; stroke-linecap: round; opacity: 0.92; }
+        .an-s { stroke: var(--chrono-pink); stroke-width: 2; stroke-linecap: round; }
+        .an-cap { fill: var(--chrono-pink); }
+        .an-dig { font-size: 15px; letter-spacing: 3px; color: var(--chrono-text); margin-top: 8px; font-weight: 700; text-shadow: 0 0 12px var(--chrono-pink-glow); }
+        .an-dig b { color: var(--chrono-pink); }
+
+        /* 04 ORBIT 同心軌道進度環 */
+        .rg-wrap { position: relative; display: grid; place-items: center; }
+        .rg-svg {
+            width: clamp(190px, 30vh, 300px);
+            height: auto;
+            transform: rotate(-90deg);
+            filter: drop-shadow(0 0 20px rgba(0, 0, 0, 0.85)) drop-shadow(0 0 16px var(--chrono-pink-glow));
+        }
+        .rg-trk { fill: none; stroke: rgba(255, 255, 255, 0.1); stroke-width: 7; }
+        .rg-bar { fill: none; stroke-width: 7; stroke-linecap: round; transition: stroke-dashoffset 0.18s linear; }
+        .rg-h { stroke: var(--chrono-pink); }
+        .rg-m { stroke: var(--chrono-pink); opacity: 0.75; }
+        .rg-s { stroke: #ffffff; opacity: 0.7; }
+        .rg-center { position: absolute; display: flex; flex-direction: column; align-items: center; gap: 2px; }
+        .rg-time { font-size: clamp(28px, 5.5vw, 54px); line-height: 1; font-variant-numeric: tabular-nums; color: #ffffff; font-weight: 700; text-shadow: 0 0 18px var(--chrono-pink-glow); }
+        .rg-sec { font-size: 14px; letter-spacing: 3px; color: var(--chrono-pink); font-weight: 700; text-shadow: 0 0 10px var(--chrono-pink); }
+        .rg-key { display: flex; gap: 14px; font-size: 10px; letter-spacing: 2px; color: var(--chrono-text-muted); text-transform: uppercase; margin-top: 6px; }
+        .rg-key i { display: inline-block; width: 9px; height: 3px; border-radius: 1px; margin-right: 5px; vertical-align: middle; }
+
+        /* 05 ARRAY 七段發光管 (大尺寸 LED) */
+        .s7-row { display: flex; align-items: center; justify-content: center; gap: clamp(6px, 1.5vw, 16px); }
+        .s7-col { display: flex; gap: 4px; }
+        .s7 { position: relative; width: clamp(34px, 5.8vw, 62px); height: clamp(62px, 10.5vw, 115px); }
+        .sg { position: absolute; background: rgba(255, 255, 255, 0.06); border-radius: 3px; transition: background 0.08s linear, box-shadow 0.08s linear; }
+        .sg.on { background: var(--chrono-pink); box-shadow: 0 0 16px var(--chrono-pink), 0 0 32px var(--chrono-pink-glow); }
+        .sg.a, .sg.d, .sg.g { height: 10%; left: 12%; right: 12%; }
+        .sg.a { top: 2%; } .sg.g { top: 45%; } .sg.d { bottom: 2%; }
+        .sg.f, .sg.b, .sg.e, .sg.c { width: 10%; top: 8%; bottom: 8%; }
+        .sg.f { left: 2%; } .sg.b { right: 2%; } .sg.e { left: 2%; } .sg.c { right: 2%; }
+        .sg.f, .sg.b { height: 38%; } .sg.e, .sg.c { height: 38%; top: auto; bottom: 8%; }
+        .s7-sp { color: var(--chrono-pink); font-size: clamp(26px, 4.5vw, 48px); align-self: center; font-weight: 700; text-shadow: 0 0 18px var(--chrono-pink); }
+
+        /* 06 SIGNET 日期典藏印記 */
+        .st-top { display: flex; align-items: flex-end; justify-content: center; gap: 16px; }
+        .st-day { font-size: clamp(56px, 10.5vw, 120px); line-height: 0.85; color: var(--chrono-pink); text-shadow: 0 0 32px var(--chrono-pink-glow), 0 0 60px var(--chrono-pink); font-weight: 700; }
+        .st-right { display: flex; flex-direction: column; align-items: flex-start; gap: 4px; }
+        .st-mon { font-size: clamp(20px, 3.8vw, 42px); letter-spacing: 3px; color: #ffffff; font-weight: bold; text-shadow: 0 0 18px rgba(255, 255, 255, 0.4); }
+        .st-year { font-size: 14px; letter-spacing: 3px; color: var(--chrono-text-muted); }
+        .st-time { font-size: clamp(28px, 5vw, 54px); letter-spacing: 3px; color: #ffffff; font-variant-numeric: tabular-nums; font-weight: 700; text-shadow: 0 0 20px var(--chrono-pink-glow); }
+        .st-dow { font-size: 13px; letter-spacing: 4px; color: var(--chrono-pink); font-weight: 700; text-transform: uppercase; }
+
+        @media (max-width: 760px) {
+            .chrono-hud { width: calc(100vw - 48px); max-width: 340px; }
+            .scene-selector-hud { left: 24px; right: 24px; width: auto; top: 24px; z-index: 110; }
+            .status-hud, .bottom-hint { display: none; }
+        }
+</style>
+</head>
+<body>
+
+    <!-- 光學折射與流體玻璃波紋 SVG 濾鏡 (提供真實凸透鏡邊緣折射 FeDisplacementMap + RGB 三色色散，無白霧泛光) -->
+    <svg width="0" height="0" style="position:absolute;width:0;height:0;pointer-events:none;" aria-hidden="true">
+        <defs>
+            <!-- 時鐘專用：強烈液態玻璃邊緣透鏡折射 + 稜鏡色散濾鏡 -->
+            <filter id="liquidRefractFilter" x="0%" y="0%" width="100%" height="100%" color-interpolation-filters="sRGB">
+                <!-- 1. 產生有機流體微波紋噪波 -->
+                <feTurbulence type="fractalNoise" baseFrequency="0.008 0.012" numOctaves="2" seed="7" result="fluidWave" />
+                <feGaussianBlur in="fluidWave" stdDeviation="3" result="smoothWave" />
+                <!-- 2. 結合凸透鏡折射位移，三原色採用不同折射率 (R=36, G=45, B=54) 產生真實光學色散 -->
+                <feDisplacementMap in="SourceGraphic" in2="smoothWave" scale="36" xChannelSelector="R" yChannelSelector="G" result="dispR" />
+                <feColorMatrix in="dispR" type="matrix" values="1 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 1 0" result="chR" />
+
+                <feDisplacementMap in="SourceGraphic" in2="smoothWave" scale="45" xChannelSelector="R" yChannelSelector="G" result="dispG" />
+                <feColorMatrix in="dispG" type="matrix" values="0 0 0 0 0  0 1 0 0 0  0 0 0 0 0  0 0 0 1 0" result="chG" />
+
+                <feDisplacementMap in="SourceGraphic" in2="smoothWave" scale="54" xChannelSelector="R" yChannelSelector="G" result="dispB" />
+                <feColorMatrix in="dispB" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 1 0 0  0 0 0 1 0" result="chB" />
+
+                <feBlend in="chR" in2="chG" mode="screen" result="rg" />
+                <feBlend in="rg" in2="chB" mode="screen" />
+            </filter>
+
+            <!-- HUD 控制面板專用：晶透液態玻璃微折射濾鏡 (兼顧文字清晰與背景水波折射感) -->
+            <filter id="hudLiquidFilter" x="0%" y="0%" width="100%" height="100%" color-interpolation-filters="sRGB">
+                <feTurbulence type="fractalNoise" baseFrequency="0.01 0.014" numOctaves="2" seed="11" result="hudWave" />
+                <feGaussianBlur in="hudWave" stdDeviation="2.5" result="smoothHudWave" />
+                <feDisplacementMap in="SourceGraphic" in2="smoothHudWave" scale="22" xChannelSelector="R" yChannelSelector="G" />
+            </filter>
+        </defs>
+    </svg>
+
+    <canvas id="canvas"></canvas>
+
+    <!-- Z64 賽博時鐘掛件 (純透明無背景、大字體、用戶可直接拖曳位置、滾輪/拉桿調大小) -->
+    <div class="chrono-clock-stage" id="chronoClockStage" title="拖曳可移動時鐘位置 / 滾輪可調整大小">
+        <div class="clock-drag-hint">✢ DRAG TO MOVE &middot; SCROLL TO SCALE</div>
+        <div class="clock-stage-body" id="clockStageBody">
+            <!-- 由 JS 動態渲染時鐘樣式 (MAGNA, VECTOR, SYNCRO, ORBIT, ARRAY, SIGNET) -->
+        </div>
+        <div class="clock-stage-ft-minimal" id="clockFootMinimal">
+            <span id="clockDateLine">UTC+8 // LOCAL TIME</span>
+            <span style="opacity:0.6">&middot;</span>
+            <span id="clockFaceTagMini">01 MAGNA</span>
+        </div>
+    </div>
+
+    <!-- 主控制菜單：完全採用截圖賽博龐克風格與切角排版 -->
+    <div class="chrono-hud" id="mainHud">
+        <div class="chrono-header">
+            <span>RKRINT // CHRONO</span>
+            <span class="title-badge" id="hudStatusBadge">ACTIVE</span>
+        </div>
+
+        <ul class="chrono-menu-list">
+            <li>
+                <button class="chrono-btn active" id="btnToggleScenes">
+                    <span>SELECT SCENE</span>
+                    <span class="shortcut">TAB ⤢</span>
+                </button>
+            </li>
+            <li>
+                <button class="chrono-btn" id="btnCycleTheme">
+                    <span>CYCLE THEME</span>
+                    <span class="shortcut">T / [A/D]</span>
+                </button>
+            </li>
+            <li>
+                <button class="chrono-btn" id="btnCycleClock">
+                    <span id="clockStyleLabel">CLOCK: 01 MAGNA</span>
+                    <span class="shortcut">[W/S]</span>
+                </button>
+            </li>
+            <li>
+                <button class="chrono-btn" id="btnSolarTransition">
+                    <span id="solarSweepLabel">SUNRISE ⇄ SUNSET</span>
+                    <span class="shortcut">X [日出/日落]</span>
+                </button>
+            </li>
+            <li>
+                <button class="chrono-btn" id="btnSpeedToggle">
+                    <span id="speedLabel">SPEED: SLOW</span>
+                    <span class="shortcut">V [快/中/慢]</span>
+                </button>
+            </li>
+            <li>
+                <button class="chrono-btn" id="btnAudioToggle">
+                    <span id="audioLabel">AUDIO: PLAYING</span>
+                    <span class="shortcut">M [♪]</span>
+                </button>
+            </li>
+
+            <div class="chrono-divider"></div>
+
+            <!-- 時鐘大小縮放拉桿、玻璃化模糊切換與位置重置 -->
+            <div class="chrono-slider-box">
+                <span>CLOCK SCALE</span>
+                <input type="range" id="clockScaleSlider" class="chrono-slider" min="0.5" max="3.0" step="0.05" value="1.35">
+                <span id="clockScaleValue">1.35×</span>
+            </div>
+            <li>
+                <button class="chrono-btn" id="btnToggleGlassBlur" style="font-size:11px;padding:8px 18px;">
+                    <span id="glassBlurLabel">LIQUID GLASS: OFF</span>
+                    <span class="shortcut">B [開關]</span>
+                </button>
+            </li>
+            <li>
+                <button class="chrono-btn" id="btnCycleGlassShape" style="font-size:11px;padding:8px 18px;">
+                    <span id="glassShapeLabel">SHAPE: SQUIRCLE</span>
+                    <span class="shortcut">G [形狀]</span>
+                </button>
+            </li>
+            <li>
+                <button class="chrono-btn" id="btnResetClockPos" style="font-size:11px;padding:8px 18px;">
+                    <span>RESET CLOCK POS</span>
+                    <span class="shortcut">⌖ CENTER</span>
+                </button>
+            </li>
+
+            <div class="chrono-divider"></div>
+
+            <!-- 日出/日落手動拉桿 + 10段自動循環時間選擇 -->
+            <div class="chrono-solar-panel">
+                <div class="chrono-solar-header">
+                    <span>SOLAR PHASE</span>
+                    <span class="solar-val" id="solarTimeValue">06:00 // 日出</span>
+                </div>
+                <input type="range" id="solarSlider" class="chrono-slider" style="width:100%;display:block;" min="0" max="1" step="0.001" value="0.25">
+                <div class="chrono-solar-ticks">
+                    <span>深夜</span>
+                    <span>日出</span>
+                    <span>正午</span>
+                    <span>日落</span>
+                    <span>星夜</span>
+                </div>
+                <div class="chrono-cycle-label">
+                    <span>AUTO CYCLE // 循環週期</span>
+                    <span id="cyclePeriodLabel" style="color:var(--chrono-pink);font-weight:bold;">3min</span>
+                </div>
+                <div class="chrono-cycle-grid" id="cycleBtnGrid">
+                    <button type="button" class="chrono-cycle-btn" data-sec="3600">1hr</button>
+                    <button type="button" class="chrono-cycle-btn" data-sec="2400">40min</button>
+                    <button type="button" class="chrono-cycle-btn" data-sec="1800">30min</button>
+                    <button type="button" class="chrono-cycle-btn" data-sec="900">15min</button>
+                    <button type="button" class="chrono-cycle-btn" data-sec="600">10min</button>
+                    <button type="button" class="chrono-cycle-btn" data-sec="420">7min</button>
+                    <button type="button" class="chrono-cycle-btn" data-sec="300">5min</button>
+                    <button type="button" class="chrono-cycle-btn active" data-sec="180">3min</button>
+                    <button type="button" class="chrono-cycle-btn" data-sec="60">1min</button>
+                    <button type="button" class="chrono-cycle-btn" data-sec="30">30sec</button>
+                </div>
+            </div>
+
+            <div class="chrono-divider"></div>
+
+            <div class="chrono-slider-box">
+                <span>VOLUME</span>
+                <input type="range" id="volumeSlider" class="chrono-slider" min="0" max="1" step="0.01" value="0.75">
+                <span id="volumeValue">75%</span>
+            </div>
+
+            <div class="chrono-divider"></div>
+
+            <li>
+                <button class="chrono-btn" id="btnSpawnFish">
+                    <span>SPAWN KOI FISH</span>
+                    <span class="shortcut">F [🐟]</span>
+                </button>
+            </li>
+            <li>
+                <button class="chrono-btn" id="btnTriggerEco">
+                    <span>TRIGGER WILDLIFE</span>
+                    <span class="shortcut">C [🐸/🦋]</span>
+                </button>
+            </li>
+            <li>
+                <button class="chrono-btn" id="btnReloadPage">
+                    <span>RELOAD PAGE</span>
+                    <span class="shortcut">↺</span>
+                </button>
+            </li>
+        </ul>
+    </div>
+
+    <!-- 場景切換選擇菜單：七種專屬水境 -->
+    <div class="scene-selector-hud" id="sceneHud">
+        <div class="chrono-header">
+            <span>WATER ARCHIVES</span>
+            <span class="title-badge">7 MODES</span>
+        </div>
+        <ul class="chrono-menu-list" id="sceneListContainer">
+            <!-- 由 JS 動態注入 7 種場景按鈕 -->
+        </ul>
+    </div>
+
+    <!-- 右上角即時狀態 HUD (預設關閉/收起，由左下角 H 鍵統一切換) -->
+    <div class="status-hud" id="statusHud">
+        <div>SCENE : <span class="val" id="hudSceneName">竹林木屋・木質水潭</span></div>
+        <div>SOLAR : <span class="val" id="hudSolarStatus">06:00 日出 // 3min CYCLE</span></div>
+        <div>ECOLOGY : <span class="val" id="hudEcoStatus">LOTUS / DRAGONFLY / FROG</span></div>
+        <div>AUDIO : <span class="val" id="hudAudioStatus">BUFFERING / READY</span></div>
+        <div>SPEED : <span class="val" id="hudSpeedName">SLOW (0.3x)</span></div>
+        <div>RIPPLES : <span class="val" id="hudWaveStatus">SPRING 60FPS</span></div>
+    </div>
+
+    <!-- 左下角折疊/展開 HUD 按鈕 (預設所有 HUD 收起，點擊展開) -->
+    <button class="hud-toggle-btn" id="btnToggleHud">SHOW HUD [H]</button>
+
+    <div class="bottom-hint">
+        [W/S] CLOCK STYLE // [A/D] THEME // [B] LIQUID GLASS // [G] GLASS SHAPE // [H] HUD // [X] SUNRISE/SUNSET // [F] KOI // [C] CRITTERS
+    </div>
+
+    <script src="engine.js"></script>
+</body>
+</html>
