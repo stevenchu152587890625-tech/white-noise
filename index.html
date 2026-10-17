@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>RKRINT // HYDRO CHRONO - 水境水聲多場景模擬</title>
+    <title>HYDRO CHRONO - 水境水聲多場景模擬</title>
     <!-- Google Fonts 科技等寬字體，同時提供本機 Consolas / Monospace 降級保障離線可用 -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -18,6 +18,7 @@
             --chrono-badge-text: #d4ffea;
             --chrono-bg: rgba(7, 18, 13, 0.93);
             --chrono-text: #e2e8f0;
+    --chrono-white: #ffffff;
             --chrono-text-muted: #8bb8a2;
             --chrono-border: #52e59b;
         }
@@ -464,8 +465,8 @@
         .chrono-clock-stage.liquid-glass {
             position: fixed;
             background: linear-gradient(135deg, rgba(255, 255, 255, 0.07) 0%, rgba(255, 255, 255, 0.015) 40%, rgba(0, 0, 0, 0.10) 100%) !important;
-            backdrop-filter: url(#liquidRefractFilter) blur(1px) saturate(170%) contrast(110%) !important;
-            -webkit-backdrop-filter: url(#liquidRefractFilter) blur(1px) saturate(170%) contrast(110%) !important;
+            backdrop-filter: url(#liquidRefractFilter) blur(0px) saturate(170%) contrast(110%) !important;
+            -webkit-backdrop-filter: url(#liquidRefractFilter) blur(0px) saturate(170%) contrast(110%) !important;
             border: 1.5px solid rgba(255, 255, 255, 0.5) !important;
             box-shadow:
                 /* 銳利細邊高光 (只在邊緣，不蓋住中心) */
@@ -652,7 +653,7 @@
             align-items: baseline;
             justify-content: center;
             gap: 4px;
-            color: #ffffff;
+            color: var(--chrono-white, #ffffff);
             text-shadow: 0 0 35px var(--chrono-pink-glow), 0 0 65px var(--chrono-pink-glow), 0 4px 18px rgba(0, 0, 0, 0.9);
             font-variant-numeric: tabular-nums;
             font-weight: 700;
@@ -722,8 +723,8 @@
         .an-tick { stroke: var(--chrono-pink-dim); stroke-width: 1.5; stroke-linecap: round; }
         .an-tick.maj { stroke: var(--chrono-pink); stroke-width: 3; }
         .an-num { font-size: 11px; fill: var(--chrono-text); text-anchor: middle; font-family: inherit; font-weight: bold; }
-        .an-h { stroke: #ffffff; stroke-width: 5; stroke-linecap: round; }
-        .an-m { stroke: #ffffff; stroke-width: 3.5; stroke-linecap: round; opacity: 0.92; }
+        .an-h { stroke: var(--chrono-white, #ffffff); stroke-width: 5; stroke-linecap: round; }
+        .an-m { stroke: var(--chrono-white, #ffffff); stroke-width: 3.5; stroke-linecap: round; opacity: 0.92; }
         .an-s { stroke: var(--chrono-pink); stroke-width: 2; stroke-linecap: round; }
         .an-cap { fill: var(--chrono-pink); }
         .an-dig { font-size: 15px; letter-spacing: 3px; color: var(--chrono-text); margin-top: 8px; font-weight: 700; text-shadow: 0 0 12px var(--chrono-pink-glow); }
@@ -741,9 +742,9 @@
         .rg-bar { fill: none; stroke-width: 7; stroke-linecap: round; transition: stroke-dashoffset 0.18s linear; }
         .rg-h { stroke: var(--chrono-pink); }
         .rg-m { stroke: var(--chrono-pink); opacity: 0.75; }
-        .rg-s { stroke: #ffffff; opacity: 0.7; }
+        .rg-s { stroke: var(--chrono-white, #ffffff); opacity: 0.7; }
         .rg-center { position: absolute; display: flex; flex-direction: column; align-items: center; gap: 2px; }
-        .rg-time { font-size: clamp(28px, 5.5vw, 54px); line-height: 1; font-variant-numeric: tabular-nums; color: #ffffff; font-weight: 700; text-shadow: 0 0 18px var(--chrono-pink-glow); }
+        .rg-time { font-size: clamp(28px, 5.5vw, 54px); line-height: 1; font-variant-numeric: tabular-nums; color: var(--chrono-white, #ffffff); font-weight: 700; text-shadow: 0 0 18px var(--chrono-pink-glow); }
         .rg-sec { font-size: 14px; letter-spacing: 3px; color: var(--chrono-pink); font-weight: 700; text-shadow: 0 0 10px var(--chrono-pink); }
         .rg-key { display: flex; gap: 14px; font-size: 10px; letter-spacing: 2px; color: var(--chrono-text-muted); text-transform: uppercase; margin-top: 6px; }
         .rg-key i { display: inline-block; width: 9px; height: 3px; border-radius: 1px; margin-right: 5px; vertical-align: middle; }
@@ -765,9 +766,9 @@
         .st-top { display: flex; align-items: flex-end; justify-content: center; gap: 16px; }
         .st-day { font-size: clamp(56px, 10.5vw, 120px); line-height: 0.85; color: var(--chrono-pink); text-shadow: 0 0 32px var(--chrono-pink-glow), 0 0 60px var(--chrono-pink); font-weight: 700; }
         .st-right { display: flex; flex-direction: column; align-items: flex-start; gap: 4px; }
-        .st-mon { font-size: clamp(20px, 3.8vw, 42px); letter-spacing: 3px; color: #ffffff; font-weight: bold; text-shadow: 0 0 18px rgba(255, 255, 255, 0.4); }
+        .st-mon { font-size: clamp(20px, 3.8vw, 42px); letter-spacing: 3px; color: var(--chrono-white, #ffffff); font-weight: bold; text-shadow: 0 0 18px rgba(255, 255, 255, 0.4); }
         .st-year { font-size: 14px; letter-spacing: 3px; color: var(--chrono-text-muted); }
-        .st-time { font-size: clamp(28px, 5vw, 54px); letter-spacing: 3px; color: #ffffff; font-variant-numeric: tabular-nums; font-weight: 700; text-shadow: 0 0 20px var(--chrono-pink-glow); }
+        .st-time { font-size: clamp(28px, 5vw, 54px); letter-spacing: 3px; color: var(--chrono-white, #ffffff); font-variant-numeric: tabular-nums; font-weight: 700; text-shadow: 0 0 20px var(--chrono-pink-glow); }
         .st-dow { font-size: 13px; letter-spacing: 4px; color: var(--chrono-pink); font-weight: 700; text-transform: uppercase; }
 
         @media (max-width: 760px) {
@@ -818,8 +819,8 @@
         <div class="clock-stage-body" id="clockStageBody">
             <!-- 由 JS 動態渲染時鐘樣式 (MAGNA, VECTOR, SYNCRO, ORBIT, ARRAY, SIGNET) -->
         </div>
-        <div class="clock-stage-ft-minimal" id="clockFootMinimal">
-            <span id="clockDateLine">UTC+8 // LOCAL TIME</span>
+        <div class="clock-stage-ft-minimal" id="clockFootMinimal" style="display:none !important">
+            <span id="clockDateLine">LOCAL TIME</span>
             <span style="opacity:0.6">&middot;</span>
             <span id="clockFaceTagMini">06 SIGNET</span>
         </div>
@@ -828,7 +829,7 @@
     <!-- 主控制菜單：完全採用截圖賽博龐克風格與切角排版 -->
     <div class="chrono-hud" id="mainHud">
         <div class="chrono-header">
-            <span>RKRINT // CHRONO</span>
+            <span>HYDRO // CHRONO</span>
             <span class="title-badge" id="hudStatusBadge">ACTIVE</span>
         </div>
 
@@ -991,5 +992,6 @@
     </div>
 
     <script src="engine.js"></script>
+<script src="glass.js"></script>
 </body>
 </html>

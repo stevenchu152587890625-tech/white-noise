@@ -63,7 +63,7 @@
             fireflies: 16, dragonflies: 3, frogs: 2, striders: 4, minnows: 18, birds: 2, turtles: 0, jellyfish: 0,
             mist: 5, mistA: 0.16, leaf: 'bamboo', current: 0,
             rain: { density: 0.045, wind: 0.03, speed: 0.75, alpha: 0.5, imp: 0.8, ripple: [0.6, 0.7, 0.8] },
-            fish: ['#ff6a4d', '#ffffff']
+            fish: ['#ffc83d', '#ffffff']
         },
         {
             id: 'bamboo_stone',
@@ -96,7 +96,7 @@
             fireflies: 8, dragonflies: 4, frogs: 1, striders: 6, minnows: 26, birds: 3, turtles: 1, jellyfish: 0,
             mist: 4, mistA: 0.12, leaf: 'autumn', current: 1.0,
             rain: { density: 0.03, wind: 0.04, speed: 0.8, alpha: 0.5, imp: 0.8, ripple: [0.6, 0.7, 0.8] },
-            fish: ['#ff8a4c', '#ffe3bf']
+            fish: ['#ffd35c', '#ffe3bf']
         },
         {
             id: 'waterfall',
@@ -112,7 +112,7 @@
             fireflies: 6, dragonflies: 2, frogs: 0, striders: 2, minnows: 20, birds: 4, turtles: 0, jellyfish: 0,
             mist: 5, mistA: 0.16, current: 0.35,
             rain: { density: 0, wind: 0, speed: 1, alpha: 0.4, imp: 1, ripple: [0, 0, 0] },
-            fish: ['#ff5252', '#ffffff']
+            fish: ['#ffbf2e', '#ffffff']
         },
         {
             id: 'ocean',
@@ -160,7 +160,7 @@
             fireflies: 0, dragonflies: 0, frogs: 1, striders: 0, minnows: 22, birds: 2, turtles: 1, jellyfish: 3,
             mist: 4, mistA: 0.11, current: 0.25,
             rain: { density: 0.55, wind: 0.2, speed: 1.15, alpha: 0.85, imp: 1.3, ripple: [0.08, 0.2, 0.3] },
-            fish: ['#ff7043', '#ffffff']
+            fish: ['#ffb833', '#ffffff']
         }
     ];
 
@@ -1721,14 +1721,14 @@
         ];
         const isStorm = SC.id === 'rain_heavy' || SC.id === 'rain_soft';
         const sunrisePalette = isStorm
-            ? [[24, 28, 52], [96, 56, 78], [186, 110, 78]]
-            : [[26, 30, 68], [156, 66, 94], [250, 148, 82]];
+            ? [[24, 28, 52], [96, 84, 66], [200, 165, 86]]
+            : [[26, 30, 68], [168, 118, 60], [252, 200, 96]];
         const noonPalette = isStorm
             ? [[28, 48, 68], [54, 84, 110], [92, 132, 156]]
             : [[20, 78, 122], [54, 138, 178], [142, 212, 228]];
         const sunsetPalette = isStorm
-            ? [[22, 20, 44], [98, 42, 66], [185, 84, 58]]
-            : [[24, 16, 54], [142, 38, 76], [246, 98, 52]];
+            ? [[22, 20, 44], [92, 74, 52], [200, 155, 70]]
+            : [[24, 16, 54], [150, 100, 40], [248, 190, 64]];
 
         let pA, pB, segT;
         if (ph < 0.25) {
@@ -1760,7 +1760,7 @@
             const sy = waterY + 14 - arc * (waterY * 0.80);
             const col = u < 0.35
                 ? lerpRgb([255, 165, 95], [255, 246, 210], u / 0.35)
-                : (u > 0.65 ? lerpRgb([255, 246, 210], [255, 102, 56], (u - 0.65) / 0.35) : [255, 248, 218]);
+                : (u > 0.65 ? lerpRgb([255, 246, 210], [255, 196, 74], (u - 0.65) / 0.35) : [255, 248, 218]);
             sun = { x: sx, y: sy, r: 26 + (1 - arc) * 10, alpha: clamp(arc * 1.35, 0, 1), col, u, arc };
         }
 
@@ -1806,17 +1806,17 @@
             const gx = W * 0.22, gy = waterY;
             const rg = ctx.createRadialGradient(gx, gy, 10, gx, gy, Math.max(W, H) * 0.65);
             rg.addColorStop(0, 'rgba(255, 175, 95, ' + (atm.dawnGlow * 0.52).toFixed(3) + ')');
-            rg.addColorStop(0.45, 'rgba(245, 98, 118, ' + (atm.dawnGlow * 0.28).toFixed(3) + ')');
-            rg.addColorStop(1, 'rgba(245, 98, 118, 0)');
+            rg.addColorStop(0.45, 'rgba(240, 185, 85, ' + (atm.dawnGlow * 0.28).toFixed(3) + ')');
+            rg.addColorStop(1, 'rgba(240, 185, 85, 0)');
             ctx.fillStyle = rg;
             ctx.fillRect(0, 0, W, waterY + 40);
         }
         if (atm.duskGlow > 0.01) {
             const gx = W * 0.78, gy = waterY;
             const rg = ctx.createRadialGradient(gx, gy, 10, gx, gy, Math.max(W, H) * 0.68);
-            rg.addColorStop(0, 'rgba(255, 115, 55, ' + (atm.duskGlow * 0.56).toFixed(3) + ')');
-            rg.addColorStop(0.45, 'rgba(195, 48, 92, ' + (atm.duskGlow * 0.32).toFixed(3) + ')');
-            rg.addColorStop(1, 'rgba(120, 28, 75, 0)');
+            rg.addColorStop(0, 'rgba(255, 205, 80, ' + (atm.duskGlow * 0.56).toFixed(3) + ')');
+            rg.addColorStop(0.45, 'rgba(215, 150, 50, ' + (atm.duskGlow * 0.32).toFixed(3) + ')');
+            rg.addColorStop(1, 'rgba(130, 90, 30, 0)');
             ctx.fillStyle = rg;
             ctx.fillRect(0, 0, W, waterY + 40);
         }
@@ -2018,7 +2018,7 @@
         if (atm.dawnGlow > 0.02 || atm.duskGlow > 0.02) {
             const warmA = Math.max(atm.dawnGlow, atm.duskGlow) * 0.14;
             ctx.fillStyle = atm.duskGlow > atm.dawnGlow
-                ? 'rgba(255, 110, 55, ' + warmA.toFixed(3) + ')'
+                ? 'rgba(255, 200, 80, ' + warmA.toFixed(3) + ')'
                 : 'rgba(255, 165, 95, ' + warmA.toFixed(3) + ')';
             ctx.fillRect(0, 0, W, waterY);
         } else if (atm.dayFactor > 0.25) {
@@ -2061,7 +2061,7 @@
             const warmGlow = Math.max(atm.dawnGlow, atm.duskGlow);
             if (warmGlow > 0.02) {
                 const wg = ctx.createLinearGradient(0, waterY - 10, 0, H);
-                const cStr = atm.duskGlow > atm.dawnGlow ? '255, 105, 55' : '255, 165, 90';
+                const cStr = atm.duskGlow > atm.dawnGlow ? '255, 200, 80' : '255, 208, 110';
                 wg.addColorStop(0, 'rgba(' + cStr + ',' + (warmGlow * 0.34).toFixed(3) + ')');
                 wg.addColorStop(0.65, 'rgba(' + cStr + ',' + (warmGlow * 0.10).toFixed(3) + ')');
                 wg.addColorStop(1, 'rgba(' + cStr + ',0)');
@@ -2203,9 +2203,83 @@
         let master = 0.75, muted = false, unlocked = false, current = null;
         const status = (t) => { const el = $('hudAudioStatus'); if (el) el.textContent = t; };
 
+        // ---- 全景聲 (3D 環繞)：HRTF 空間化，環境音緩慢繞場、蟲鳴在四周飛移 ----
+        let ac = null, spatialOK = false, bugBus = null, spatialT = 0, curScene = null;
+        const orbiters = [];
+        function initSpatial() {
+            if (ac) return;
+            const AC = window.AudioContext || window.webkitAudioContext;
+            if (!AC) return;
+            ac = new AC();
+            spatialOK = /^https?:$/.test(location.protocol); // file:// 會令 MediaElementSource 靜音，故退回普通播放
+            const L = ac.listener;
+            if (L.positionX) { L.positionX.value = 0; L.positionY.value = 0; L.positionZ.value = 0; L.forwardX.value = 0; L.forwardY.value = 0; L.forwardZ.value = -1; L.upX.value = 0; L.upY.value = 1; L.upZ.value = 0; }
+            bugBus = ac.createGain(); bugBus.gain.value = 0; bugBus.connect(ac.destination);
+            for (const id in players) for (const e of [players[id].a, players[id].b]) if (e) attachSpatial(e);
+            scheduleBug();
+        }
+        function mkPanner() {
+            const p = ac.createPanner();
+            p.panningModel = 'HRTF'; p.distanceModel = 'inverse'; p.refDistance = 3; p.rolloffFactor = 0.6;
+            return p;
+        }
+        function attachSpatial(e) {
+            if (!ac || !spatialOK || e._sp) return;
+            try {
+                const src = ac.createMediaElementSource(e), pn = mkPanner();
+                src.connect(pn); pn.connect(ac.destination);
+                e._sp = pn; orbiters.push({ pn, ph: Math.random() * 6.283, sp: 0.12 + Math.random() * 0.08, r: 4 + Math.random() * 2, bob: Math.random() * 6 });
+            } catch (err) { /* ignore */ }
+        }
+        function setPos(pn, x, y, z, t) {
+            if (pn.positionX) { pn.positionX.setTargetAtTime(x, ac.currentTime, t || 0.05); pn.positionY.setTargetAtTime(y, ac.currentTime, t || 0.05); pn.positionZ.setTargetAtTime(z, ac.currentTime, t || 0.05); }
+            else pn.setPosition(x, y, z);
+        }
+        function spatialTick(dt) {
+            if (!ac) return;
+            spatialT += dt;
+            for (const o of orbiters) {
+                const a = o.ph + spatialT * o.sp;
+                setPos(o.pn, Math.sin(a) * o.r, Math.sin(spatialT * 0.3 + o.bob) * 1.2, Math.cos(a) * o.r, 0.12);
+            }
+            if (bugBus) {
+                const want = (!muted && curScene && curScene.fireflies > 0) ? master * 0.5 : 0;
+                bugBus.gain.setTargetAtTime(want, ac.currentTime, 0.4);
+            }
+        }
+        function chirp(x0, z0, x1, z1) {
+            const t0 = ac.currentTime + 0.02, pn = mkPanner(), g = ac.createGain();
+            const dur = 1.2 + Math.random() * 1.6;
+            const pulses = 3 + Math.floor(Math.random() * 4), gap = 0.085 + Math.random() * 0.03;
+            const f = 3800 + Math.random() * 1500;
+            const o = ac.createOscillator(); o.type = 'sine'; o.frequency.value = f;
+            g.gain.value = 0;
+            o.connect(g); g.connect(pn); pn.connect(bugBus);
+            const y = (Math.random() - 0.3) * 2;
+            if (pn.positionX) {
+                pn.positionX.setValueAtTime(x0, t0); pn.positionY.setValueAtTime(y, t0); pn.positionZ.setValueAtTime(z0, t0);
+                pn.positionX.linearRampToValueAtTime(x1, t0 + dur); pn.positionZ.linearRampToValueAtTime(z1, t0 + dur);
+            } else pn.setPosition(x0, y, z0);
+            const chirps = Math.floor(dur / (pulses * gap + 0.25)) + 1;
+            for (let c = 0; c < chirps; c++) for (let i = 0; i < pulses; i++) {
+                const s = t0 + c * (pulses * gap + 0.25) + i * gap;
+                g.gain.setValueAtTime(0, s); g.gain.linearRampToValueAtTime(0.06, s + 0.012); g.gain.linearRampToValueAtTime(0, s + 0.05);
+            }
+            o.start(t0); o.stop(t0 + dur + 0.1);
+            o.onended = () => { try { o.disconnect(); g.disconnect(); pn.disconnect(); } catch (err) { } };
+        }
+        function scheduleBug() {
+            if (ac && ac.state === 'running' && unlocked && !muted && curScene && curScene.fireflies > 0) {
+                const a0 = Math.random() * 6.283, sweep = (Math.random() < 0.5 ? -1 : 1) * (1 + Math.random() * 2.2), r = 2 + Math.random() * 4;
+                chirp(Math.sin(a0) * r, Math.cos(a0) * r, Math.sin(a0 + sweep) * r, Math.cos(a0 + sweep) * r);
+            }
+            setTimeout(scheduleBug, 350 + Math.random() * 1100);
+        }
+
         function mkEl(src) {
             const e = new Audio();
             e.preload = 'auto'; e.loop = false; e.src = src; e.volume = 0; e._env = 0; e._goal = 0;
+            attachSpatial(e);
             e.addEventListener('playing', () => status(muted ? 'MUTED // SILENT' : 'ONLINE // LOOPING'));
             e.addEventListener('waiting', () => status('BUFFERING'));
             e.addEventListener('error', () => status('FILE ERROR'));
@@ -2223,6 +2297,7 @@
         }
         function tick() {
             const dt = 0.05;
+            spatialTick(dt);
             for (const id in players) {
                 const p = players[id];
                 p.env = clamp(p.env + (p.goal > p.env ? 1 : -1) * dt / FADE, 0, 1);
@@ -2246,11 +2321,11 @@
         }
         setInterval(tick, 50);
         return {
-            unlock() { if (unlocked) return; unlocked = true; if (current) startPlayer(current); },
+            unlock() { if (unlocked) return; unlocked = true; initSpatial(); if (ac && ac.state !== 'running') ac.resume(); if (current) startPlayer(current); },
             play(sc) {
                 const next = getPlayer(sc);
                 if (current && current !== next) { current.goal = 0; current.a._goal = 0; if (current.b) current.b._goal = 0; }
-                current = next;
+                current = next; curScene = sc;
                 if (unlocked) startPlayer(next); else status('CLICK TO ENABLE AUDIO');
             },
             setVolume(v) { master = clamp(parseFloat(v), 0, 1); },
@@ -2327,6 +2402,7 @@
         drawDragonflies();
         drawRim();
         drawLightning();
+        applyLightGrade(atm);
 
         // 賽博時鐘掛件更新 (同步當下時間與面孔)
         updateClock();
@@ -2335,6 +2411,62 @@
     // ------------------------------------------------------------------
     // 場景切換 / UI 主題動態變色
     // ------------------------------------------------------------------
+    // ------------------------------------------------------------------
+    // 全域光照調色：畫面所有物件 + 時鐘/介面文字 跟隨日出/正午/日落/夜晚光色
+    // ------------------------------------------------------------------
+    let lightUiT = 0;
+    function lightTint(atm) {
+        const day = [255, 255, 255], warm = [255, 218, 130], night = [128, 150, 205];
+        const w = Math.max(atm.dawnGlow, atm.duskGlow);
+        let c = lerpRgb(night, day, clamp(atm.dayFactor * 1.2, 0, 1));
+        c = lerpRgb(c, warm, clamp(w * 1.1, 0, 1));
+        return c;
+    }
+    function applyLightGrade(atm) {
+        if (!atm) return;
+        const c = lightTint(atm);
+        const w = Math.max(atm.dawnGlow, atm.duskGlow);
+        // 1) 乘色：所有帶色物體（竹子、木屋、魚、植物…）染上當下光色
+        ctx.save();
+        ctx.globalCompositeOperation = 'multiply';
+        ctx.fillStyle = 'rgb(' + (c[0] | 0) + ',' + (c[1] | 0) + ',' + (c[2] | 0) + ')';
+        ctx.globalAlpha = 0.6;
+        ctx.fillRect(0, 0, W, H);
+        // 2) 晨昏暖光疊加
+        if (w > 0.02) {
+            ctx.globalCompositeOperation = 'soft-light';
+            ctx.globalAlpha = w * 0.5;
+            ctx.fillStyle = 'rgb(255,200,90)';
+            ctx.fillRect(0, 0, W, H);
+        }
+        ctx.restore();
+        // 3) 介面 / 時鐘字體顏色
+        const now = performance.now();
+        if (now - lightUiT < 33) return;
+        lightUiT = now;
+        const u = SC.ui; if (!u) return;
+        const base = hexToRgb(u.accent);
+        const k = 0.45 + w * 0.35;
+        const a = lerpRgb(base, c[0] + c[1] + c[2] > 600 ? lerpRgb(base, [255, 214, 120], 0.5) : c, k * 0.6);
+        const ar = a.map(v => Math.round(v)).join(', ');
+        const hex = '#' + a.map(v => ('0' + Math.round(v).toString(16)).slice(-2)).join('');
+        let cc = lerpRgb([140, 178, 255], [255, 252, 236], clamp(atm.dayFactor * 1.25, 0, 1));
+        cc = lerpRgb(cc, [255, 190, 70], clamp(w * 1.15, 0, 1));
+        const wt = cc;
+        const mu = lerpRgb(hexToRgb(u.muted), c, 0.35).map(v => Math.round(v));
+        const r = document.documentElement.style;
+        const chex = '#' + cc.map(v => ('0' + Math.round(v).toString(16)).slice(-2)).join('');
+        r.setProperty('--chrono-pink', chex);
+        r.setProperty('--chrono-border', hex);
+        r.setProperty('--chrono-rgb', cc.join(', '));
+        r.setProperty('--chrono-pink-glow', 'rgba(' + ar + ', 0.38)');
+        r.setProperty('--chrono-pink-dim', 'rgba(' + ar + ', 0.36)');
+        r.setProperty('--chrono-pink-faint', 'rgba(' + ar + ', 0.08)');
+        r.setProperty('--chrono-badge-bg', 'rgba(' + ar + ', 0.22)');
+        r.setProperty('--chrono-white', 'rgb(' + wt.join(',') + ')');
+        r.setProperty('--chrono-text', 'rgb(' + lerpRgb([226, 232, 240], cc, 0.6).map(v => Math.round(v)).join(',') + ')');
+        r.setProperty('--chrono-text-muted', 'rgb(' + mu.join(',') + ')');
+    }
     function applyUITheme(sc) {
         if (!sc || !sc.ui) return;
         const u = sc.ui;
@@ -2551,7 +2683,7 @@
         { id: 'ARRAY', name: '05 ARRAY', key: 'SEVEN-SEGMENT' },
         { id: 'SIGNET', name: '06 SIGNET', key: 'DATE HERO' }
     ];
-    let clockFaceIdx = 0;
+    let clockFaceIdx = 5;
     let clockPainter = null;
     let clockPrev = null;
 
@@ -2599,7 +2731,7 @@
                 if (S.h) { eh.textContent = T.hh24; eap.textContent = ''; }
                 if (S.m) em.textContent = T.mn;
                 if (S.s) es.textContent = T.sc;
-                if (S.s || S.m) esub.innerHTML = T.dateLong + ' &middot; <b>UTC+8 LOCAL</b>';
+                if (S.s || S.m) esub.innerHTML = T.dateLong;
             };
         },
         VECTOR(root) {
@@ -2776,10 +2908,11 @@
     // ------------------------------------------------------------------
     // 時鐘大小與位置狀態 (支援用戶拖曳、滑鼠滾輪縮放、玻璃化模糊、拉桿調節與本機記憶)
     // ------------------------------------------------------------------
-    const CLK_POS_KEY = 'chrono_clock_pos';
-    const CLK_SCALE_KEY = 'chrono_clock_scale';
-    const CLK_GLASS_KEY = 'chrono_clock_glass';
-    const CLK_SHAPE_KEY = 'chrono_clock_shape';
+    const CLK_POS_KEY = 'chrono_clock_pos_v2';
+    const CLK_SCALE_KEY = 'chrono_clock_scale_v2';
+    const CLK_GLASS_KEY = 'chrono_clock_glass_v2';
+    const CLK_SHAPE_KEY = 'chrono_clock_shape_v2';
+    const CLK_FACE_KEY = 'chrono_clock_face_v2';
 
     const GLASS_SHAPES = [
         { id: 'squircle', name: 'SQUIRCLE 方圓', cls: 'glass-shape-squircle' },
@@ -2789,9 +2922,9 @@
     ];
     let glassShapeIdx = 0;
 
-    let clockPos = { x: 0, y: -140 };
+    let clockPos = { x: -280, y: -100 };
     let clockScale = 1.35;
-    let glassBlurEnabled = false;
+    let glassBlurEnabled = true;
     let isClockDragging = false;
     let dragStartPointer = { x: 0, y: 0 };
     let dragStartPos = { x: 0, y: 0 };
@@ -2856,7 +2989,7 @@
     }
 
     function resetClockPosAndScale() {
-        clockPos = { x: 0, y: -140 };
+        clockPos = { x: -280, y: -100 };
         clockScale = 1.35;
         applyClockTransform();
         try {
@@ -2882,6 +3015,7 @@
         if (tagMini) tagMini.textContent = `${face.name}`;
         const btnLbl = $('clockStyleLabel');
         if (btnLbl) btnLbl.textContent = `CLOCK: ${face.name}`;
+        try { localStorage.setItem(CLK_FACE_KEY, String(clockFaceIdx)); } catch (e) {}
     }
 
     function cycleClockFace(step) {
@@ -2902,13 +3036,14 @@
             if (T.ss % 2 === 1) document.body.classList.add('ck-blink');
             else document.body.classList.remove('ck-blink');
             const dt = $('clockDateLine');
-            if (dt) dt.textContent = `UTC+8 // ${T.dateLong}`;
+            if (dt) dt.textContent = `${T.dateLong}`;
         }
         clockPrev = T;
     }
 
     function initClock() {
-        // 讀取先前儲存的位置與尺寸
+        // 讀取先前儲存的位置與尺寸 (預設：左上偏中 x=-280, y=-100、開啟 Liquid Glass、SQUIRCLE 方圓、06 SIGNET 錶盤)
+        let initFace = 5;
         try {
             const savedPos = JSON.parse(localStorage.getItem(CLK_POS_KEY) || 'null');
             if (savedPos && typeof savedPos.x === 'number' && typeof savedPos.y === 'number') {
@@ -2927,11 +3062,15 @@
                 const fIdx = GLASS_SHAPES.findIndex(s => s.id === savedShape);
                 if (fIdx >= 0) glassShapeIdx = fIdx;
             }
+            const savedFace = parseInt(localStorage.getItem(CLK_FACE_KEY), 10);
+            if (!isNaN(savedFace) && savedFace >= 0 && savedFace < CLOCK_FACES.length) {
+                initFace = savedFace;
+            }
         } catch (e) {}
 
         applyClockTransform();
         applyGlassBlurUI();
-        activateClockFace(0);
+        activateClockFace(initFace);
 
         // 綁定拖曳移動與滾輪縮放事件
         const stage = $('chronoClockStage');
