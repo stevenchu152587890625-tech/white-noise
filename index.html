@@ -1,997 +1,287 @@
 <!DOCTYPE html>
 <html lang="zh-Hant">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>HYDRO CHRONO - 水境水聲多場景模擬</title>
-    <!-- Google Fonts 科技等寬字體，同時提供本機 Consolas / Monospace 降級保障離線可用 -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
-    <style>
-        :root {
-            --chrono-pink: #52e59b;
-            --chrono-pink-glow: rgba(82, 229, 155, 0.38);
-            --chrono-pink-dim: rgba(82, 229, 155, 0.36);
-            --chrono-pink-faint: rgba(82, 229, 155, 0.08);
-            --chrono-badge-bg: rgba(82, 229, 155, 0.20);
-            --chrono-badge-text: #d4ffea;
-            --chrono-bg: rgba(7, 18, 13, 0.93);
-            --chrono-text: #e2e8f0;
-    --chrono-white: #ffffff;
-            --chrono-text-muted: #8bb8a2;
-            --chrono-border: #52e59b;
-        }
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>電子學(三) 第三次小考 ─ 計算教學</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;600&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/style.css">
+<link rel="stylesheet" href="assets/katex.min.css">
+<script defer src="assets/katex.min.js"></script>
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            user-select: none;
-            -webkit-user-select: none;
-        }
-
-        html, body {
-            width: 100%;
-            height: 100%;
-            overflow: hidden;
-            background-color: #07090e;
-            font-family: 'Share Tech Mono', 'Consolas', 'Courier New', monospace;
-            color: var(--chrono-text);
-        }
-
-        #canvas {
-            display: block;
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: 1;
-        }
-
-        /* ==================== 截圖原版風格：賽博科技切角 HUD 菜單 (全面升級 Liquid Glass 半透流體玻璃 + 光學折射) ==================== */
-        .chrono-hud {
-            position: absolute;
-            top: 24px;
-            left: 24px;
-            z-index: 100;
-            width: 320px;
-            background: linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, rgba(8, 20, 15, 0.38) 38%, rgba(4, 10, 8, 0.52) 100%) !important;
-            border: 1px solid rgba(255, 255, 255, 0.42);
-            /* 精確實現截圖中的右上角切角 (45度 Chamfer) 與左下角微切角 */
-            clip-path: polygon(
-                0 0,
-                calc(100% - 20px) 0,
-                100% 20px,
-                100% 100%,
-                14px 100%,
-                0 calc(100% - 14px)
-            );
-            box-shadow:
-                inset 1px 1.5px 1.5px rgba(255, 255, 255, 0.75),
-                inset 5px 8px 14px -5px rgba(255, 255, 255, 0.25),
-                inset -1px -1.5px 1.5px rgba(255, 255, 255, 0.35),
-                inset -5px -8px 14px -5px rgba(var(--chrono-rgb, 82, 229, 155), 0.32),
-                0 20px 50px rgba(0, 0, 0, 0.65),
-                0 0 26px rgba(var(--chrono-rgb, 82, 229, 155), 0.24);
-            letter-spacing: 2.2px;
-            backdrop-filter: url(#hudLiquidFilter) blur(5px) saturate(165%) contrast(112%);
-            -webkit-backdrop-filter: url(#hudLiquidFilter) blur(5px) saturate(165%) contrast(112%);
-            transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.25s ease, border-color 0.4s ease, box-shadow 0.4s ease, background 0.4s ease;
-        }
-
-        /* 介面邊緣光學色散高光 (Refractive Sheen Rim - 僅保留清透邊緣反光，不泛白) */
-        .chrono-hud::before,
-        .scene-selector-hud::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 22%;
-            background: linear-gradient(165deg, rgba(255, 255, 255, 0.12) 0%, rgba(255, 255, 255, 0.02) 45%, rgba(255, 255, 255, 0) 75%);
-            pointer-events: none;
-            z-index: 1;
-        }
-
-        .chrono-hud.hidden {
-            transform: translateY(-20px);
-            opacity: 0;
-            pointer-events: none;
-        }
-
-        .chrono-header {
-            padding: 13px 18px 11px 18px;
-            font-size: 13px;
-            font-weight: 700;
-            color: var(--chrono-pink);
-            letter-spacing: 3px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background: linear-gradient(90deg, rgba(var(--chrono-rgb, 82, 229, 155), 0.2) 0%, rgba(255, 255, 255, 0.08) 100%);
-            backdrop-filter: contrast(120%);
-            text-shadow: 0 0 10px var(--chrono-pink-glow);
-            transition: color 0.35s ease, border-color 0.35s ease, background 0.35s ease;
-            position: relative;
-            z-index: 2;
-        }
-
-        .chrono-header .title-badge {
-            display: inline-block;
-            font-size: 10px;
-            padding: 2px 7px;
-            background: rgba(var(--chrono-rgb, 82, 229, 155), 0.28);
-            border: 1px solid rgba(255, 255, 255, 0.35);
-            border-radius: 3px;
-            color: #ffffff;
-            box-shadow: 0 0 8px rgba(var(--chrono-rgb, 82, 229, 155), 0.4);
-            transition: background-color 0.35s ease, color 0.35s ease;
-        }
-
-        .chrono-menu-list {
-            list-style: none;
-            padding: 0;
-            margin: 0;
-            position: relative;
-            z-index: 2;
-        }
-
-        .chrono-btn {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            width: 100%;
-            padding: 11px 18px;
-            font-size: 12.5px;
-            color: var(--chrono-text);
-            cursor: pointer;
-            transition: background 0.15s ease, color 0.15s ease, box-shadow 0.15s ease;
-            border: none;
-            background: rgba(255, 255, 255, 0.03);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-            font-family: inherit;
-            letter-spacing: 2px;
-            text-transform: uppercase;
-            text-align: left;
-            position: relative;
-        }
-
-        /* 主題高亮底色 + 純黑粗體字 + 透光高亮效果 */
-        .chrono-btn:hover,
-        .chrono-btn.active {
-            background: var(--chrono-pink) !important;
-            color: #000000 !important;
-            font-weight: 700;
-            box-shadow: inset 0 1px 2px rgba(255, 255, 255, 0.8), 0 0 16px var(--chrono-pink-glow);
-        }
-
-        .chrono-btn .shortcut {
-            font-size: 12px;
-            color: var(--chrono-text-muted);
-            letter-spacing: 1px;
-            margin-left: 8px;
-            white-space: nowrap;
-            transition: color 0.25s ease;
-        }
-
-        .chrono-btn:hover .shortcut,
-        .chrono-btn.active .shortcut {
-            color: #000000 !important;
-        }
-
-        .chrono-divider {
-            height: 1px;
-            background: linear-gradient(90deg, rgba(255,255,255,0.05) 0%, rgba(var(--chrono-rgb, 82, 229, 155), 0.4) 50%, rgba(255,255,255,0.05) 100%);
-            margin: 2px 0;
-            transition: background-color 0.35s ease;
-        }
-
-        /* 音量拉桿容器 (半透液態玻璃底板) */
-        .chrono-slider-box {
-            padding: 10px 18px 12px 18px;
-            background: rgba(0, 0, 0, 0.22);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 12px;
-            font-size: 11px;
-            color: var(--chrono-text-muted);
-            transition: color 0.35s ease;
-            position: relative;
-            z-index: 2;
-        }
-
-        .chrono-slider {
-            -webkit-appearance: none;
-            appearance: none;
-            flex: 1;
-            height: 4px;
-            background: rgba(255, 255, 255, 0.2);
-            outline: none;
-            border-radius: 2px;
-        }
-
-        .chrono-slider::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            appearance: none;
-            width: 13px;
-            height: 13px;
-            background: var(--chrono-pink);
-            cursor: pointer;
-            border-radius: 2px;
-            border: 1px solid rgba(255, 255, 255, 0.7);
-            box-shadow: 0 0 10px var(--chrono-pink);
-            transition: background-color 0.3s ease, box-shadow 0.3s ease;
-        }
-
-        /* ==================== 場景切換子菜單 (液態玻璃半透質感) ==================== */
-        .scene-selector-hud {
-            position: absolute;
-            top: 24px;
-            left: 360px;
-            z-index: 100;
-            width: 320px;
-            background: linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, rgba(8, 20, 15, 0.38) 38%, rgba(4, 10, 8, 0.52) 100%) !important;
-            border: 1px solid rgba(255, 255, 255, 0.42);
-            clip-path: polygon(
-                0 0,
-                calc(100% - 20px) 0,
-                100% 20px,
-                100% 100%,
-                14px 100%,
-                0 calc(100% - 14px)
-            );
-            box-shadow:
-                inset 1px 1.5px 1.5px rgba(255, 255, 255, 0.75),
-                inset 5px 8px 14px -5px rgba(255, 255, 255, 0.25),
-                inset -1px -1.5px 1.5px rgba(255, 255, 255, 0.35),
-                inset -5px -8px 14px -5px rgba(var(--chrono-rgb, 82, 229, 155), 0.32),
-                0 20px 50px rgba(0, 0, 0, 0.65),
-                0 0 26px rgba(var(--chrono-rgb, 82, 229, 155), 0.24);
-            letter-spacing: 2px;
-            backdrop-filter: url(#hudLiquidFilter) blur(5px) saturate(165%) contrast(112%);
-            -webkit-backdrop-filter: url(#hudLiquidFilter) blur(5px) saturate(165%) contrast(112%);
-            transition: all 0.35s ease;
-        }
-
-        .scene-selector-hud.collapsed {
-            display: none;
-        }
-
-        /* 頂部資訊與切換提示 HUD (右上方：液態玻璃半透質感) */
-        .status-hud {
-            position: absolute;
-            top: 24px;
-            right: 24px;
-            z-index: 90;
-            background: linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, rgba(8, 20, 15, 0.40) 40%, rgba(4, 10, 8, 0.55) 100%) !important;
-            border: 1px solid rgba(255, 255, 255, 0.42);
-            clip-path: polygon(
-                0 0,
-                calc(100% - 14px) 0,
-                100% 14px,
-                100% 100%,
-                0 100%
-            );
-            padding: 12px 18px;
-            font-size: 11px;
-            line-height: 1.6;
-            letter-spacing: 1.5px;
-            color: var(--chrono-text-muted);
-            pointer-events: none;
-            box-shadow:
-                inset 1px 1.5px 1.5px rgba(255, 255, 255, 0.7),
-                inset -1px -1.5px 1.5px rgba(var(--chrono-rgb, 82, 229, 155), 0.35),
-                0 10px 30px rgba(0, 0, 0, 0.55),
-                0 0 20px rgba(var(--chrono-rgb, 82, 229, 155), 0.22);
-            transform: translateY(-16px) scale(0.96);
-            opacity: 0;
-            backdrop-filter: url(#hudLiquidFilter) blur(4px) saturate(165%) contrast(112%);
-            -webkit-backdrop-filter: url(#hudLiquidFilter) blur(4px) saturate(165%) contrast(112%);
-            transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.25s ease, border-color 0.4s ease, background 0.4s ease, box-shadow 0.4s ease, color 0.35s ease;
-        }
-
-        .status-hud.active {
-            transform: translateY(0) scale(1);
-            opacity: 1;
-        }
-
-        .status-hud .val {
-            color: var(--chrono-pink);
-            font-weight: bold;
-            transition: color 0.35s ease;
-        }
-
-        /* 快捷鍵開關浮動按鈕（液態玻璃半透質感） */
-        .hud-toggle-btn {
-            position: absolute;
-            bottom: 24px;
-            left: 24px;
-            z-index: 100;
-            background: linear-gradient(135deg, rgba(255, 255, 255, 0.06) 0%, rgba(8, 20, 15, 0.40) 45%, rgba(4, 10, 8, 0.55) 100%);
-            border: 1px solid rgba(255, 255, 255, 0.45);
-            color: var(--chrono-pink);
-            padding: 9px 18px;
-            font-size: 11px;
-            letter-spacing: 2px;
-            cursor: pointer;
-            box-shadow:
-                inset 1px 1.5px 1.5px rgba(255, 255, 255, 0.75),
-                inset -1px -1.5px 1.5px rgba(var(--chrono-rgb, 82, 229, 155), 0.35),
-                0 6px 20px rgba(0,0,0,0.55),
-                0 0 16px rgba(var(--chrono-rgb, 82, 229, 155), 0.25);
-            font-family: inherit;
-            clip-path: polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 0 100%);
-            backdrop-filter: url(#hudLiquidFilter) blur(4px) saturate(165%) contrast(112%);
-            -webkit-backdrop-filter: url(#hudLiquidFilter) blur(4px) saturate(165%) contrast(112%);
-            transition: all 0.25s ease;
-        }
-        .hud-toggle-btn:hover {
-            background: var(--chrono-pink);
-            color: #000;
-            font-weight: bold;
-            box-shadow: 0 0 20px var(--chrono-pink);
-        }
-
-        /* 日夜循環面板與 10 段週期按鈕網格 */
-        .chrono-solar-panel {
-            padding: 10px 18px 12px 18px;
-            background: rgba(0, 0, 0, 0.32);
-        }
-
-        .chrono-solar-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-size: 11px;
-            color: var(--chrono-text-muted);
-            margin-bottom: 7px;
-            letter-spacing: 1.5px;
-            transition: color 0.35s ease;
-        }
-
-        .chrono-solar-header .solar-val {
-            color: var(--chrono-pink);
-            font-weight: 700;
-            transition: color 0.35s ease;
-        }
-
-        .chrono-solar-ticks {
-            display: flex;
-            justify-content: space-between;
-            font-size: 9.5px;
-            color: rgba(226, 232, 240, 0.45);
-            margin-top: 5px;
-            margin-bottom: 9px;
-            letter-spacing: 1px;
-        }
-
-        .chrono-cycle-label {
-            font-size: 10px;
-            color: var(--chrono-text-muted);
-            margin-bottom: 6px;
-            letter-spacing: 1.5px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            transition: color 0.35s ease;
-        }
-
-        .chrono-cycle-grid {
-            display: grid;
-            grid-template-columns: repeat(5, 1fr);
-            gap: 4px;
-        }
-
-        .chrono-cycle-btn {
-            background: var(--chrono-pink-faint);
-            border: 1px solid var(--chrono-pink-dim);
-            color: var(--chrono-text);
-            font-family: inherit;
-            font-size: 10px;
-            padding: 5px 2px;
-            cursor: pointer;
-            text-align: center;
-            letter-spacing: 0.5px;
-            transition: all 0.15s ease;
-        }
-
-        .chrono-cycle-btn:hover,
-        .chrono-cycle-btn.active {
-            background: var(--chrono-pink) !important;
-            color: #000000 !important;
-            border-color: var(--chrono-pink) !important;
-            font-weight: 700;
-            box-shadow: 0 0 8px var(--chrono-pink-glow);
-        }
-
-        /* 底部交互指引 */
-        .bottom-hint {
-            position: absolute;
-            bottom: 24px;
-            right: 24px;
-            z-index: 20;
-            font-size: 11px;
-            letter-spacing: 2px;
-            color: rgba(255, 255, 255, 0.4);
-            pointer-events: none;
-            text-align: right;
-        }
-        /* ===== 防溢出：HUD 在小螢幕不超出視窗 ===== */
-        .chrono-hud, .scene-selector-hud { max-height: calc(100vh - 48px); overflow-y: auto; scrollbar-width: none; }
-        .chrono-hud::-webkit-scrollbar, .scene-selector-hud::-webkit-scrollbar { display: none; }
-
-        /* ==================== Z64 賽博時鐘掛件 (隨場景與日照動態變色) ==================== */
-        /* ==================== Z64 賽博時鐘掛件 (無背景、大字體、用戶自由拖曳位置與縮放大小) ==================== */
-        .chrono-clock-stage {
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(calc(-50% + var(--clock-x, -280px)), calc(-50% + var(--clock-y, -100px))) scale(var(--clock-scale, 1.35));
-            transform-origin: center center;
-            z-index: 60;
-            background: transparent !important;
-            border: none !important;
-            box-shadow: none !important;
-            clip-path: none !important;
-            padding: 12px 18px;
-            letter-spacing: 2px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            pointer-events: auto;
-            cursor: grab;
-            user-select: none;
-            -webkit-user-select: none;
-            touch-action: none;
-            transition: color 0.35s ease, filter 0.35s ease, background 0.35s ease, border-color 0.35s ease, box-shadow 0.35s ease, backdrop-filter 0.35s ease;
-        }
-
-        .chrono-clock-stage:active {
-            cursor: grabbing;
-        }
-
-        /* 液態玻璃模式 (Apple WWDC25 Liquid Glass 流體玻璃質感 - 增強光學折射與稜鏡色散)
-           - 真實微晶光學折射 (SVG Displacement Map 濾鏡 + 背景透光扭曲)
-           - 多層極限菲涅爾反射 (Extreme Fresnel Specular Inset Highlights)
-           - 多種幾何形狀 (拒絕妥圓形)：賽博切角菱鏡、極簡微弧方圓(Squircle)、八角切面寶石、棱鏡裝甲塊
-           - 棱鏡色散光斑 (Prismatic Caustic Sheen & Rainbow Chromatic Aberration)
-        */
-        .chrono-clock-stage.liquid-glass {
-            position: fixed;
-            background: linear-gradient(135deg, rgba(255, 255, 255, 0.07) 0%, rgba(255, 255, 255, 0.015) 40%, rgba(0, 0, 0, 0.10) 100%) !important;
-            backdrop-filter: url(#liquidRefractFilter) blur(0px) saturate(170%) contrast(110%) !important;
-            -webkit-backdrop-filter: url(#liquidRefractFilter) blur(0px) saturate(170%) contrast(110%) !important;
-            border: 1.5px solid rgba(255, 255, 255, 0.5) !important;
-            box-shadow:
-                /* 銳利細邊高光 (只在邊緣，不蓋住中心) */
-                inset 1px 2px 1.5px rgba(255, 255, 255, 0.85),
-                inset 0 0 0 1px rgba(255, 255, 255, 0.12),
-                inset -1px -2px 1.5px rgba(255, 255, 255, 0.45),
-                /* 邊緣內側窄帶光暈，向中心快速衰減 */
-                inset 6px 8px 14px -6px rgba(255, 255, 255, 0.35),
-                inset -6px -8px 14px -6px rgba(var(--chrono-rgb, 82, 229, 155), 0.45),
-                /* 外部投影 */
-                0 22px 55px rgba(0, 0, 0, 0.55),
-                0 0 30px rgba(var(--chrono-rgb, 82, 229, 155), 0.3) !important;
-            padding: 20px 42px 18px 42px !important;
-            overflow: hidden;
-            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-
-        /* 1. SQUIRCLE 微弧方圓 (現代精工超橢圓方角，告別普通橢圓) */
-        .chrono-clock-stage.liquid-glass.glass-shape-squircle {
-            border-radius: 26px !important;
-            clip-path: none !important;
-        }
-        .chrono-clock-stage.liquid-glass.glass-shape-squircle::before {
-            border-radius: 25px 25px 0 0;
-        }
-        .chrono-clock-stage.liquid-glass.glass-shape-squircle::after {
-            border-radius: 25px;
-        }
-
-        /* 2. CYBER CHAMFER 賽博切角棱鏡 (硬朗斜切角 Cyberpunk 玻璃裝甲板) */
-        .chrono-clock-stage.liquid-glass.glass-shape-chamfer {
-            border-radius: 0px !important;
-            clip-path: polygon(20px 0, calc(100% - 20px) 0, 100% 20px, 100% calc(100% - 20px), calc(100% - 20px) 100%, 20px 100%, 0 calc(100% - 20px), 0 20px) !important;
-            border: 1.5px solid rgba(255, 255, 255, 0.75) !important;
-        }
-        .chrono-clock-stage.liquid-glass.glass-shape-chamfer::before {
-            border-radius: 0;
-            clip-path: polygon(20px 0, calc(100% - 20px) 0, 100% 20px, 100% 100%, 0 100%, 0 20px);
-        }
-        .chrono-clock-stage.liquid-glass.glass-shape-chamfer::after {
-            border-radius: 0;
-            clip-path: polygon(20px 0, calc(100% - 20px) 0, 100% 20px, 100% calc(100% - 20px), calc(100% - 20px) 100%, 20px 100%, 0 calc(100% - 20px), 0 20px);
-        }
-
-        /* 3. FACETED GEM 八角鑽石寶石切面 (立體晶格玻璃琢面) */
-        .chrono-clock-stage.liquid-glass.glass-shape-gem {
-            border-radius: 0px !important;
-            clip-path: polygon(30px 0, calc(100% - 30px) 0, 100% 50%, calc(100% - 30px) 100%, 30px 100%, 0 50%) !important;
-            border: 1.5px solid rgba(255, 255, 255, 0.8) !important;
-            padding: 20px 50px 18px 50px !important;
-        }
-        .chrono-clock-stage.liquid-glass.glass-shape-gem::before {
-            border-radius: 0;
-            clip-path: polygon(30px 0, calc(100% - 30px) 0, 100% 50%, 0 50%);
-        }
-        .chrono-clock-stage.liquid-glass.glass-shape-gem::after {
-            border-radius: 0;
-            clip-path: polygon(30px 0, calc(100% - 30px) 0, 100% 50%, calc(100% - 30px) 100%, 30px 100%, 0 50%);
-        }
-
-        /* 4. TECH SLAB 機甲平切矩陣板 (右上與左下切角戰術 HUD 板) */
-        .chrono-clock-stage.liquid-glass.glass-shape-slab {
-            border-radius: 8px !important;
-            clip-path: polygon(0 0, calc(100% - 24px) 0, 100% 24px, 100% 100%, 24px 100%, 0 calc(100% - 24px)) !important;
-            border: 1.5px solid rgba(255, 255, 255, 0.7) !important;
-            padding: 20px 42px 18px 42px !important;
-        }
-        .chrono-clock-stage.liquid-glass.glass-shape-slab::before {
-            border-radius: 0;
-            clip-path: polygon(0 0, calc(100% - 24px) 0, 100% 24px, 100% 100%, 0 100%);
-        }
-        .chrono-clock-stage.liquid-glass.glass-shape-slab::after {
-            border-radius: 0;
-            clip-path: polygon(0 0, calc(100% - 24px) 0, 100% 24px, 100% 100%, 24px 100%, 0 calc(100% - 24px));
-        }
-
-        /* 液態玻璃頂部流動弧面光澤 + 動態斜角透鏡折射光斑 (Caustic Sheen) */
-        .chrono-clock-stage.liquid-glass::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 30%;
-            background: linear-gradient(160deg, rgba(255, 255, 255, 0.16) 0%, rgba(255, 255, 255, 0.04) 40%, rgba(255, 255, 255, 0) 70%);
-            pointer-events: none;
-            z-index: 1;
-        }
-
-        /* 液態玻璃邊緣色散色差高光微環 (Prismatic Edge / Rainbow Dispersion Rim) */
-        .chrono-clock-stage.liquid-glass::after {
-            content: '';
-            position: absolute;
-            inset: 0;
-            box-shadow:
-                inset 0 0 0 1px rgba(255, 255, 255, 0.3),
-                inset 1px 1px 6px rgba(255, 120, 160, 0.25),
-                inset -1px -1px 8px rgba(90, 200, 255, 0.35),
-                inset 0 0 20px rgba(var(--chrono-rgb, 82, 229, 155), 0.35);
-            pointer-events: none;
-            z-index: 2;
-        }
-
-        /* 拖曳握柄提示 (懸停時淡入微弱引導) */
-        .clock-drag-hint {
-            font-size: 9.5px;
-            letter-spacing: 2.5px;
-            color: var(--chrono-pink);
-            opacity: 0;
-            margin-bottom: 6px;
-            text-transform: uppercase;
-            font-weight: bold;
-            transition: opacity 0.2s ease;
-            pointer-events: none;
-            text-shadow: 0 0 10px var(--chrono-pink-glow);
-        }
-        .chrono-clock-stage:hover .clock-drag-hint {
-            opacity: 0.85;
-        }
-
-        .clock-stage-body {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            width: auto;
-            background: transparent;
-        }
-
-        .clock-stage-ft-minimal {
-            font-size: 11px;
-            letter-spacing: 3px;
-            color: var(--chrono-text-muted);
-            text-transform: uppercase;
-            margin-top: 8px;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            transition: color 0.35s ease;
-        }
-        .clock-stage-ft-minimal b {
-            color: var(--chrono-pink);
-            font-weight: 700;
-        }
-
-        /* 時鐘字體及公用樣式 */
-        .ck {
-            width: auto;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            text-align: center;
-            background: transparent;
-        }
-        .ck-sub {
-            font-size: 12px;
-            letter-spacing: 2.8px;
-            text-transform: uppercase;
-            color: var(--chrono-text-muted);
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-            justify-content: center;
-            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.9);
-        }
-        .ck-sub b {
-            color: var(--chrono-pink);
-            font-weight: 700;
-        }
-        .colon {
-            transition: opacity 0.16s linear;
-        }
-        body.ck-blink .colon {
-            opacity: 0.2;
-        }
-
-        /* 01 MAGNA 巨幅電子鐘 (大字體、無背景) */
-        .mega-time {
-            font-size: clamp(68px, 12vw, 150px);
-            line-height: 0.92;
-            letter-spacing: 0.05em;
-            display: flex;
-            align-items: baseline;
-            justify-content: center;
-            gap: 4px;
-            color: var(--chrono-white, #ffffff);
-            text-shadow: 0 0 35px var(--chrono-pink-glow), 0 0 65px var(--chrono-pink-glow), 0 4px 18px rgba(0, 0, 0, 0.9);
-            font-variant-numeric: tabular-nums;
-            font-weight: 700;
-        }
-        .mega-time .sec {
-            font-size: 0.44em;
-            opacity: 0.92;
-            color: var(--chrono-pink);
-            text-shadow: 0 0 24px var(--chrono-pink);
-        }
-        .mega-time .ap {
-            font-size: 0.22em;
-            letter-spacing: 2.5px;
-            color: var(--chrono-pink);
-            margin-left: 8px;
-            font-weight: 700;
-        }
-
-        /* 02 VECTOR 終端監控儀 (無背景、大字體、雙層幽靈數字) */
-        .mono-wrap {
-            position: relative;
-            font-size: clamp(60px, 10.5vw, 130px);
-            line-height: 1;
-            letter-spacing: 0.06em;
-            display: inline-block;
-        }
-        .mono-wrap .ghost {
-            color: rgba(255, 255, 255, 0.08);
-            user-select: none;
-            font-variant-numeric: tabular-nums;
-        }
-        .mono-wrap .real {
-            position: absolute;
-            inset: 0;
-            color: var(--chrono-pink);
-            text-shadow: 0 0 32px var(--chrono-pink-glow), 0 0 55px var(--chrono-pink), 0 4px 16px rgba(0, 0, 0, 0.9);
-            font-variant-numeric: tabular-nums;
-            font-weight: 700;
-        }
-        .mono-rule {
-            display: flex;
-            gap: 16px;
-            align-items: center;
-            font-size: 11px;
-            letter-spacing: 3px;
-            color: var(--chrono-text-muted);
-            text-transform: uppercase;
-            margin-top: 6px;
-            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.9);
-        }
-        .mono-rule .dash {
-            width: 44px;
-            height: 1.5px;
-            background: var(--chrono-pink);
-            box-shadow: 0 0 8px var(--chrono-pink);
-        }
-
-        /* 03 SYNCRO 圓形指針鐘 (無背景、通透鏤空指針) */
-        .an-svg {
-            width: clamp(200px, 32vh, 320px);
-            height: auto;
-            overflow: visible;
-            filter: drop-shadow(0 0 20px rgba(0, 0, 0, 0.85)) drop-shadow(0 0 16px var(--chrono-pink-glow));
-        }
-        .an-face { fill: none; stroke: var(--chrono-pink-dim); stroke-width: 1.8; }
-        .an-inner { fill: none; stroke: var(--chrono-pink-faint); stroke-width: 1.2; stroke-dasharray: 4 4; }
-        .an-tick { stroke: var(--chrono-pink-dim); stroke-width: 1.5; stroke-linecap: round; }
-        .an-tick.maj { stroke: var(--chrono-pink); stroke-width: 3; }
-        .an-num { font-size: 11px; fill: var(--chrono-text); text-anchor: middle; font-family: inherit; font-weight: bold; }
-        .an-h { stroke: var(--chrono-white, #ffffff); stroke-width: 5; stroke-linecap: round; }
-        .an-m { stroke: var(--chrono-white, #ffffff); stroke-width: 3.5; stroke-linecap: round; opacity: 0.92; }
-        .an-s { stroke: var(--chrono-pink); stroke-width: 2; stroke-linecap: round; }
-        .an-cap { fill: var(--chrono-pink); }
-        .an-dig { font-size: 15px; letter-spacing: 3px; color: var(--chrono-text); margin-top: 8px; font-weight: 700; text-shadow: 0 0 12px var(--chrono-pink-glow); }
-        .an-dig b { color: var(--chrono-pink); }
-
-        /* 04 ORBIT 同心軌道進度環 */
-        .rg-wrap { position: relative; display: grid; place-items: center; }
-        .rg-svg {
-            width: clamp(190px, 30vh, 300px);
-            height: auto;
-            transform: rotate(-90deg);
-            filter: drop-shadow(0 0 20px rgba(0, 0, 0, 0.85)) drop-shadow(0 0 16px var(--chrono-pink-glow));
-        }
-        .rg-trk { fill: none; stroke: rgba(255, 255, 255, 0.1); stroke-width: 7; }
-        .rg-bar { fill: none; stroke-width: 7; stroke-linecap: round; transition: stroke-dashoffset 0.18s linear; }
-        .rg-h { stroke: var(--chrono-pink); }
-        .rg-m { stroke: var(--chrono-pink); opacity: 0.75; }
-        .rg-s { stroke: var(--chrono-white, #ffffff); opacity: 0.7; }
-        .rg-center { position: absolute; display: flex; flex-direction: column; align-items: center; gap: 2px; }
-        .rg-time { font-size: clamp(28px, 5.5vw, 54px); line-height: 1; font-variant-numeric: tabular-nums; color: var(--chrono-white, #ffffff); font-weight: 700; text-shadow: 0 0 18px var(--chrono-pink-glow); }
-        .rg-sec { font-size: 14px; letter-spacing: 3px; color: var(--chrono-pink); font-weight: 700; text-shadow: 0 0 10px var(--chrono-pink); }
-        .rg-key { display: flex; gap: 14px; font-size: 10px; letter-spacing: 2px; color: var(--chrono-text-muted); text-transform: uppercase; margin-top: 6px; }
-        .rg-key i { display: inline-block; width: 9px; height: 3px; border-radius: 1px; margin-right: 5px; vertical-align: middle; }
-
-        /* 05 ARRAY 七段發光管 (大尺寸 LED) */
-        .s7-row { display: flex; align-items: center; justify-content: center; gap: clamp(6px, 1.5vw, 16px); }
-        .s7-col { display: flex; gap: 4px; }
-        .s7 { position: relative; width: clamp(34px, 5.8vw, 62px); height: clamp(62px, 10.5vw, 115px); }
-        .sg { position: absolute; background: rgba(255, 255, 255, 0.06); border-radius: 3px; transition: background 0.08s linear, box-shadow 0.08s linear; }
-        .sg.on { background: var(--chrono-pink); box-shadow: 0 0 16px var(--chrono-pink), 0 0 32px var(--chrono-pink-glow); }
-        .sg.a, .sg.d, .sg.g { height: 10%; left: 12%; right: 12%; }
-        .sg.a { top: 2%; } .sg.g { top: 45%; } .sg.d { bottom: 2%; }
-        .sg.f, .sg.b, .sg.e, .sg.c { width: 10%; top: 8%; bottom: 8%; }
-        .sg.f { left: 2%; } .sg.b { right: 2%; } .sg.e { left: 2%; } .sg.c { right: 2%; }
-        .sg.f, .sg.b { height: 38%; } .sg.e, .sg.c { height: 38%; top: auto; bottom: 8%; }
-        .s7-sp { color: var(--chrono-pink); font-size: clamp(26px, 4.5vw, 48px); align-self: center; font-weight: 700; text-shadow: 0 0 18px var(--chrono-pink); }
-
-        /* 06 SIGNET 日期典藏印記 */
-        .st-top { display: flex; align-items: flex-end; justify-content: center; gap: 16px; }
-        .st-day { font-size: clamp(56px, 10.5vw, 120px); line-height: 0.85; color: var(--chrono-pink); text-shadow: 0 0 32px var(--chrono-pink-glow), 0 0 60px var(--chrono-pink); font-weight: 700; }
-        .st-right { display: flex; flex-direction: column; align-items: flex-start; gap: 4px; }
-        .st-mon { font-size: clamp(20px, 3.8vw, 42px); letter-spacing: 3px; color: var(--chrono-white, #ffffff); font-weight: bold; text-shadow: 0 0 18px rgba(255, 255, 255, 0.4); }
-        .st-year { font-size: 14px; letter-spacing: 3px; color: var(--chrono-text-muted); }
-        .st-time { font-size: clamp(28px, 5vw, 54px); letter-spacing: 3px; color: var(--chrono-white, #ffffff); font-variant-numeric: tabular-nums; font-weight: 700; text-shadow: 0 0 20px var(--chrono-pink-glow); }
-        .st-dow { font-size: 13px; letter-spacing: 4px; color: var(--chrono-pink); font-weight: 700; text-transform: uppercase; }
-
-        @media (max-width: 760px) {
-            .chrono-hud { width: calc(100vw - 48px); max-width: 340px; }
-            .scene-selector-hud { left: 24px; right: 24px; width: auto; top: 24px; z-index: 110; }
-            .status-hud, .bottom-hint { display: none; }
-        }
-</style>
 </head>
 <body>
+<div class="wrap">
 
-    <!-- 光學折射與流體玻璃波紋 SVG 濾鏡 (提供真實凸透鏡邊緣折射 FeDisplacementMap + RGB 三色色散，無白霧泛光) -->
-    <svg width="0" height="0" style="position:absolute;width:0;height:0;pointer-events:none;" aria-hidden="true">
-        <defs>
-            <!-- 時鐘專用：強烈液態玻璃邊緣透鏡折射 + 稜鏡色散濾鏡 -->
-            <filter id="liquidRefractFilter" x="0%" y="0%" width="100%" height="100%" color-interpolation-filters="sRGB">
-                <!-- 1. 產生有機流體微波紋噪波 -->
-                <feTurbulence type="fractalNoise" baseFrequency="0.008 0.012" numOctaves="2" seed="7" result="fluidWave" />
-                <feGaussianBlur in="fluidWave" stdDeviation="3" result="smoothWave" />
-                <!-- 2. 結合凸透鏡折射位移，三原色採用不同折射率 (R=36, G=45, B=54) 產生真實光學色散 -->
-                <feDisplacementMap in="SourceGraphic" in2="smoothWave" scale="36" xChannelSelector="R" yChannelSelector="G" result="dispR" />
-                <feColorMatrix in="dispR" type="matrix" values="1 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 1 0" result="chR" />
+<header class="hero">
+  <p class="eyebrow">Electronics (III) · Quiz 3 · Worked Solutions</p>
+  <h1>電子學(三) 第三次小考<br>計算教學與完整推導</h1>
+  <p class="sub">題目來源：<code>電子學(三)第三次小考_空白題目版.pdf</code>（2 頁、掃描影像，共 2 大題）</p>
+  <div class="chips">
+    <span class="chip">Q1 · 非理想 OP-AMP · 100%</span>
+    <span class="chip">Q2 · BJT π 模型 · 30%</span>
+    <span class="chip">所有結果已用 SymPy 代數驗證</span>
+  </div>
+  <nav class="toc">
+    <a href="#q1"><b>Q1 非理想運放：A、β、A_f、R_if、R_of、R_in、R_out、A_v</b><span>圖 1 · 電壓串聯負回授</span></a>
+    <a href="#q2"><b>Q2 BJT π 模型與 R_in</b><span>圖 2 / 圖 3 · 集極看入</span></a>
+    <a href="#recheck"><b>常見錯誤檢查表</b><span>考前 5 分鐘複習</span></a>
+  </nav>
+</header>
 
-                <feDisplacementMap in="SourceGraphic" in2="smoothWave" scale="45" xChannelSelector="R" yChannelSelector="G" result="dispG" />
-                <feColorMatrix in="dispG" type="matrix" values="0 0 0 0 0  0 1 0 0 0  0 0 0 0 0  0 0 0 1 0" result="chG" />
+<!-- ================================================================ Q1 -->
+<h2 id="q1"><span class="num">QUESTION 1 · 100%</span>非理想運算放大器電路</h2>
+<p class="sub" style="margin-bottom:6px">題目原文：<i>For the circuit shown in Fig.1, (a) what is the type of the circuit? Please derive (b) A (c) β (d) A_f (e) R_if (f) R_of (g) R_in (h) R_out (i) A_v</i></p>
 
-                <feDisplacementMap in="SourceGraphic" in2="smoothWave" scale="54" xChannelSelector="R" yChannelSelector="G" result="dispB" />
-                <feColorMatrix in="dispB" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 1 0 0  0 0 0 1 0" result="chB" />
+<figure>
+  <svg style="width:100%;height:auto" viewBox="0 0 610 300" role="img" aria-label="Fig.1" xmlns="http://www.w3.org/2000/svg"><defs><marker id="a1" markerWidth="9" markerHeight="7" refX="8" refY="3.5" orient="auto"><polygon points="0 0, 9 3.5, 0 7" fill="#23272f"/></marker><marker id="a2" markerWidth="9" markerHeight="7" refX="8" refY="3.5" orient="auto"><polygon points="0 0, 9 3.5, 0 7" fill="#c4542d"/></marker></defs><line x1="60" y1="290" x2="60" y2="36" stroke="#23272f" stroke-width="1.5"/><line x1="60" y1="290" x2="60" y2="299" stroke="#23272f" stroke-width="1.5"/><line x1="48" y1="299" x2="72" y2="299" stroke="#23272f" stroke-width="1.8"/><line x1="52" y1="304" x2="68" y2="304" stroke="#23272f" stroke-width="1.5"/><line x1="56" y1="309" x2="64" y2="309" stroke="#23272f" stroke-width="1.3"/><circle cx="60" cy="256" r="16" fill="#fff" stroke="#23272f" stroke-width="1.5"/><text x="38" y="262" font-size="14" font-style="italic" text-anchor="start" fill="#23272f">V</text><text x="47.12" y="266.48" font-size="9.2" font-style="italic" fill="#23272f">s</text><text x="70" y="238" font-size="12" fill="#23272f" text-anchor="start">+</text><path d="M60,240 L67,230.0 L53,220.0 L67,210.0 L53,200.0 L67,190.0 L53,180.0 L60,180" fill="none" stroke="#23272f" stroke-width="1.5"/><text x="78" y="205" font-size="14" font-style="italic" text-anchor="start" fill="#23272f">R</text><text x="87.12" y="209.48" font-size="9.2" font-style="italic" fill="#23272f">s</text><line x1="60" y1="180" x2="60" y2="40" stroke="#23272f" stroke-width="1.5"/><line x1="60" y1="40" x2="250" y2="40" stroke="#23272f" stroke-width="1.5"/><circle cx="170" cy="40" r="3.8" fill="#23272f"/><path d="M250,10 L360,62 L360,148 L250,200 Z" fill="none" stroke="#23272f" stroke-width="1.8"/><text x="262" y="74" font-size="17" fill="#23272f" text-anchor="start">+</text><text x="262" y="146" font-size="17" fill="#23272f" text-anchor="start">−</text><line x1="170" y1="40" x2="170" y2="110" stroke="#23272f" stroke-width="1.5"/><circle cx="170" cy="110" r="3.8" fill="#23272f"/><path d="M170,110 L183.33333333333334,117 L196.66666666666666,103 L210.0,117 L223.33333333333334,103 L236.66666666666669,117 L250.0,103 L250,110" fill="none" stroke="#23272f" stroke-width="1.5"/><text x="196" y="130" font-size="14" font-style="italic" text-anchor="start" fill="#23272f">R</text><text x="205.12" y="134.48" font-size="9.2" font-style="italic" fill="#23272f">id</text><text x="300" y="96" font-size="15" fill="#23272f" text-anchor="start">μ</text><text x="312" y="98" font-size="14" font-style="italic" text-anchor="start" fill="#23272f">V</text><text x="321.12" y="102.48" font-size="9.2" font-style="italic" fill="#23272f">id</text><line x1="170" y1="40" x2="170" y2="86" stroke="#23272f" stroke-width="1.1"/><polygon points="170,94 165,84 175,84" fill="#23272f"/><text x="180" y="78" font-size="14" font-style="italic" text-anchor="start" fill="#23272f">I</text><polyline points="170,40 204,40 204,64" fill="none" stroke="#23272f" stroke-width="0.9" stroke-dasharray="3,3" marker-end="url(#a1)"/><line x1="250" y1="160" x2="170" y2="160" stroke="#23272f" stroke-width="1.5"/><circle cx="170" cy="160" r="3.8" fill="#23272f"/><line x1="170" y1="160" x2="170" y2="190" stroke="#23272f" stroke-width="1.5"/><path d="M170,190 L177,198.33333333333334 L163,206.66666666666666 L177,215.0 L163,223.33333333333334 L177,231.66666666666669 L163,240.0 L170,240" fill="none" stroke="#23272f" stroke-width="1.5"/><line x1="170" y1="250" x2="170" y2="259" stroke="#23272f" stroke-width="1.5"/><line x1="158" y1="259" x2="182" y2="259" stroke="#23272f" stroke-width="1.8"/><line x1="162" y1="264" x2="178" y2="264" stroke="#23272f" stroke-width="1.5"/><line x1="166" y1="269" x2="174" y2="269" stroke="#23272f" stroke-width="1.3"/><text x="188" y="215" font-size="14" font-style="italic" text-anchor="start" fill="#23272f">R</text><text x="197.12" y="219.48" font-size="9.2" font-style="italic" fill="#23272f">1</text><line x1="360" y1="100" x2="440" y2="100" stroke="#23272f" stroke-width="1.5"/><circle cx="440" cy="100" r="3.8" fill="#23272f"/><path d="M440,100 L447,110.83333333333333 L433,121.66666666666667 L447,132.5 L433,143.33333333333334 L447,154.16666666666669 L433,165.0 L440,165" fill="none" stroke="#23272f" stroke-width="1.5"/><line x1="440" y1="200" x2="440" y2="209" stroke="#23272f" stroke-width="1.5"/><line x1="428" y1="209" x2="452" y2="209" stroke="#23272f" stroke-width="1.8"/><line x1="432" y1="214" x2="448" y2="214" stroke="#23272f" stroke-width="1.5"/><line x1="436" y1="219" x2="444" y2="219" stroke="#23272f" stroke-width="1.3"/><line x1="440" y1="165" x2="440" y2="200" stroke="#23272f" stroke-width="1.5"/><text x="456" y="135" font-size="14" font-style="italic" text-anchor="start" fill="#23272f">r</text><text x="465.12" y="139.48" font-size="9.2" font-style="italic" fill="#23272f">o</text><line x1="440" y1="100" x2="530" y2="100" stroke="#23272f" stroke-width="1.5"/><circle cx="530" cy="100" r="3.8" fill="#23272f"/><path d="M530,72 L482,90 L482,110 L530,128 Z" fill="none" stroke="#23272f" stroke-width="1.5"/><text x="516" y="106" font-size="13" font-style="italic" text-anchor="start" fill="#23272f">V</text><text x="524.54" y="110.16" font-size="8.6" font-style="italic" fill="#23272f">o</text><path d="M530,100 L537,112.5 L523,125.0 L537,137.5 L523,150.0 L537,162.5 L523,175.0 L530,175" fill="none" stroke="#23272f" stroke-width="1.5"/><line x1="530" y1="210" x2="530" y2="219" stroke="#23272f" stroke-width="1.5"/><line x1="518" y1="219" x2="542" y2="219" stroke="#23272f" stroke-width="1.8"/><line x1="522" y1="224" x2="538" y2="224" stroke="#23272f" stroke-width="1.5"/><line x1="526" y1="229" x2="534" y2="229" stroke="#23272f" stroke-width="1.3"/><line x1="530" y1="175" x2="530" y2="210" stroke="#23272f" stroke-width="1.5"/><text x="546" y="143" font-size="14" font-style="italic" text-anchor="start" fill="#23272f">R</text><text x="555.12" y="147.48" font-size="9.2" font-style="italic" fill="#23272f">L</text><line x1="530" y1="100" x2="530" y2="14" stroke="#23272f" stroke-width="1.5"/><line x1="530" y1="14" x2="420" y2="14" stroke="#23272f" stroke-width="1.5"/><line x1="420" y1="14" x2="250" y2="14" stroke="#23272f" stroke-width="1.5"/><path d="M420,14 L410.0,21 L400.0,7 L390.0,21 L380.0,7 L370.0,21 L360.0,7 L360,14" fill="none" stroke="#23272f" stroke-width="1.5"/><line x1="360" y1="14" x2="320" y2="14" stroke="#23272f" stroke-width="1.5"/><text x="376" y="11" font-size="14" font-style="italic" text-anchor="start" fill="#23272f">R</text><text x="385.12" y="15.48" font-size="9.2" font-style="italic" fill="#23272f">2</text><line x1="320" y1="14" x2="320" y2="100" stroke="#23272f" stroke-width="1.5"/><line x1="320" y1="100" x2="360" y2="100" stroke="#23272f" stroke-width="1.5"/><circle cx="320" cy="100" r="3.8" fill="#23272f"/><line x1="88" y1="40" x2="88" y2="160" stroke="#c4542d" stroke-width="1.1" stroke-dasharray="4,3"/><line x1="88" y1="160" x2="102" y2="160" stroke="#c4542d" stroke-width="1.1" stroke-dasharray="4,3"/><line x1="88" y1="40" x2="102" y2="40" stroke="#c4542d" stroke-width="1.1" stroke-dasharray="4,3"/><text x="92" y="182" font-size="13" font-style="italic" text-anchor="start" fill="#c4542d">R</text><text x="100.53999999999999" y="186.16" font-size="8.6" font-style="italic" fill="#c4542d">in</text><line x1="496" y1="142" x2="516" y2="142" stroke="#c4542d" stroke-width="1.1" stroke-dasharray="4,3"/><text x="492" y="162" font-size="13" font-style="italic" text-anchor="start" fill="#c4542d">R</text><text x="500.54" y="166.16" font-size="8.6" font-style="italic" fill="#c4542d">out</text></svg>
+  <figcaption>Fig.1　V_s 經 R_s 接到同相端「＋」；R_2 由輸出接回反相端「−」，R_1 由「−」端接地；r_o 為運放內部輸出電阻，R_L 為負載</figcaption>
+</figure>
 
-                <feBlend in="chR" in2="chG" mode="screen" result="rg" />
-                <feBlend in="rg" in2="chB" mode="screen" />
-            </filter>
+<div class="box accent">
+  <div class="label">解題地圖</div>
+  <p>這一題的目的只有一個：<b>把「非理想運放」拆成回授理論裡的 A 與 β</b>，再用回授公式一次得到 A_f、R_if、R_of，最後補上來源電阻與負載的「分壓」修正，就得到 R_in、R_out、A_v。</p>
+  <ol>
+    <li>認電路型態（決定回授類別 → 用哪一組公式）</li>
+    <li>求 β（純電阻分壓，與負載無關）</li>
+    <li>求 A（含 R_id、r_o、R_L 的「放大器本體」增益）</li>
+    <li>回授公式求 A_f、R_if、R_of</li>
+    <li>串 R_s、並 R_L 修正得到 R_in、R_out、A_v</li>
+  </ol>
+</div>
 
-            <!-- HUD 控制面板專用：晶透液態玻璃微折射濾鏡 (兼顧文字清晰與背景水波折射感) -->
-            <filter id="hudLiquidFilter" x="0%" y="0%" width="100%" height="100%" color-interpolation-filters="sRGB">
-                <feTurbulence type="fractalNoise" baseFrequency="0.01 0.014" numOctaves="2" seed="11" result="hudWave" />
-                <feGaussianBlur in="hudWave" stdDeviation="2.5" result="smoothHudWave" />
-                <feDisplacementMap in="SourceGraphic" in2="smoothHudWave" scale="22" xChannelSelector="R" yChannelSelector="G" />
-            </filter>
-        </defs>
-    </svg>
+<div class="step"><div class="k">(a)</div><div class="b">
+  <h4>判斷電路型態</h4>
+  <p>看三件事：</p>
+  <ul>
+    <li><b>輸入</b>：訊號源 V_s 串 R_s 接到「＋」端 → 回授節點與輸入節點<b>串聯</b>比較 → <b>串聯（series）取樣</b>。</li>
+    <li><b>輸出</b>：回授訊號 R_2 直接取自輸出電壓 V_o（與 R_L 並聯節點）→ <b>分壓（shunt）取樣</b>。</li>
+    <li><b>回授端</b>：R_2 接回「−」端 → <b>負回授</b>。</li>
+  </ul>
+  <p><b>結論：（電壓）分壓取樣 ＋ 串聯比較的負回授，即 電壓串聯負回授（series–shunt, voltage-series feedback），電路本身是非反相放大器（Non-inverting amplifier）。</b></p>
+  <div class="box" style="margin-bottom:0">
+    <div class="label">為什麼 A 要用「V_id → V_o」這個定義？</div>
+    <p>回授理論的 A 是「<b>A 方塊</b>」的正向增益。在電壓串聯回授中，A 方塊的輸入是 <span class="math">V_{id}</span>（運放兩端的差動電壓），輸出是 <span class="math">V_o</span>；β 方塊則是 <span class="math">V_o</span> → <span class="math">V_f</span>。把「R_s 串在訊號源」與「R_L 併在輸出」看成 A 方塊<b>外面</b>的電路，這是回授公式只套一次的關鍵。</p>
+  </div>
+</div></div>
 
-    <canvas id="canvas"></canvas>
+<div class="step"><div class="k">(c)</div><div class="b">
+  <h4>求回授因數 β（先做，因為最簡單）</h4>
+  <p>β 的定義是「回授訊號 ÷ 輸出訊號」。R_1、R_2 串在 V_o 與地之間，「−」端幾乎不吸取電流（理想時 I = 0；非理想時差動輸入電阻 R_id 接在兩輸入端之間，而「＋」端是由 R_s 與 V_s 驅動，<b>不是接地</b>，所以 R_1∥R_2 分壓的「輸出端」只有 V_o 一個驅動源，分壓比仍與 R_L 無關）。</p>
+  <div class="eq">\beta=\frac{V_f}{V_o}=\frac{R_1}{R_1+R_2}</div>
+  <p><b>注意</b>：β 與 R_id、r_o、R_L 全都無關；只看回授網路本身的電阻分壓。</p>
+</div></div>
 
-    <!-- Z64 賽博時鐘掛件 (預設開啟 Liquid Glass 液態玻璃、SQUIRCLE 方圓、06 SIGNET 錶盤、左上偏中位置) -->
-    <div class="chrono-clock-stage liquid-glass glass-shape-squircle" id="chronoClockStage" title="拖曳可移動時鐘位置 / 滾輪可調整大小">
-        <div class="clock-drag-hint">✢ DRAG TO MOVE &middot; SCROLL TO SCALE</div>
-        <div class="clock-stage-body" id="clockStageBody">
-            <!-- 由 JS 動態渲染時鐘樣式 (MAGNA, VECTOR, SYNCRO, ORBIT, ARRAY, SIGNET) -->
-        </div>
-        <div class="clock-stage-ft-minimal" id="clockFootMinimal" style="display:none !important">
-            <span id="clockDateLine">LOCAL TIME</span>
-            <span style="opacity:0.6">&middot;</span>
-            <span id="clockFaceTagMini">06 SIGNET</span>
-        </div>
-    </div>
+<div class="step"><div class="k">(b)</div><div class="b">
+  <h4>求 A（放大器本體增益）</h4>
+  <p>把放大器從 R_s 之後、R_L 之前切開。A 方塊的輸出端「看到了」兩樣東西：<b>內阻 r_o 接地的本體</b>，以及<b>外部負載 R_L</b>。受控源 μV_id 先送到 r_o 的節點，再由 r_o ∥ R_L 分壓輸出。</p>
+  <ul>
+    <li>輸入端「＋」、「−」之間只有 R_id，供給的電壓就是 V_id（R_s 被切開，所以「＋」端只由 V_id 驅動）。</li>
+    <li>輸出端：受控源 μV_id 驅動 r_o∥R_L 的並聯，因此</li>
+  </ul>
+  <div class="eq">A=\frac{V_o}{V_{id}}=\mu\cdot\frac{r_o\parallel R_L}{r_o}=\mu\cdot\frac{R_L}{r_o+R_L}</div>
+  <p>若題目把運放開回路增益寫成 <b>A_ol</b>（而不是題圖上的 μ），那麼 <span class="math">A=A_{ol}\,\dfrac{R_L}{r_o+R_L}</span>。若你把 R_s 也算進 A 方塊（另一種合法切法），則 <span class="math">A'=A\cdot\frac{R_{id}}{R_{id}+R_s}</span>，回授公式同樣成立，後面的 R_in 結論不會改變。</p>
+</div></div>
 
-    <!-- 主控制菜單：完全採用截圖賽博龐克風格與切角排版 -->
-    <div class="chrono-hud" id="mainHud">
-        <div class="chrono-header">
-            <span>HYDRO // CHRONO</span>
-            <span class="title-badge" id="hudStatusBadge">ACTIVE</span>
-        </div>
+<div class="step"><div class="k">(d)</div><div class="b">
+  <h4>閉回路增益 A_f = V_o / V_id</h4>
+  <p>回授的基本關係：<span class="math">V_{id}=V_s'-\beta V_o</span>（<span class="math">V_s'</span> 是 V_id 那一側的電壓，此處等於 V_s）。代入 <span class="math">V_o=A\,V_{id}</span>：</p>
+  <div class="eq">A_f=\frac{V_o}{V_{id}}=\frac{A}{1+A\beta}</div>
+  <p>明確寫成元件值：</p>
+  <div class="eq">A_f=\frac{\mu\,(R_1+R_2)R_L}{\mu R_1 R_L+ R_1 R_L + R_1 r_o + R_2 R_L + R_2 r_o}</div>
+  <p>當 <span class="math">\mu\to\infty</span>：<span class="math">A_f\to 1+\dfrac{R_2}{R_1}</span> ✓（理想非反相放大器）。</p>
+  <div class="box ok" style="margin-bottom:0">
+    <div class="label">快速記憶</div>
+    <p><b>電壓串聯負回授：</b> <span class="math">A_f=\dfrac{A}{1+A\beta}</span>、<span class="math">R_{if}=R_i(1+A\beta)</span>、<span class="math">R_{of}=\dfrac{R_o}{1+A\beta}</span>。三個式子共用同一個 <span class="math">1+A\beta</span>（回授量 D）。</p>
+  </div>
+</div></div>
 
-        <ul class="chrono-menu-list">
-            <li>
-                <button class="chrono-btn active" id="btnToggleScenes">
-                    <span>SELECT SCENE</span>
-                    <span class="shortcut">TAB ⤢</span>
-                </button>
-            </li>
-            <li>
-                <button class="chrono-btn" id="btnCycleTheme">
-                    <span>CYCLE THEME</span>
-                    <span class="shortcut">T / [A/D]</span>
-                </button>
-            </li>
-            <li>
-                <button class="chrono-btn" id="btnCycleClock">
-                    <span id="clockStyleLabel">CLOCK: 06 SIGNET</span>
-                    <span class="shortcut">[W/S]</span>
-                </button>
-            </li>
-            <li>
-                <button class="chrono-btn" id="btnSolarTransition">
-                    <span id="solarSweepLabel">SUNRISE ⇄ SUNSET</span>
-                    <span class="shortcut">X [日出/日落]</span>
-                </button>
-            </li>
-            <li>
-                <button class="chrono-btn" id="btnSpeedToggle">
-                    <span id="speedLabel">SPEED: SLOW</span>
-                    <span class="shortcut">V [快/中/慢]</span>
-                </button>
-            </li>
-            <li>
-                <button class="chrono-btn" id="btnAudioToggle">
-                    <span id="audioLabel">AUDIO: PLAYING</span>
-                    <span class="shortcut">M [♪]</span>
-                </button>
-            </li>
+<div class="step"><div class="k">(e)(f)</div><div class="b">
+  <h4>R_if 與 R_of（回授後的「本體」電阻）</h4>
+  <p><b>R_if</b>：回授讓回授節點電壓 <span class="math">V_f=\beta V_o</span> 跟著 V_id 動，若把「＋」端與「−」端推開 ΔV，兩端擺幅被放大成 <span class="math">(1+A\beta)\Delta V</span>，通過 R_id 的電流只剩 <span class="math">1/(1+A\beta)</span> → 等效電阻放大 <span class="math">1+A\beta</span> 倍：</p>
+  <div class="eq">R_{if}=R_{id}\,(1+A\beta)=R_{id}\left(1+\frac{\mu R_1 R_L}{(R_1+R_2)(r_o+R_L)}\right)</div>
+  <p><b>R_of</b>：把 V_id 接地（輸入源消去）後，從輸出端往回看。r_o 兩端電壓變成 <span class="math">\beta V_o</span> 的鏡像，等效輸出電阻被壓縮 <span class="math">1+A\beta</span> 倍：</p>
+  <div class="eq">R_{of}=\frac{r_o}{1+A\beta}=\frac{r_o(R_1+R_2)(r_o+R_L)}{\mu R_1 R_L+(R_1+R_2)(r_o+R_L)}</div>
+  <p class="sub" style="margin:0">（R_of 是「不含 R_L」的本體輸出電阻；R_L 屬於外部，留給下一步。）</p>
+</div></div>
 
-            <div class="chrono-divider"></div>
+<div class="step"><div class="k">(g)(h)</div><div class="b">
+  <h4>R_in 與 R_out（把「源電阻」與「負載」加回來）</h4>
+  <p><b>R_in</b>＝從 V_s 兩端看進整個電路（含 R_s）＝ R_s 串 R_if：</p>
+  <div class="eq">R_{in}=R_s+R_{if}=R_s+R_{id}\left(1+\frac{\mu R_1 R_L}{(R_1+R_2)(r_o+R_L)}\right)\approx R_s+R_{id}(1+\mu\beta)\ \ (\text{若 }R_L\gg r_o)</div>
+  <p><b>R_out</b>＝從 R_L 端看回電路（R_L 不算在內）＝ R_of ∥ r_o 的「另一半」修正：</p>
+  <div class="eq">R_{out}=R_{of}\parallel R_L=\frac{R_L\,r_o(R_1+R_2)}{\mu R_1 R_L+(R_1+R_2)(R_L+r_o)}</div>
+  <div class="box warn" style="margin-bottom:0">
+    <div class="label">別搞混</div>
+    <p>R_of 是「閉回路放大器本體」的輸出電阻；<b>R_out 才是題目要的「從輸出端看入」（含 R_L）</b>。反相／非反相放大器的 R_out 通常要再與 R_L 並聯，否則小到不合理的數值會讓你以為算錯。</p>
+  </div>
+</div></div>
 
-            <!-- 時鐘大小縮放拉桿、玻璃化模糊切換與位置重置 -->
-            <div class="chrono-slider-box">
-                <span>CLOCK SCALE</span>
-                <input type="range" id="clockScaleSlider" class="chrono-slider" min="0.5" max="3.0" step="0.05" value="1.35">
-                <span id="clockScaleValue">1.35×</span>
-            </div>
-            <li>
-                <button class="chrono-btn active" id="btnToggleGlassBlur" style="font-size:11px;padding:8px 18px;">
-                    <span id="glassBlurLabel">LIQUID GLASS: ON</span>
-                    <span class="shortcut">B [開關]</span>
-                </button>
-            </li>
-            <li>
-                <button class="chrono-btn" id="btnCycleGlassShape" style="font-size:11px;padding:8px 18px;">
-                    <span id="glassShapeLabel">SHAPE: SQUIRCLE</span>
-                    <span class="shortcut">G [形狀]</span>
-                </button>
-            </li>
-            <li>
-                <button class="chrono-btn" id="btnResetClockPos" style="font-size:11px;padding:8px 18px;">
-                    <span>RESET CLOCK POS</span>
-                    <span class="shortcut">⌖ CENTER</span>
-                </button>
-            </li>
+<div class="step"><div class="k">(i)</div><div class="b">
+  <h4>整體電壓增益 A_v = V_o / V_s</h4>
+  <p>把兩層修正乘上去：<b>輸入分壓 </b><span class="math">V_{id}/V_s=R_{if}/R_{in}</span>，<b>輸出分壓 </b><span class="math">V_o/V_{id}=A_f\cdot\dfrac{R_L}{R_L+R_{of}}</span>。</p>
+  <div class="eq">A_v=\frac{V_o}{V_s}=A_f\cdot\frac{R_{if}}{R_s+R_{if}}\cdot\frac{R_L}{R_L+R_{of}}</div>
+  <p>展開後與節點方程式（三個未知數 V_p、V_n、V_o）的解<b>完全相同</b>：</p>
+  <div class="eq">A_v=\frac{\mu R_L R_{id}(R_1+R_2)}{\mu R_1R_LR_{id}+R_LR_{id}(R_1+R_2)+R_s\big[(R_1+R_2)(R_L+r_o)+R_L r_o\big]+r_o R_{id}(R_1+R_2)}</div>
+  <p>極限檢查：<span class="math">\mu\to\infty</span> 時 <span class="math">A_v\to 1+\dfrac{R_2}{R_1}</span>，與理想非反相放大器一致。</p>
+  <div class="box" style="margin-bottom:0">
+    <div class="label">數字示範（μ=10⁵、R_id=1 MΩ、r_o=100 Ω、R_s=1 kΩ、R₁=1 kΩ、R₂=9 kΩ、R_L=10 kΩ）</div>
+    <p style="margin:4px 0">
+      β = 0.1，A = 10⁵×0.9901 = 9.901×10⁴，1+Aβ ≈ 9902，<br>
+      A_f ≈ 9.999，R_if ≈ 9.90 MΩ，R_in ≈ 9.90 MΩ，<br>
+      R_of ≈ 0.0101 Ω，R_out ≈ 0.0101 Ω，<b>A_v ≈ 9.999</b>（理想值 10）。
+    </p>
+  </div>
+</div></div>
 
-            <div class="chrono-divider"></div>
+<div class="box accent">
+  <div class="label">Q1 答案總表</div>
+  <table>
+    <tr><th>小題</th><th>答案</th></tr>
+    <tr><td>(a)</td><td>電壓串聯負回授（series-shunt）之<b>非反相放大器</b></td></tr>
+    <tr><td>(b) A</td><td class="n">μ·R_L/(r_o+R_L)</td></tr>
+    <tr><td>(c) β</td><td class="n">R₁/(R₁+R₂)</td></tr>
+    <tr><td>(d) A_f</td><td class="n">A/(1+Aβ)</td></tr>
+    <tr><td>(e) R_if</td><td class="n">R_id(1+Aβ)</td></tr>
+    <tr><td>(f) R_of</td><td class="n">r_o/(1+Aβ)</td></tr>
+    <tr><td>(g) R_in</td><td class="n">R_s + R_id(1+Aβ)</td></tr>
+    <tr><td>(h) R_out</td><td class="n">r_o(1+Aβ) ∥ R_L  （= r_o′∥R_L）</td></tr>
+    <tr><td>(i) A_v</td><td class="n">A_f · R_if/(R_s+R_if) · R_L/(R_L+R_of)</td></tr>
+  </table>
+  <p class="sub" style="margin:0">※ (h) 的寫法：<span class="math">R_{out}=\left[\dfrac{r_o}{1+A\beta}\right]\parallel R_L=\dfrac{R_L r_o(1+A\beta)^{-1}}{R_L+r_o(1+A\beta)^{-1}}</span>，與上面的分式等價。</p>
+</div>
 
-            <!-- 日出/日落手動拉桿 + 10段自動循環時間選擇 -->
-            <div class="chrono-solar-panel">
-                <div class="chrono-solar-header">
-                    <span>SOLAR PHASE</span>
-                    <span class="solar-val" id="solarTimeValue">06:00 // 日出</span>
-                </div>
-                <input type="range" id="solarSlider" class="chrono-slider" style="width:100%;display:block;" min="0" max="1" step="0.001" value="0.25">
-                <div class="chrono-solar-ticks">
-                    <span>深夜</span>
-                    <span>日出</span>
-                    <span>正午</span>
-                    <span>日落</span>
-                    <span>星夜</span>
-                </div>
-                <div class="chrono-cycle-label">
-                    <span>AUTO CYCLE // 循環週期</span>
-                    <span id="cyclePeriodLabel" style="color:var(--chrono-pink);font-weight:bold;">3min</span>
-                </div>
-                <div class="chrono-cycle-grid" id="cycleBtnGrid">
-                    <button type="button" class="chrono-cycle-btn" data-sec="3600">1hr</button>
-                    <button type="button" class="chrono-cycle-btn" data-sec="2400">40min</button>
-                    <button type="button" class="chrono-cycle-btn" data-sec="1800">30min</button>
-                    <button type="button" class="chrono-cycle-btn" data-sec="900">15min</button>
-                    <button type="button" class="chrono-cycle-btn" data-sec="600">10min</button>
-                    <button type="button" class="chrono-cycle-btn" data-sec="420">7min</button>
-                    <button type="button" class="chrono-cycle-btn" data-sec="300">5min</button>
-                    <button type="button" class="chrono-cycle-btn active" data-sec="180">3min</button>
-                    <button type="button" class="chrono-cycle-btn" data-sec="60">1min</button>
-                    <button type="button" class="chrono-cycle-btn" data-sec="30">30sec</button>
-                </div>
-            </div>
+<!-- ================================================================ Q2 -->
+<h2 id="q2"><span class="num">QUESTION 2 · 30%</span>BJT 的 π 模型與 R_in</h2>
+<p class="sub" style="margin-bottom:6px">題目原文：<i>For the circuit shown in Fig.3, please draw the BJT equivalent model of π model, and derive the R_in. Known (r_π, r_e, g_m, α, β, r_o ≠ ∞).</i></p>
+<p>圖上有 (a)(b) 兩小題，但文字只寫 Fig.3。<b>兩個圖都要會算</b>，兩個都是「從<b>集極</b>看進去」的電阻（不是從基極看）。</p>
 
-            <div class="chrono-divider"></div>
+<div class="side-grid">
+  <figure style="margin:0">
+    <svg style="width:100%;height:auto;max-height:400px" viewBox="0 0 230 300" role="img" aria-label="Fig.2" xmlns="http://www.w3.org/2000/svg"><defs><marker id="a1" markerWidth="9" markerHeight="7" refX="8" refY="3.5" orient="auto"><polygon points="0 0, 9 3.5, 0 7" fill="#23272f"/></marker><marker id="a2" markerWidth="9" markerHeight="7" refX="8" refY="3.5" orient="auto"><polygon points="0 0, 9 3.5, 0 7" fill="#c4542d"/></marker></defs><line x1="74" y1="116" x2="74" y2="156" stroke="#23272f" stroke-width="2.8"/><path d="M74,136 L120,118 L120,100" fill="none" stroke="#23272f" stroke-width="1.5"/><path d="M74,136 L120,154 L120,190" fill="none" stroke="#23272f" stroke-width="1.5"/><polygon points="106,143 118,157 115,140" fill="#23272f"/><text x="58" y="141" font-size="11" fill="#23272f" text-anchor="start">B</text><line x1="120" y1="100" x2="120" y2="44" stroke="#23272f" stroke-width="1.5"/><circle cx="120" cy="44" r="3.8" fill="#23272f"/><text x="130" y="40" font-size="11" fill="#23272f" text-anchor="start">C</text><line x1="30" y1="136" x2="74" y2="136" stroke="#23272f" stroke-width="1.5"/><line x1="30" y1="136" x2="8" y2="136" stroke="#23272f" stroke-width="1.5"/><line x1="8" y1="136" x2="8" y2="136" stroke="#23272f" stroke-width="1.5"/><path d="M8,114 L15,125.0 L1,136.0 L15,147.0 L1,158.0 L15,169.0 L1,180.0 L8,180" fill="none" stroke="#23272f" stroke-width="1.5"/><text x="26" y="150" font-size="14" font-style="italic" text-anchor="start" fill="#23272f">R</text><text x="35.12" y="154.48" font-size="9.2" font-style="italic" fill="#23272f">B</text><line x1="8" y1="180" x2="8" y2="190" stroke="#23272f" stroke-width="1.5"/><line x1="8" y1="190" x2="8" y2="199" stroke="#23272f" stroke-width="1.5"/><line x1="-4" y1="199" x2="20" y2="199" stroke="#23272f" stroke-width="1.8"/><line x1="0" y1="204" x2="16" y2="204" stroke="#23272f" stroke-width="1.5"/><line x1="4" y1="209" x2="12" y2="209" stroke="#23272f" stroke-width="1.3"/><path d="M120,190 L127,195.66666666666666 L113,201.33333333333334 L127,207.0 L113,212.66666666666666 L127,218.33333333333334 L113,224.0 L120,224" fill="none" stroke="#23272f" stroke-width="1.5"/><line x1="120" y1="250" x2="120" y2="259" stroke="#23272f" stroke-width="1.5"/><line x1="108" y1="259" x2="132" y2="259" stroke="#23272f" stroke-width="1.8"/><line x1="112" y1="264" x2="128" y2="264" stroke="#23272f" stroke-width="1.5"/><line x1="116" y1="269" x2="124" y2="269" stroke="#23272f" stroke-width="1.3"/><line x1="120" y1="224" x2="120" y2="250" stroke="#23272f" stroke-width="1.5"/><text x="138" y="208" font-size="14" font-style="italic" text-anchor="start" fill="#23272f">R</text><text x="147.12" y="212.48" font-size="9.2" font-style="italic" fill="#23272f">E</text><line x1="150" y1="44" x2="150" y2="128" stroke="#c4542d" stroke-width="1.1" stroke-dasharray="4,3"/><line x1="150" y1="128" x2="166" y2="128" stroke="#c4542d" stroke-width="1.1" stroke-dasharray="4,3"/><line x1="150" y1="44" x2="166" y2="44" stroke="#c4542d" stroke-width="1.1" stroke-dasharray="4,3"/><text x="152" y="108" font-size="13" font-style="italic" text-anchor="start" fill="#c4542d">R</text><text x="160.54" y="112.16" font-size="8.6" font-style="italic" fill="#c4542d">in</text><text x="10" y="290" font-size="11" fill="#5a6273" text-anchor="start">R_in 自集極端點量測</text></svg>
+    <figcaption>(a) Fig.2：基極經 R_B 接地</figcaption>
+  </figure>
+  <figure style="margin:0">
+    <svg style="width:100%;height:auto;max-height:400px" viewBox="0 0 230 300" role="img" aria-label="Fig.3" xmlns="http://www.w3.org/2000/svg"><defs><marker id="a1" markerWidth="9" markerHeight="7" refX="8" refY="3.5" orient="auto"><polygon points="0 0, 9 3.5, 0 7" fill="#23272f"/></marker><marker id="a2" markerWidth="9" markerHeight="7" refX="8" refY="3.5" orient="auto"><polygon points="0 0, 9 3.5, 0 7" fill="#c4542d"/></marker></defs><line x1="74" y1="116" x2="74" y2="156" stroke="#23272f" stroke-width="2.8"/><path d="M74,136 L120,118 L120,100" fill="none" stroke="#23272f" stroke-width="1.5"/><path d="M74,136 L120,154 L120,190" fill="none" stroke="#23272f" stroke-width="1.5"/><polygon points="106,143 118,157 115,140" fill="#23272f"/><text x="58" y="141" font-size="11" fill="#23272f" text-anchor="start">B</text><line x1="120" y1="100" x2="120" y2="44" stroke="#23272f" stroke-width="1.5"/><circle cx="120" cy="44" r="3.8" fill="#23272f"/><text x="130" y="40" font-size="11" fill="#23272f" text-anchor="start">C</text><line x1="14" y1="136" x2="74" y2="136" stroke="#23272f" stroke-width="1.5"/><line x1="14" y1="136" x2="14" y2="145" stroke="#23272f" stroke-width="1.5"/><line x1="2" y1="145" x2="26" y2="145" stroke="#23272f" stroke-width="1.8"/><line x1="6" y1="150" x2="22" y2="150" stroke="#23272f" stroke-width="1.5"/><line x1="10" y1="155" x2="18" y2="155" stroke="#23272f" stroke-width="1.3"/><path d="M120,190 L127,195.66666666666666 L113,201.33333333333334 L127,207.0 L113,212.66666666666666 L127,218.33333333333334 L113,224.0 L120,224" fill="none" stroke="#23272f" stroke-width="1.5"/><line x1="120" y1="224" x2="120" y2="250" stroke="#23272f" stroke-width="1.5"/><line x1="120" y1="250" x2="120" y2="259" stroke="#23272f" stroke-width="1.5"/><line x1="108" y1="259" x2="132" y2="259" stroke="#23272f" stroke-width="1.8"/><line x1="112" y1="264" x2="128" y2="264" stroke="#23272f" stroke-width="1.5"/><line x1="116" y1="269" x2="124" y2="269" stroke="#23272f" stroke-width="1.3"/><text x="138" y="208" font-size="14" font-style="italic" text-anchor="start" fill="#23272f">R</text><text x="147.12" y="212.48" font-size="9.2" font-style="italic" fill="#23272f">E</text><line x1="150" y1="44" x2="150" y2="128" stroke="#c4542d" stroke-width="1.1" stroke-dasharray="4,3"/><line x1="150" y1="128" x2="166" y2="128" stroke="#c4542d" stroke-width="1.1" stroke-dasharray="4,3"/><line x1="150" y1="44" x2="166" y2="44" stroke="#c4542d" stroke-width="1.1" stroke-dasharray="4,3"/><text x="152" y="108" font-size="13" font-style="italic" text-anchor="start" fill="#c4542d">R</text><text x="160.54" y="112.16" font-size="8.6" font-style="italic" fill="#c4542d">in</text><text x="10" y="290" font-size="11" fill="#5a6273" text-anchor="start">基極直接接地</text></svg>
+    <figcaption>(b) Fig.3：基極直接接地</figcaption>
+  </figure>
+</div>
 
-            <div class="chrono-slider-box">
-                <span>VOLUME</span>
-                <input type="range" id="volumeSlider" class="chrono-slider" min="0" max="1" step="0.01" value="0.75">
-                <span id="volumeValue">75%</span>
-            </div>
+<h3>第 0 步：先畫對 π 模型（這步錯，後面全錯）</h3>
+<p>π 模型只有三條連線要記：</p>
+<ul>
+  <li><b>r_π</b>：接在 <b>B 與 E 之間</b>，上面的電壓就是 v_π（= v_be）。</li>
+  <li><b>g_m v_π</b>：受控電流源，接在 <b>C 與 E 之間</b>，NPN 時電流<b>由 C 流向 E</b>。</li>
+  <li><b>r_o</b>：接在 <b>C 與 E 之間</b>（與受控源並聯）。</li>
+  <li>r_μ 接 B–C，本題忽略。</li>
+</ul>
+<div class="box warn">
+  <div class="label">三個常見的地雷</div>
+  <ol style="margin:4px 0">
+    <li><b>把 r_π 畫在 C–E 之間</b> —— 錯，r_π 一定在 B–E。</li>
+    <li><b>把 r_e 當成 C–E 的並聯電阻</b> —— 錯。r_e 是「從射極看進去的電阻」，它會出現在 E 到地的路徑上，不是跟 r_o 並聯。</li>
+    <li><b>B 與 C 直接連在一起</b> —— 錯。B、C 是獨立節點，只有 r_μ（本題忽略）跨接。</li>
+  </ol>
+</div>
+<figure>
+  <svg style="width:100%;height:auto" viewBox="0 0 430 262" role="img" aria-label="π model" xmlns="http://www.w3.org/2000/svg"><defs><marker id="a1" markerWidth="9" markerHeight="7" refX="8" refY="3.5" orient="auto"><polygon points="0 0, 9 3.5, 0 7" fill="#23272f"/></marker><marker id="a2" markerWidth="9" markerHeight="7" refX="8" refY="3.5" orient="auto"><polygon points="0 0, 9 3.5, 0 7" fill="#c4542d"/></marker></defs><circle cx="70" cy="78" r="4.5" fill="#23272f"/><text x="58" y="62" font-size="12" fill="#23272f" text-anchor="start" font-weight="600">C</text><circle cx="150" cy="78" r="4.5" fill="#23272f"/><text x="144" y="62" font-size="12" fill="#23272f" text-anchor="start" font-weight="600">B</text><circle cx="250" cy="78" r="4.5" fill="#23272f"/><circle cx="360" cy="78" r="4.5" fill="#23272f"/><line x1="250" y1="78" x2="360" y2="78" stroke="#23272f" stroke-width="1.5"/><path d="M360,78 L367,96.66666666666667 L353,115.33333333333334 L367,134.0 L353,152.66666666666669 L367,171.33333333333334 L353,190.0 L360,190" fill="none" stroke="#23272f" stroke-width="1.5"/><line x1="360" y1="190" x2="360" y2="206" stroke="#23272f" stroke-width="1.5"/><line x1="360" y1="206" x2="360" y2="215" stroke="#23272f" stroke-width="1.5"/><line x1="348" y1="215" x2="372" y2="215" stroke="#23272f" stroke-width="1.8"/><line x1="352" y1="220" x2="368" y2="220" stroke="#23272f" stroke-width="1.5"/><line x1="356" y1="225" x2="364" y2="225" stroke="#23272f" stroke-width="1.3"/><text x="376" y="132" font-size="14" font-style="italic" text-anchor="start" fill="#23272f">r</text><text x="385.12" y="136.48" font-size="9.2" font-style="italic" fill="#23272f">o</text><path d="M150,78 L157,96.66666666666667 L143,115.33333333333334 L157,134.0 L143,152.66666666666669 L157,171.33333333333334 L143,190.0 L150,190" fill="none" stroke="#23272f" stroke-width="1.5"/><text x="164" y="132" font-size="14" font-style="italic" text-anchor="start" fill="#23272f">r</text><text x="173.12" y="136.48" font-size="9.2" font-style="italic" fill="#23272f">π</text><path d="M70,78 L77,96.66666666666667 L63,115.33333333333334 L77,134.0 L63,152.66666666666669 L77,171.33333333333334 L63,190.0 L70,190" fill="none" stroke="#23272f" stroke-width="1.5"/><text x="84" y="132" font-size="14" font-style="italic" text-anchor="start" fill="#23272f">r</text><text x="93.12" y="136.48" font-size="9.2" font-style="italic" fill="#23272f">e</text><line x1="250" y1="78" x2="250" y2="100" stroke="#23272f" stroke-width="1.5"/><polygon points="250,100 268,132 250,164 232,132" fill="#fff" stroke="#23272f" stroke-width="1.5"/><line x1="250" y1="164" x2="250" y2="190" stroke="#23272f" stroke-width="1.5"/><polygon points="250,190 245,178 255,178" fill="#23272f"/><text x="276" y="128" font-size="13" fill="#23272f" text-anchor="start">g</text><text x="287" y="135" font-size="10" fill="#23272f" text-anchor="start">m</text><text x="296" y="128" font-size="13" font-style="italic" text-anchor="start" fill="#23272f">v</text><text x="304.54" y="132.16" font-size="8.6" font-style="italic" fill="#23272f">π</text><line x1="70" y1="190" x2="360" y2="190" stroke="#23272f" stroke-width="1.5"/><circle cx="70" cy="190" r="3.8" fill="#23272f"/><circle cx="150" cy="190" r="3.8" fill="#23272f"/><circle cx="250" cy="190" r="3.8" fill="#23272f"/><line x1="70" y1="190" x2="70" y2="206" stroke="#23272f" stroke-width="1.5"/><line x1="70" y1="206" x2="70" y2="215" stroke="#23272f" stroke-width="1.5"/><line x1="58" y1="215" x2="82" y2="215" stroke="#23272f" stroke-width="1.8"/><line x1="62" y1="220" x2="78" y2="220" stroke="#23272f" stroke-width="1.5"/><line x1="66" y1="225" x2="74" y2="225" stroke="#23272f" stroke-width="1.3"/><text x="58" y="222" font-size="12" fill="#23272f" text-anchor="start" font-weight="600">E</text><line x1="126" y1="80" x2="126" y2="92" stroke="#c4542d" stroke-width="1.0"/><line x1="174" y1="80" x2="174" y2="92" stroke="#c4542d" stroke-width="1.0"/><line x1="126" y1="87" x2="174" y2="87" stroke="#c4542d" stroke-width="1.0"/><text x="140" y="72" font-size="13" font-style="italic" text-anchor="start" fill="#c4542d">v</text><text x="148.54" y="76.16" font-size="8.6" font-style="italic" fill="#c4542d">π</text><line x1="150" y1="78" x2="150" y2="87" stroke="#23272f" stroke-width="1.5"/><line x1="138" y1="87" x2="162" y2="87" stroke="#23272f" stroke-width="1.8"/><line x1="142" y1="92" x2="158" y2="92" stroke="#23272f" stroke-width="1.5"/><line x1="146" y1="97" x2="154" y2="97" stroke="#23272f" stroke-width="1.3"/><text x="60" y="64" font-size="10" fill="#5a6273" text-anchor="start">B 直接接地</text><line x1="150" y1="78" x2="250" y2="78" stroke="#23272f" stroke-width="1.5"/><text x="24" y="250" font-size="10.5" fill="#5a6273" text-anchor="start">受控源 g_m v_π 的電流由 C 流向 E；r_π 跨在 B–E 之間（B–C 間的 r_μ 本題忽略）</text></svg>
+  <figcaption>π 模型（以 Fig.3 的基極接地情形為例）：C 在上、B 在中、E 在下；r_π 在 B–E，g_m v_π 與 r_o 在 C–E</figcaption>
+</figure>
 
-            <div class="chrono-divider"></div>
+<h3>為什麼 r_e 會出現？(r_π, r_e, β, α, g_m 之間的換算)</h3>
+<p>題目同時給 r_π、r_e、β、α、g_m，就是因為 <b>r_e 不是模型元件，而是「射極端點看進去的等效電阻」</b>：</p>
+<div class="eq">g_m=\frac{\beta}{r_\pi}=\frac{\alpha}{r_e},\qquad r_\pi=(\beta+1)r_e,\qquad \alpha=\frac{\beta}{\beta+1}</div>
+<p>所以從射極端點往 B 看回去，看到的是 <span class="math">r_\pi/(\beta+1)=r_e</span>（因為 r_π 另一端接的是基極，而基極經 R_B 或直接接地）。<b>因此「r_e 與 R_E 串聯」是 Fig.2 / Fig.3 兩個電路的共同骨架。</b></p>
 
-            <li>
-                <button class="chrono-btn" id="btnSpawnFish">
-                    <span>SPAWN KOI FISH</span>
-                    <span class="shortcut">F [🐟]</span>
-                </button>
-            </li>
-            <li>
-                <button class="chrono-btn" id="btnTriggerEco">
-                    <span>TRIGGER WILDLIFE</span>
-                    <span class="shortcut">C [🐸/🦋]</span>
-                </button>
-            </li>
-            <li>
-                <button class="chrono-btn" id="btnReloadPage">
-                    <span>RELOAD PAGE</span>
-                    <span class="shortcut">↺</span>
-                </button>
-            </li>
-        </ul>
-    </div>
+<h3>(a) Fig.2：基極經 R_B 接地 → 求 R_in（自集極看入）</h3>
+<div class="step"><div class="k">1</div><div class="b">
+  <h4>在集極加測試源 V_x，量流入電流 I_x</h4>
+  <p>R_in = V_x / I_x。測試源在 C，B 經 R_B 到地，E 經 R_E 到地。依 π 模型列出三個節點（C：V_x、B：V_b、E：V_e）的 KCL：</p>
+  <div class="eq">\frac{V_x-V_b}{r_o}+\frac{V_x}{r_e}-\frac{V_e}{r_e}=I_x</div>
+  <div class="eq">\frac{V_b-V_x}{r_o}+\frac{V_b}{r_\pi}+\frac{V_b}{R_B}+g_m(V_b-V_e)=0</div>
+  <div class="eq">\frac{V_e-V_x}{r_e}+\frac{V_e}{R_E}+g_m(V_e-V_b)=0</div>
+  <p class="sub">（第一式：r_o 與 r_e 並聯在 C 與 E 之間；第二式：B 端只有 r_o、r_π、R_B 三路；第三式：E 端有 r_e、R_E 與受控源。）</p>
+</div></div>
+<div class="step"><div class="k">2</div><div class="b">
+  <h4>解出 V_x / I_x（建議用「先摺疊再並聯」的結構）</h4>
+  <p>把 E 端那條路「往上看」摺疊：B 經 R_B 接地，所以 <span class="math">v_\pi=v_b</span>；E 端等效接地電阻為</p>
+  <div class="eq">R_{E}'=R_E\parallel r_e,\qquad (\text{E 端往 B 看去}) \Rightarrow R_{eq}=R_E\parallel\underbrace{\big[(R_B\parallel r_\pi)+(\beta+1)R_E'\big]}_{\text{其實更方便的順序}}</div>
+  <p>實務上最穩的作法是 <b>用替代定理把 v_π 消掉</b>：由第二式可得</p>
+  <div class="eq">V_b=\frac{V_x/r_o+g_m V_e}{1/r_o+1/r_\pi+1/R_B+g_m}</div>
+  <p>代回第三式求 V_e，再代回第一式，就得到（<b>化簡後的分式形式，考場可直接用</b>）：</p>
+  <div class="eq">R_{in}=\frac{r_o\left[r_\pi R_B+(r_\pi+r_e)(R_B+R_E)\right]+R_B R_E(r_\pi+r_e)+R_B r_\pi r_e+R_E r_\pi r_e}{R_B R_E+(R_B+R_E)(r_\pi+r_e)+r_o\left[R_B+R_E+(r_\pi+r_e)\right]}</div>
+  <p><b>物理意義（背這個比背公式好）</b>：集極看進去＝ <span class="math">r_o</span> <b>並聯</b>上「射極走道 ＋ 基極走道」的串聯路徑：</p>
+  <div class="eq">R_{in}\approx r_o\parallel\Big(R_E\parallel r_e\Big)\ \ \text{的修正形式} =\ r_o\ \Big\|\ \underbrace{(r_\pi+r_e)}_{B\text{ 走道（含 }R_B\text{ 的並聯）}}\ \text{與}\ (R_E)\ \text{組合}</div>
+  <p class="sub">精確式沒有一個乾淨的「三電阻並聯」形式，因為受控源讓 E 端不是單純接地；<b>考場上有時間就用節點法推到上式，沒時間就寫成上面的結構＋「並聯 r_o」的等效描述。</b></p>
+</div></div>
+<div class="box ok">
+  <div class="label">數字驗算（R_B=100 kΩ、R_E=1 kΩ、r_π=2.6 kΩ、r_e=26 Ω、r_o=100 kΩ）</div>
+  <p style="margin:4px 0">R_in ≈ <b>1.097 MΩ</b>（略大於 r_o = 100 kΩ，因為 r_o 與另一條較小的路徑並聯後再被受控源抬升）。</p>
+</div>
 
-    <!-- 場景切換選擇菜單：七種專屬水境 -->
-    <div class="scene-selector-hud" id="sceneHud">
-        <div class="chrono-header">
-            <span>WATER ARCHIVES</span>
-            <span class="title-badge">7 MODES</span>
-        </div>
-        <ul class="chrono-menu-list" id="sceneListContainer">
-            <!-- 由 JS 動態注入 7 種場景按鈕 -->
-        </ul>
-    </div>
+<h3>(b) Fig.3：基極直接接地 → 求 R_in</h3>
+<p>把 (a) 的 R_B 令為 0（B 直接接地，V_b = 0），v_π = 0，所以受控源 g_m v_π = 0 <b>整支斷路</b>。此時 C 端只剩下：</p>
+<div class="eq">R_{in}=r_o\parallel\big(r_e+R_E\big)=\frac{r_o\,(R_E+r_e)}{r_o+R_E+r_e}</div>
+<p>這就是最經典的答案：<b>共基（或基極接地）電路從集極看入的電阻。</b> 若 <span class="math">r_o\to\infty</span>，则 <span class="math">R_{in}=r_e+R_E</span>。</p>
+<div class="box ok">
+  <div class="label">數字驗算（同一組數值）</div>
+  <p style="margin:4px 0">r_e+R_E = 1.026 kΩ → R_in = 100 kΩ ∥ 1.026 kΩ ≈ <b>1.0156 kΩ</b>。</p>
+  <p style="margin:4px 0" class="sub">對照 (a)：R_B 由 0 變成 100 kΩ，R_in 從 1.0 kΩ 暴增到 1.1 MΩ —— 因為基極被「浮」起來後，r_o 才能透過受控源把阻抗抬起來。</p>
+</div>
 
-    <!-- 右上角即時狀態 HUD (預設關閉/收起，由左下角 H 鍵統一切換) -->
-    <div class="status-hud" id="statusHud">
-        <div>SCENE : <span class="val" id="hudSceneName">竹林木屋・木質水潭</span></div>
-        <div>SOLAR : <span class="val" id="hudSolarStatus">06:00 日出 // 3min CYCLE</span></div>
-        <div>ECOLOGY : <span class="val" id="hudEcoStatus">LOTUS / DRAGONFLY / FROG</span></div>
-        <div>AUDIO : <span class="val" id="hudAudioStatus">BUFFERING / READY</span></div>
-        <div>SPEED : <span class="val" id="hudSpeedName">SLOW (0.3x)</span></div>
-        <div>RIPPLES : <span class="val" id="hudWaveStatus">SPRING 60FPS</span></div>
-    </div>
+<div class="box accent">
+  <div class="label">Q2 答案總表</div>
+  <table>
+    <tr><th>電路</th><th>R_in（自集極看入）</th><th>極限（r_o→∞）</th></tr>
+    <tr><td>(a) Fig.2（B 經 R_B 接地）</td><td>上式長分式；結構 = r_o 並聯（B 走道 + R_E 走道）</td><td class="n">≈ r_e+R_E（再由 R_B 修正）</td></tr>
+    <tr><td>(b) Fig.3（B 直接接地）</td><td class="n">r_o ∥ (r_e + R_E)</td><td class="n">r_e + R_E</td></tr>
+  </table>
+  <p class="sub" style="margin:0">若老師把題目解讀成「自基極看入」，答案則是：<span class="math">R_{in}=R_B\parallel r_\pi</span>（Fig.2）、<span class="math">R_{in}=r_\pi</span>（Fig.3）。答題時寫一句「題圖 R_in 標示在集極端點，故以下自集極看入」即可避免爭議。</p>
+</div>
 
-    <!-- 左下角折疊/展開 HUD 按鈕 (預設所有 HUD 收起，點擊展開) -->
-    <button class="hud-toggle-btn" id="btnToggleHud">SHOW HUD [H]</button>
+<!-- ================================================================ 複習 -->
+<h2 id="recheck"><span class="num">REVISION</span>考前錯誤檢查表</h2>
+<details open>
+  <summary>Q1 最常錯的三件事</summary>
+  <table>
+    <tr><th>錯誤</th><th>正確</th></tr>
+    <tr><td>把 Ao（開回路增益）直接當 A 用</td><td>A 要含負載效應：<span class="math">A=\mu R_L/(r_o+R_L)</span>；不然 A_f 會少乘一項</td></tr>
+    <tr><td>R_out 直接寫成 r_o/(1+Aβ)</td><td>那是 R_of；題目要的 R_out 還要 <b>∥ R_L</b></td></tr>
+    <tr><td>R_in 只寫 R_id(1+Aβ)</td><td>從 V_s 看入要 <b>加 R_s</b>：<span class="math">R_in=R_s+R_id(1+Aβ)</span></td></tr>
+  </table>
+</details>
+<details>
+  <summary>Q2 最常錯的三件事</summary>
+  <table>
+    <tr><th>錯誤</th><th>正確</th></tr>
+    <tr><td>R_in 從基極算（R_B∥r_π）</td><td>先確認 R_in 箭頭在哪一端；本題箭頭在<b>集極</b></td></tr>
+    <tr><td>B 接地後還留著 g_m v_π</td><td>B 接地 → v_π=0 → 受控源 = 0，整支開路</td></tr>
+    <tr><td>把 r_e 當成 C–E 並聯元件</td><td>r_e 是射極端點看入電阻，與 R_E <b>串聯</b>後再與 r_o 並聯</td></tr>
+  </table>
+</details>
 
-    <div class="bottom-hint">
-        [W/S] CLOCK STYLE // [A/D] THEME // [B] LIQUID GLASS // [G] GLASS SHAPE // [H] HUD // [X] SUNRISE/SUNSET // [F] KOI // [C] CRITTERS
-    </div>
-
-    <script src="engine.js"></script>
-<script src="glass.js"></script>
+<div class="footer">
+  電子學(三) 第三次小考 ─ 計算教學 · 由 PDF 原題重製並以 SymPy 驗證 · 公式需連網載入 KaTeX，離線時會顯示原始 TeX
+</div>
+</div>
+<script defer src="assets/app.js"></script>
+<script>
+var FIGS = {fig1:'fig1.svg', fig2:'fig2.svg', fig3:'fig3.svg', pi_gnd:'pi_gnd.svg', block:'block.svg', pi_rb:'pi_rb.svg'};
+function mountFigs() {
+  Object.keys(FIGS).forEach(function (id) {
+    var host = document.getElementById(id);
+    if (!host) return;
+    fetch(FIGS[id]).then(function (r) { if (!r.ok) throw 0; return r.text(); })
+      .then(function (svg) { host.innerHTML = svg; })
+      .catch(function () { host.textContent = '（圖檔載入失敗：' + FIGS[id] + '，請確認 assets 資料夾與 index.html 在一起）'; });
+  });
+}
+document.addEventListener('DOMContentLoaded', function () {
+  // 圖：由 app.js 讀入同資料夾的 SVG 檔並內嵌
+  mountFigs();
+  if (window.renderMath) window.renderMath(document);
+});
+</script>
 </body>
 </html>
