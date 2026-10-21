@@ -3,559 +3,319 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>中原大學 電子學(三) 考試題目與解答檢索瀏覽器</title>
+    <title>電子學(三) EE3 歷屆試題與手寫解答全集檢視器 | 中原大學</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700;900&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg-primary: #0f172a;
-            --bg-secondary: #1e293b;
-            --bg-card: #1e293b;
-            --bg-hover: #334155;
-            --text-primary: #f8fafc;
+            --bg-base: #0f172a;
+            --bg-surface: #1e293b;
+            --bg-card: #182234;
+            --border: #334155;
+            --primary: #3b82f6;
+            --primary-hover: #2563eb;
+            --accent-gold: #f59e0b;
+            --accent-cyan: #06b6d4;
+            --text-main: #f8fafc;
             --text-secondary: #94a3b8;
-            --accent: #38bdf8;
-            --accent-gradient: linear-gradient(135deg, #38bdf8 0%, #818cf8 100%);
-            --badge-quiz: #0284c7;
-            --badge-midterm: #ea580c;
-            --badge-notes: #16a34a;
-            --badge-update: #d97706;
-            --border-color: #334155;
-            --card-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.4), 0 8px 10px -6px rgba(0, 0, 0, 0.4);
+            --text-muted: #64748b;
         }
-
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
-
+        * { box-sizing: border-box; margin: 0; padding: 0; }
         body {
-            font-family: 'Noto Sans TC', sans-serif;
-            background-color: var(--bg-primary);
-            color: var(--text-primary);
-            line-height: 1.6;
+            font-family: 'Noto Sans TC', system-ui, sans-serif;
+            background-color: var(--bg-base);
+            color: var(--text-main);
             min-height: 100vh;
-            display: flex;
-            flex-direction: column;
         }
-
         header {
-            background: linear-gradient(180deg, rgba(15, 23, 42, 0.95) 0%, rgba(30, 41, 59, 0.9) 100%);
-            backdrop-filter: blur(12px);
-            border-bottom: 1px solid var(--border-color);
+            background: linear-gradient(180deg, #1e293b 0%, rgba(15, 23, 42, 0.8) 100%);
+            border-bottom: 1px solid var(--border);
+            padding: 2.2rem 1.5rem 1.5rem;
             position: sticky;
             top: 0;
-            z-index: 50;
-            padding: 1.25rem 2rem;
+            z-index: 100;
+            backdrop-filter: blur(12px);
         }
-
-        .header-content {
-            max-width: 1600px;
-            margin: 0 auto;
+        .header-content { max-width: 1400px; margin: 0 auto; }
+        .header-top {
             display: flex;
-            justify-content: space-between;
             align-items: center;
+            justify-content: space-between;
             flex-wrap: wrap;
             gap: 1rem;
+            margin-bottom: 1.2rem;
         }
-
         .title-group h1 {
-            font-size: 1.6rem;
-            font-weight: 900;
-            background: var(--accent-gradient);
+            font-size: 1.85rem;
+            font-weight: 800;
+            letter-spacing: -0.02em;
+            background: linear-gradient(135deg, #60a5fa 0%, #38bdf8 50%, #f59e0b 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            letter-spacing: -0.02em;
         }
-
-        .title-group p {
-            font-size: 0.9rem;
-            color: var(--text-secondary);
-            margin-top: 0.25rem;
-        }
-
-        .controls {
+        .title-group p { color: var(--text-secondary); font-size: 0.95rem; margin-top: 0.25rem; }
+        
+        .viewer-mode-bar {
             display: flex;
             align-items: center;
-            gap: 1rem;
-            flex-wrap: wrap;
+            background: #090d16;
+            border: 2px solid #2a3b60;
+            border-radius: 999px;
+            padding: 4px;
+            gap: 4px;
         }
-
-        .search-box {
-            position: relative;
-        }
-
-        .search-box input {
-            background: rgba(15, 23, 42, 0.8);
-            border: 1px solid var(--border-color);
-            border-radius: 9999px;
-            padding: 0.55rem 1rem 0.55rem 2.4rem;
-            color: var(--text-primary);
-            font-size: 0.9rem;
-            width: 280px;
-            outline: none;
-            transition: all 0.2s ease;
-        }
-
-        .search-box input:focus {
-            border-color: var(--accent);
-            box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.2);
-            width: 340px;
-        }
-
-        .search-box svg {
-            position: absolute;
-            left: 0.85rem;
-            top: 50%;
-            transform: translateY(-50%);
-            width: 16px;
-            height: 16px;
+        .view-btn {
+            background: transparent;
+            border: none;
             color: var(--text-secondary);
-        }
-
-        .stats-badge {
-            background: rgba(56, 189, 248, 0.1);
-            color: var(--accent);
-            border: 1px solid rgba(56, 189, 248, 0.3);
-            border-radius: 9999px;
-            padding: 0.35rem 0.85rem;
-            font-size: 0.85rem;
-            font-weight: 600;
-        }
-
-        .filter-nav {
-            background: var(--bg-secondary);
-            border-bottom: 1px solid var(--border-color);
-            padding: 0.75rem 2rem;
-            position: sticky;
-            top: 86px;
-            z-index: 40;
-            overflow-x: auto;
-            white-space: nowrap;
-        }
-
-        .filter-container {
-            max-width: 1600px;
-            margin: 0 auto;
+            padding: 8px 18px;
+            border-radius: 999px;
+            font-size: 13.5px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
             display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .view-btn:hover { color: #fff; }
+        .view-btn.active {
+            background: linear-gradient(135deg, #2563eb, #1d4ed8);
+            color: #fff;
+            box-shadow: 0 2px 10px rgba(37, 99, 235, 0.4);
+        }
+        .view-btn.active.q-active {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+            box-shadow: 0 2px 10px rgba(245, 158, 11, 0.4);
+        }
+
+        .filter-container { display: flex; flex-direction: column; gap: 1rem; }
+        .filter-tabs {
+            display: flex;
+            flex-wrap: wrap;
             gap: 0.5rem;
             align-items: center;
         }
-
         .filter-btn {
-            background: transparent;
-            border: 1px solid transparent;
+            background: rgba(30, 41, 59, 0.7);
+            border: 1px solid var(--border);
             color: var(--text-secondary);
-            padding: 0.45rem 1rem;
+            padding: 0.45rem 0.95rem;
             border-radius: 8px;
-            font-size: 0.85rem;
-            font-weight: 500;
+            font-size: 0.88rem;
+            font-weight: 600;
             cursor: pointer;
             transition: all 0.2s ease;
-            display: flex;
-            align-items: center;
-            gap: 0.4rem;
         }
-
-        .filter-btn:hover {
-            background: var(--bg-hover);
-            color: var(--text-primary);
-        }
-
+        .filter-btn:hover { background: rgba(51, 65, 85, 0.9); color: var(--text-main); }
         .filter-btn.active {
-            background: rgba(56, 189, 248, 0.15);
-            border-color: var(--accent);
-            color: var(--accent);
-            font-weight: 700;
+            background: var(--primary);
+            border-color: var(--primary);
+            color: white;
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.35);
         }
-
-        .filter-count {
-            background: rgba(255, 255, 255, 0.1);
-            padding: 0.1rem 0.45rem;
-            border-radius: 999px;
-            font-size: 0.75rem;
+        .search-row { display: flex; gap: 0.75rem; align-items: center; }
+        .search-input {
+            flex: 1;
+            background: #0f172a;
+            border: 1px solid var(--border);
+            color: var(--text-main);
+            padding: 0.6rem 1rem;
+            border-radius: 8px;
+            font-size: 0.92rem;
+            outline: none;
         }
+        .search-input:focus { border-color: var(--primary); }
 
-        main {
-            max-width: 1600px;
-            margin: 0 auto;
-            padding: 2rem;
-            flex-grow: 1;
-            width: 100%;
-        }
-
+        main { max-width: 1400px; margin: 2rem auto; padding: 0 1.5rem; }
         .grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
             gap: 1.5rem;
         }
-
         .card {
             background: var(--bg-card);
-            border: 1px solid var(--border-color);
-            border-radius: 14px;
+            border: 1px solid var(--border);
+            border-radius: 12px;
             overflow: hidden;
             display: flex;
             flex-direction: column;
-            transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
-            box-shadow: var(--card-shadow);
-            cursor: pointer;
+            transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
             position: relative;
         }
-
         .card:hover {
             transform: translateY(-4px);
-            border-color: var(--accent);
-            box-shadow: 0 20px 30px -10px rgba(56, 189, 248, 0.25);
+            border-color: #475569;
+            box-shadow: 0 12px 24px -10px rgba(0, 0, 0, 0.5);
         }
-
         .card-thumb-container {
             position: relative;
             width: 100%;
-            height: 240px;
+            height: 260px;
             background: #090d16;
+            cursor: pointer;
             overflow: hidden;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-bottom: 1px solid var(--border-color);
         }
-
         .card-thumb {
             width: 100%;
             height: 100%;
-            object-fit: contain;
+            object-fit: cover;
+            object-position: top;
             transition: transform 0.3s ease;
         }
-
-        .card:hover .card-thumb {
-            transform: scale(1.03);
-        }
-
+        .card:hover .card-thumb { transform: scale(1.03); }
         .card-badge-top-left {
-            position: absolute;
-            top: 0.75rem;
-            left: 0.75rem;
-            background: rgba(15, 23, 42, 0.85);
-            backdrop-filter: blur(6px);
-            border: 1px solid rgba(255, 255, 255, 0.15);
-            color: #fff;
-            padding: 0.25rem 0.6rem;
-            border-radius: 6px;
-            font-size: 0.75rem;
-            font-family: 'JetBrains Mono', monospace;
-            font-weight: 600;
+            position: absolute; top: 10px; left: 10px;
+            background: rgba(15, 23, 42, 0.85); backdrop-filter: blur(4px);
+            border: 1px solid var(--border); border-radius: 6px;
+            padding: 2px 8px; font-family: 'JetBrains Mono', monospace;
+            font-size: 0.8rem; font-weight: 700; color: var(--accent-cyan);
         }
-
-        .card-badge-top-right {
-            position: absolute;
-            top: 0.75rem;
-            right: 0.75rem;
-            background: rgba(15, 23, 42, 0.85);
-            backdrop-filter: blur(6px);
-            border: 1px solid rgba(255, 255, 255, 0.15);
-            padding: 0.25rem 0.6rem;
-            border-radius: 6px;
-            font-size: 0.75rem;
-            font-weight: 600;
+        .card-badge-mode {
+            position: absolute; top: 10px; right: 10px;
+            border-radius: 6px; padding: 3px 8px; font-size: 0.75rem; font-weight: 700;
         }
-
-        .badge-quiz { color: #38bdf8; border-color: rgba(56, 189, 248, 0.4); }
-        .badge-midterm { color: #fb923c; border-color: rgba(251, 146, 60, 0.4); }
-        .badge-notes { color: #4ade80; border-color: rgba(74, 222, 128, 0.4); }
-
-        .card-body {
-            padding: 1.25rem;
-            display: flex;
-            flex-direction: column;
-            flex-grow: 1;
-            gap: 0.6rem;
+        .badge-sol { background: rgba(59, 130, 246, 0.9); color: white; }
+        .badge-q { background: rgba(245, 158, 11, 0.95); color: white; }
+        
+        .card-flip-btn {
+            position: absolute; bottom: 10px; right: 10px;
+            background: rgba(15, 23, 42, 0.9); backdrop-filter: blur(6px);
+            border: 1px solid #475569; border-radius: 6px;
+            color: #e2e8f0; padding: 4px 10px; font-size: 0.75rem; font-weight: 700;
+            cursor: pointer; transition: all 0.2s;
         }
+        .card-flip-btn:hover { background: var(--primary); color: #fff; }
 
+        .card-body { padding: 1.1rem; display: flex; flex-direction: column; flex: 1; }
         .card-meta-line {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            font-size: 0.8rem;
-            color: var(--text-secondary);
+            display: flex; justify-content: space-between; align-items: center;
+            font-size: 0.82rem; color: var(--text-muted); margin-bottom: 0.5rem;
         }
-
-        .card-year {
-            color: #facc15;
-            font-weight: 600;
-        }
-
         .card-title {
-            font-size: 1.05rem;
-            font-weight: 700;
-            color: var(--text-primary);
-            line-height: 1.4;
+            font-size: 1.05rem; font-weight: 700; color: #fff; margin-bottom: 0.6rem; line-height: 1.4;
         }
-
         .card-desc {
-            font-size: 0.85rem;
-            color: #cbd5e1;
-            line-height: 1.5;
-            flex-grow: 1;
+            font-size: 0.86rem; color: var(--text-secondary); line-height: 1.5; margin-bottom: 0.8rem; flex: 1;
+        }
+        .card-version-note {
+            background: rgba(245, 158, 11, 0.1); border-left: 3px solid var(--accent-gold);
+            padding: 0.4rem 0.6rem; border-radius: 0 4px 4px 0; font-size: 0.8rem;
+            color: #fde68a; line-height: 1.4; margin-top: auto;
         }
 
-        .card-version-box {
-            background: rgba(217, 119, 6, 0.1);
-            border-left: 3px solid #f59e0b;
-            padding: 0.5rem 0.75rem;
-            border-radius: 0 6px 6px 0;
-            font-size: 0.78rem;
-            color: #fde68a;
-            margin-top: 0.4rem;
-        }
-
-        .card-footer {
-            margin-top: 0.5rem;
-            padding-top: 0.75rem;
-            border-top: 1px solid rgba(255, 255, 255, 0.06);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-size: 0.75rem;
-            color: var(--text-secondary);
-        }
-
-        .card-filename {
-            font-family: 'JetBrains Mono', monospace;
-            max-width: 220px;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-        }
-
-        /* Modal Viewer */
+        /* Modal */
         .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            background: rgba(10, 15, 30, 0.95);
-            backdrop-filter: blur(12px);
-            z-index: 100;
-            flex-direction: column;
-        }
-
-        .modal.active {
-            display: flex;
-        }
-
-        .modal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 1rem 2rem;
-            background: rgba(15, 23, 42, 0.9);
-            border-bottom: 1px solid var(--border-color);
-        }
-
-        .modal-title-group h2 {
-            font-size: 1.2rem;
-            color: var(--text-primary);
-        }
-
-        .modal-title-group p {
-            font-size: 0.85rem;
-            color: var(--text-secondary);
-        }
-
-        .modal-actions {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-        }
-
-        .modal-btn {
-            background: var(--bg-hover);
-            border: 1px solid var(--border-color);
-            color: var(--text-primary);
-            padding: 0.5rem 0.9rem;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 0.85rem;
-            display: flex;
-            align-items: center;
-            gap: 0.4rem;
-            transition: all 0.2s ease;
-        }
-
-        .modal-btn:hover {
-            background: var(--accent);
-            color: #0f172a;
-            border-color: var(--accent);
-        }
-
-        .modal-body {
-            flex-grow: 1;
-            display: flex;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .modal-img-container {
-            flex-grow: 1;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            display: none; position: fixed; inset: 0; background: rgba(0, 0, 0, 0.88);
+            backdrop-filter: blur(10px); z-index: 1000; align-items: center; justify-content: center;
             padding: 1.5rem;
-            overflow: auto;
         }
-
-        .modal-img {
-            max-width: 100%;
-            max-height: 85vh;
-            object-fit: contain;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
-            border-radius: 8px;
-            transition: transform 0.2s ease;
+        .modal.active { display: flex; }
+        .modal-dialog {
+            background: var(--bg-surface); border: 1px solid var(--border); border-radius: 16px;
+            max-width: 1300px; width: 100%; max-height: 94vh; display: flex;
+            flex-direction: column; overflow: hidden; position: relative;
         }
-
-        .modal-sidebar {
-            width: 420px;
-            background: rgba(15, 23, 42, 0.95);
-            border-left: 1px solid var(--border-color);
-            padding: 2rem;
-            overflow-y: auto;
-            display: flex;
-            flex-direction: column;
-            gap: 1.25rem;
+        .modal-header {
+            padding: 1rem 1.5rem; background: rgba(15, 23, 42, 0.8);
+            border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center;
         }
-
-        .modal-sidebar-section h3 {
-            font-size: 0.8rem;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            color: var(--accent);
-            margin-bottom: 0.5rem;
+        .modal-body {
+            display: grid; grid-template-columns: 1fr 380px; gap: 1.5rem; padding: 1.5rem;
+            overflow-y: auto; max-height: calc(94vh - 70px);
         }
-
-        .modal-nav-arrow {
-            position: absolute;
-            top: 50%;
-            transform: translateY(-50%);
-            background: rgba(15, 23, 42, 0.7);
-            backdrop-filter: blur(8px);
-            border: 1px solid var(--border-color);
-            color: white;
-            width: 48px;
-            height: 48px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            z-index: 10;
+        .modal-img-wrapper {
+            background: #090d16; border-radius: 12px; border: 1px solid var(--border);
+            display: flex; align-items: center; justify-content: center; min-height: 480px; overflow: hidden;
         }
-
-        .modal-nav-arrow:hover {
-            background: var(--accent);
-            color: #0f172a;
-            transform: translateY(-50%) scale(1.1);
+        .modal-img { max-width: 100%; max-height: 78vh; object-fit: contain; }
+        .modal-close {
+            background: transparent; border: none; color: var(--text-secondary);
+            font-size: 1.5rem; cursor: pointer;
         }
-
-        .nav-prev { left: 1.5rem; }
-        .nav-next { right: calc(420px + 1.5rem); }
-
-        @media (max-width: 1024px) {
-            .modal-body {
-                flex-direction: column;
-            }
-            .modal-sidebar {
-                width: 100%;
-                border-left: none;
-                border-top: 1px solid var(--border-color);
-                max-height: 250px;
-            }
-            .nav-next { right: 1.5rem; }
+        @media (max-width: 900px) {
+            .modal-body { grid-template-columns: 1fr; }
         }
     </style>
 </head>
 <body>
-
     <header>
         <div class="header-content">
-            <div class="title-group">
-                <h1>中原大學 電子學(三) 歷屆考題與詳解總目錄</h1>
-                <p>授課教師：薛光華 老師 | 共 52 張試卷、手寫解答、學生原卷與課堂簡報</p>
-            </div>
-            <div class="controls">
-                <div class="search-box">
-                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
-                    <input type="text" id="searchInput" placeholder="搜尋題型、年份、組態 (例: 串並, GIC, 111_1)...">
+            <div class="header-top">
+                <div class="title-group">
+                    <h1>《電子學(三) EE3》歷屆試題與解答全集</h1>
+                    <p>授課教師：薛光華 老師 | 52 張試卷與解答全集・支援【僅題目版】與【解答版】即時對照</p>
                 </div>
-                <div class="stats-badge" id="statsBadge">顯示 52 / 52 張</div>
+                <div class="viewer-mode-bar">
+                    <button class="view-btn active" id="btnViewSol" onclick="setViewerMode('solution')">
+                        <span>📄</span> 完整解答版
+                    </button>
+                    <button class="view-btn" id="btnViewQ" onclick="setViewerMode('question')">
+                        <span>📝</span> 僅題目測驗版
+                    </button>
+                </div>
+            </div>
+
+            <div class="filter-container">
+                <div class="filter-tabs" id="filterTabs">
+                    <button class="filter-btn active" onclick="setFilter('ALL')">全部 (52)</button>
+                    <button class="filter-btn" onclick="setFilter('第一次小考')">第一次小考</button>
+                    <button class="filter-btn" onclick="setFilter('第二次小考')">第二次小考</button>
+                    <button class="filter-btn" onclick="setFilter('第四次小考')">第四次小考</button>
+                    <button class="filter-btn" onclick="setFilter('第五次小考')">第五次小考</button>
+                    <button class="filter-btn" onclick="setFilter('第六次小考')">第六次小考</button>
+                    <button class="filter-btn" onclick="setFilter('期中考')">期中考全集</button>
+                    <button class="filter-btn" onclick="setFilter('專題')">專題與練習</button>
+                    <button class="filter-btn" onclick="setFilter('筆記')">筆記與投影片</button>
+                </div>
+                <div class="search-row">
+                    <input type="text" id="searchInput" class="search-input" placeholder="搜尋題號、回授型態（例如：MOSFET, BJT, Series-Shunt, NIC, GIC, 密勒...）" oninput="applyFilters()">
+                    <a href="index.html" class="filter-btn" style="text-decoration:none;display:inline-flex;align-items:center;gap:6px;">🖨️ 列印決策指南</a>
+                </div>
             </div>
         </div>
     </header>
-
-    <div class="filter-nav">
-        <div class="filter-container" id="filterContainer">
-            <button class="filter-btn active" data-filter="all">全部考題與解答 <span class="filter-count">52</span></button>
-            <button class="filter-btn" data-filter="第一次小考">第一次小考 <span class="filter-count">2</span></button>
-            <button class="filter-btn" data-filter="第二次小考">第二次小考 <span class="filter-count">1</span></button>
-            <button class="filter-btn" data-filter="第四次小考">第四次小考 (跨版對照) <span class="filter-count">7</span></button>
-            <button class="filter-btn" data-filter="第五次小考">第五次小考 <span class="filter-count">4</span></button>
-            <button class="filter-btn" data-filter="第六次小考">第六次小考 (新舊對照) <span class="filter-count">6</span></button>
-            <button class="filter-btn" data-filter="小考練習">小考練習/複習題 <span class="filter-count">4</span></button>
-            <button class="filter-btn" data-filter="期中考">期中考 (兩大梯次+詳解) <span class="filter-count">20</span></button>
-            <button class="filter-btn" data-filter="講義筆記">課堂重點筆記/投影片 <span class="filter-count">6</span></button>
-            <button class="filter-btn" data-filter="版本更新">★ 版本更新與對照專區 ★ <span class="filter-count">16</span></button>
-        </div>
-    </div>
 
     <main>
         <div class="grid" id="imageGrid"></div>
     </main>
 
-    <!-- Modal Lightbox -->
-    <div class="modal" id="imageModal">
-        <div class="modal-header">
-            <div class="modal-title-group">
-                <h2 id="modalTitle">標題</h2>
-                <p id="modalSubtitle">副標題</p>
-            </div>
-            <div class="modal-actions">
-                <button class="modal-btn" id="openRawBtn" onclick="openRawImage()">🔍 另開高解析原圖</button>
-                <button class="modal-btn" onclick="closeModal()">✕ 關閉 (Esc)</button>
-            </div>
-        </div>
-        <div class="modal-body">
-            <div class="modal-nav-arrow nav-prev" onclick="navPrev()">❮</div>
-            <div class="modal-img-container" onclick="closeModalOnBg(event)">
-                <img src="" alt="" class="modal-img" id="modalImg">
-            </div>
-            <div class="modal-nav-arrow nav-next" onclick="navNext()">❯</div>
-            
-            <div class="modal-sidebar">
-                <div class="modal-sidebar-section">
-                    <h3>考試梯次與章節</h3>
-                    <div id="modalExamInfo" style="font-size: 1.1rem; font-weight: 700;"></div>
-                    <div id="modalPageInfo" style="color: var(--accent); font-size: 0.9rem; margin-top: 0.2rem;"></div>
+    <!-- Modal -->
+    <div class="modal" id="imageModal" onclick="closeModalOnBg(event)">
+        <div class="modal-dialog">
+            <div class="modal-header">
+                <div style="display:flex;align-items:center;gap:10px;">
+                    <span id="modalNumber" style="font-family:'JetBrains Mono';font-weight:700;color:var(--accent-cyan);">#01</span>
+                    <h3 id="modalTitle" style="font-size:1.1rem;color:#fff;">標題</h3>
                 </div>
-
-                <div class="modal-sidebar-section">
-                    <h3>詳細題目與推導說明</h3>
-                    <p id="modalDesc" style="color: #e2e8f0; font-size: 0.95rem; line-height: 1.6;"></p>
+                <div style="display:flex;align-items:center;gap:10px;">
+                    <button class="filter-btn" id="modalFlipBtn" onclick="toggleModalFlip()">
+                        🔄 切換看題目 / 看解答
+                    </button>
+                    <button class="modal-close" onclick="closeModal()">✕</button>
                 </div>
-
-                <div class="modal-sidebar-section">
-                    <h3>版本演進 / 教師更新對照</h3>
-                    <div class="card-version-box" id="modalVersionNote" style="font-size: 0.88rem;"></div>
+            </div>
+            <div class="modal-body">
+                <div class="modal-img-wrapper">
+                    <img id="modalImg" class="modal-img" src="" alt="大圖">
                 </div>
-
-                <div class="modal-sidebar-section">
-                    <h3>檔案資訊</h3>
-                    <p style="font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; color: #94a3b8;" id="modalFileInfo"></p>
-                    <p style="font-size: 0.8rem; color: #64748b; margin-top: 0.3rem;" id="modalKeywords"></p>
+                <div style="display:flex;flex-direction:column;gap:12px;">
+                    <div style="background:#090d16;padding:12px;border-radius:8px;border:1px solid var(--border);">
+                        <div style="font-size:12px;color:var(--text-muted);margin-bottom:4px;">類別與年份</div>
+                        <div id="modalCategory" style="font-weight:700;color:#fff;"></div>
+                        <div id="modalYear" style="font-size:13px;color:var(--accent-gold);margin-top:2px;"></div>
+                    </div>
+                    <div style="background:#090d16;padding:12px;border-radius:8px;border:1px solid var(--border);flex:1;">
+                        <div style="font-size:12px;color:var(--text-muted);margin-bottom:6px;">考點與題意解析</div>
+                        <div id="modalDesc" style="font-size:13.5px;color:var(--text-secondary);line-height:1.6;"></div>
+                    </div>
+                    <div id="modalVersionNote" style="background:rgba(245, 158, 11, 0.1);border-left:3px solid var(--accent-gold);padding:10px;border-radius:0 6px 6px 0;font-size:13px;color:#fde68a;"></div>
+                    <div id="modalDownloadBox" style="margin-top:auto;">
+                        <a id="modalDownloadBtn" href="" target="_blank" class="filter-btn" style="background:#10b981;border-color:#10b981;color:#fff;text-decoration:none;display:flex;align-items:center;justify-content:center;gap:6px;padding:10px;">
+                            <span>⚡</span> 雲端直接下載本份考卷 PDF
+                        </a>
+                    </div>
                 </div>
             </div>
         </div>
@@ -563,167 +323,156 @@
 
     <script>
         const rawData = [{"index": 1, "filename": "FB_IMG_1792568117636.jpg", "category": "第四次小考 (Quiz 4)", "exam_type": "第四次小考", "year": "113學年度 第1學期 (113_1)", "type": "官方手寫解答", "page_info": "Page 1 / 題目1", "title": "題目1：雙級 BJT 並串回授放大器交流分析 (前半部)", "desc": "Q1、Q2 BJT 電路分析。判定為並串組態 (Shunt-Series)。求開路迴路等效模型 (A')，計算 Ri'、Ro' 及 A'z = Io'/Is'。", "version_note": "113_1 最新版手寫解答，右下角標註頁碼 [1]。", "keywords": "BJT, 並串, Shunt-Series, 開路迴路, Ri', Ro', A'z"}, {"index": 2, "filename": "FB_IMG_1792568119359.jpg", "category": "第四次小考 (Quiz 4)", "exam_type": "第四次小考", "year": "113學年度 第1學期 (113_1)", "type": "官方手寫解答", "page_info": "Page 2 / 題目1 接續", "title": "題目1：雙級 BJT 並串回授放大器交流分析 (後半部)", "desc": "接續題目1。(c) 回授網路 β = I1/I2 = -R2/(R1+R2)；(d)(e)(f) 計算 Azf、Rif、Rof；(g)(h)(i) 計算整體輸入阻抗 Rin、輸出阻抗 Rout 及電壓增益 Av = Vo/Vs。", "version_note": "113_1 最新版手寫解答，右下角標註頁碼 [2]。", "keywords": "β, Azf, Rif, Rof, Rin, Rout, Av"}, {"index": 3, "filename": "FB_IMG_1792568120859.jpg", "category": "第四次小考 (Quiz 4)", "exam_type": "第四次小考", "year": "113學年度 第1學期 (113_1)", "type": "官方手寫解答", "page_info": "Page 3 / 題目2", "title": "題目2：三級 BJT 串串回授放大器交流分析 (前半部)", "desc": "Q1, Q2, Q3 三級 BJT 電路分析。判定為串串組態 (Series-Series)。求開路迴路等效模型，計算 Ri'、Ro' 及 A'g = Io'/Vs'。", "version_note": "本題與 112_1 小考練習解答題目1 (圖28) 電路完全一致，113_1 編為小考題目2。頁碼 [3]。", "keywords": "三級BJT, 串串, Series-Series, Ri', Ro', A'g"}, {"index": 4, "filename": "FB_IMG_1792568122476.jpg", "category": "第四次小考 (Quiz 4)", "exam_type": "第四次小考", "year": "113學年度 第1學期 (113_1)", "type": "官方手寫解答", "page_info": "Page 4 / 題目2 接續", "title": "題目2：三級 BJT 串串回授放大器交流分析 (後半部)", "desc": "接續題目2。(c) 回授網路 β；(d)(e)(f) 閉迴路參數 Af、Rif、Rof；(g)(h)(i) 整體電路 Rin、Rout、電壓增益 Av = -Af * RL。", "version_note": "與 112_1 小考練習解答第2頁 (圖29) 內容完全一致，頁碼 [4]。", "keywords": "β, Af, Rif, Rof, Rin, Rout, Av"}, {"index": 5, "filename": "FB_IMG_1792568134648.jpg", "category": "第五次小考 (Quiz 5)", "exam_type": "第五次小考", "year": "114學年度 第2學期 (114_2)", "type": "官方手寫解答", "page_info": "題目1", "title": "題目1：NMOS 共閘極 (CG) 放大器交流分析", "desc": "NMOS Common-Gate 放大器電路，含交流小訊號模型與驅動分析。推導 Rin = 1/gm (5%)、Rout = RD // RL (5%)、Av = Vo/Vi = (RD//RL)/(Rsig + 1/gm) (15%) 與兩級電壓比 (Vo/Vg)*(Vg/Vi)。", "version_note": "114_2 標記版本，右上角附完整計分配分標記。", "keywords": "NMOS, CG, Common Gate, Rin, Rout, Av"}, {"index": 6, "filename": "FB_IMG_1792568136115.jpg", "category": "第五次小考 (Quiz 5)", "exam_type": "第五次小考", "year": "114學年度 第2學期 (114_2)", "type": "官方手寫解答", "page_info": "題目2", "title": "題目2：NMOS 放大器 (含源極電阻 Rs, ro ≠ ∞) 交流分析", "desc": "考慮通道長度調變 ro ≠ ∞ 與源極電阻 Rs 之 NMOS 放大器。推導 Rin = R1 // R2 (5%)、Rout = RL // RD // [ro + (1+μ)Rs] (5%) 及整體增益 Av = Vo/Vsig 公式。", "version_note": "114_2 標記版本，詳細標註 μ = gm*ro 及各項配分。", "keywords": "NMOS, ro, Rs, μ=gm*ro, Rin, Rout, Av"}, {"index": 7, "filename": "FB_IMG_1792568137728.jpg", "category": "第五次小考 (Quiz 5)", "exam_type": "第五次小考", "year": "114學年度 第2學期 (114_2)", "type": "官方手寫解答", "page_info": "題目3", "title": "題目3：雙 MOSFET (Q1, Q2) 疊接戴維寧等效電路分析", "desc": "Q1 與 Q2 上下疊接 MOSFET 電路，分別從節點看入進行源極與汲極戴維寧等效 (TEQs, TEQD)。推導輸出電壓 Vo 之嚴謹公式 (25%)。", "version_note": "114_2 標記版本，戴維寧等效 (Thevenin Equivalent) 專題題型。", "keywords": "MOSFET, TEQs, TEQD, 戴維寧等效, Vo"}, {"index": 8, "filename": "FB_IMG_1792568139529.jpg", "category": "第五次小考 (Quiz 5)", "exam_type": "第五次小考", "year": "114學年度 第2學期 (114_2)", "type": "官方手寫解答", "page_info": "題目4", "title": "題目4：三級 MOSFET 放大器 (Q1, Q2, Q3) 交流多級增益分析", "desc": "Q1 (P-MOS/N-MOS), Q2, Q3 組成之三級多級放大器。推導輸入阻抗 Rin = Rs + R1//R2 (5%)、Rout = RL//R10//[ro3+(1+μ3)R9] (5%) 及多級級聯增益 Av = (Vo/Vg3)*(Vg3/Vg2)*(Vg2/Vg1)*(Vg1/Vs) (15%)。", "version_note": "114_2 標記版本，多級串接經典分析題。", "keywords": "三級MOSFET, 多級放大器, Rin, Rout, Av 級聯分解"}, {"index": 9, "filename": "FB_IMG_1792568171678.jpg", "category": "第六次小考 (Quiz 6)", "exam_type": "第六次小考", "year": "114學年度 第1學期 (114_1) [教師更新版]", "type": "官方手寫解答", "page_info": "Page 1 / 題目1 & 題目2", "title": "題目1：OPAMP 差動放大器平衡條件 & 題目2：T型回授網路反相放大器", "desc": "題目1：推導 OPAMP 差動放大器消除共模電壓的平衡條件 R1/R2 = R3/R4 及 Vo = (R2/R1)(V2-V1)；題目2：T 型回授電路 (Ra, Rb, Rc, Rd) 反相增益 Vo/Vi = -(Rb/Ra)[1 + Rd/Rc + Rd/Rb]。", "version_note": "【版本更新】114_1 更新版，與 113_1 (圖25) 題目完全相同，本版增益書寫更工整，頁碼 [1]。", "keywords": "OPAMP, 差動放大器, 平衡條件, T型回授網路, 反相放大器"}, {"index": 10, "filename": "FB_IMG_1792568173161.jpg", "category": "第六次小考 (Quiz 6)", "exam_type": "第六次小考", "year": "114學年度 第1學期 (114_1) [教師更新版]", "type": "官方手寫解答", "page_info": "Page 2 / 題目3", "title": "題目3：負阻抗轉換器 (NIC, Negative Impedance Converter)", "desc": "OPAMP 正負回授組合之負阻抗轉換電路。推導節點電壓 Vo = (1 + R2/R1)Vt、測試電流 It，求出等效輸入阻抗 Rin = Vt/It = -R3*(R1/R2)。若 R1=R2 則 Rin = -R3。", "version_note": "【版本更新】114_1 更新版，與 113_1 (圖26) 題目相同，頁碼 [2]。", "keywords": "NIC, 負阻抗轉換器, Rin = -R3*(R1/R2), OPAMP"}, {"index": 11, "filename": "FB_IMG_1792568174915.jpg", "category": "第六次小考 (Quiz 6)", "exam_type": "第六次小考", "year": "114學年度 第1學期 (114_1) [教師更新版]", "type": "官方手寫解答", "page_info": "Page 3 / 題目4", "title": "題目4：通用阻抗轉換器 (GIC, Generalized Impedance Converter)", "desc": "雙理想 OPAMP 與 5 個阻抗元件 (Za, Zb, Zc, Zd, Ze) 構成之 GIC 電路。推導各節點電壓 Vx, Vy 與各支路電流，證得輸入阻抗 Zin = Vt/It = (Za*Zc*Ze)/(Zb*Zd)。", "version_note": "【版本更新】114_1 更新版，與 113_1 (圖27) 題目相同，此題為濾波器實作必備考題，頁碼 [3]。", "keywords": "GIC, 通用阻抗轉換器, Zin = (Za*Zc*Ze)/(Zb*Zd), 雙OPAMP"}, {"index": 12, "filename": "FB_IMG_1792568226441.jpg", "category": "期中考 (Midterm) 111_1", "exam_type": "期中考", "year": "111學年度 第1學期 (111_1)", "type": "官方手寫解答", "page_info": "Page 1 / 題目1(a)", "title": "題目1(a)：Series-Shunt (串並) 理想與非理想模型推導", "desc": "薛光華老師期中考題目1解答(a)：繪製 Series-Shunt 回授放大器雙埠 h 參數等效電路，寫出 V1 = h11*I1 + h12*V2, I2 = h21*I1 + h22*V2 矩陣方程及簡化模型。", "version_note": "111_1 期中考官方10頁詳解之第 1 頁，右下角標註頁碼 [1]。", "keywords": "Series-Shunt, 串並, h參數, 雙埠網路, 理想與非理想模型"}, {"index": 13, "filename": "FB_IMG_1792568227713.jpg", "category": "期中考 (Midterm) 111_1", "exam_type": "期中考", "year": "111學年度 第1學期 (111_1)", "type": "官方手寫解答", "page_info": "Page 2 / 題目1(b)", "title": "題目1(b)：Shunt-Series (並串) 理想與非理想模型推導", "desc": "薛光華老師期中考題目1解答(b)：繪製 Shunt-Series 回授放大器雙埠 g 參數等效電路，寫出 I1 = g11*V1 + g12*I2, V2 = g21*V1 + g22*I2 方程式及等效圖。", "version_note": "111_1 期中考官方10頁詳解之第 2 頁，右下角標註頁碼 [2]。", "keywords": "Shunt-Series, 並串, g參數, 雙埠網路, 非理想模型"}, {"index": 14, "filename": "FB_IMG_1792568229069.jpg", "category": "期中考 (Midterm) 111_1", "exam_type": "期中考", "year": "111學年度 第1學期 (111_1)", "type": "官方手寫解答", "page_info": "Page 3 / 題目2 (前半部)", "title": "題目2：三級 MOSFET 並並回授放大器分析 (前半部)", "desc": "Q1, Q2, Q3 三級 MOSFET 放大器，外加 R5 回授。判定為並並 (Shunt-Shunt)。求開路迴路等效模型，計算 Ri'、Ro' 及跨阻增益 A'R = Vo'/Is'。", "version_note": "111_1 期中考官方10頁詳解之第 3 頁，右下角標註頁碼 [3]。", "keywords": "三級MOSFET, 並並, Shunt-Shunt, Ri', Ro', A'R"}, {"index": 15, "filename": "FB_IMG_1792568231299.jpg", "category": "期中考 (Midterm) 111_1", "exam_type": "期中考", "year": "111學年度 第1學期 (111_1)", "type": "官方手寫解答", "page_info": "Page 4 / 題目2 (後半部)", "title": "題目2：三級 MOSFET 並並回授放大器分析 (後半部)", "desc": "接續題目2。③ 求 β = I1/V2 = -1/R5；④ 計算 Rif、Rof、Af；⑤ 計算整體電路之輸入阻抗 Rin = Rs*Rif/(Rs-Rif)、Rout = Rof 及電壓增益 Av = Vo/Vs = Af*(1/Rs)。", "version_note": "111_1 期中考官方10頁詳解之第 4 頁，右下角標註頁碼 [4]。", "keywords": "β = -1/R5, Rif, Rof, Af, Rin, Rout, Av"}, {"index": 16, "filename": "FB_IMG_1792568233269.jpg", "category": "期中考 (Midterm) 111_1", "exam_type": "期中考", "year": "111學年度 第1學期 (111_1)", "type": "官方手寫解答", "page_info": "Page 5 / 題目3 (前半部)", "title": "題目3：Q1(BJT) + Q2(MOSFET) 並串回授放大器分析 (前半部)", "desc": "Q1 (BJT) 與 Q2 (MOSFET) 混合放大器。判定為並串組態 (Shunt-Series, AIf = Io/Is)。求解開路模型 Ri'、Ro' 及短路電流增益 A'I = Io'/Is'。", "version_note": "111_1 期中考官方10頁詳解之第 5 頁，右下角標註頁碼 [5]。", "keywords": "BJT+MOSFET, 並串, Shunt-Series, Ri', Ro', A'I"}, {"index": 17, "filename": "FB_IMG_1792568234918.jpg", "category": "期中考 (Midterm) 111_1", "exam_type": "期中考", "year": "111學年度 第1學期 (111_1)", "type": "官方手寫解答", "page_info": "Page 6 / 題目3 (後半部)", "title": "題目3：Q1(BJT) + Q2(MOSFET) 並串回授放大器分析 (後半部)", "desc": "接續題目3。③ β 網路推導；④ 閉迴路參數 Rif、Rof、AIf；⑤ 整體 Rin、Rout、AI = Io/Is 及電壓增益 Av = Vo/Vs = -AI*(RL/Rs)。", "version_note": "111_1 期中考官方10頁詳解之第 6 頁，右下角標註頁碼 [6]。", "keywords": "β, Rif, Rof, AIf, Rin, Rout, AI, Av"}, {"index": 18, "filename": "FB_IMG_1792568236556.jpg", "category": "期中考 (Midterm) 111_1", "exam_type": "期中考", "year": "111學年度 第1學期 (111_1)", "type": "官方手寫解答", "page_info": "Page 7 / 題目4 (前半部)", "title": "題目4：OPAMP 串並回授放大器分析 (含非理想 Rid, ro, μVid) (前半部)", "desc": "OPAMP 內部非理想模型 (Rid, ro, μVid) 與外接電阻 R1, R2, R3。判定為串並 (Series-Shunt, Avf = Vo/Vs)。推導開路迴路 Ri'、Ro' 與電壓增益 A'v = Vo'/Vi'。", "version_note": "111_1 期中考官方10頁詳解之第 7 頁，右下角標註頁碼 [7]。", "keywords": "OPAMP, 串並, Series-Shunt, Rid, ro, μVid, Ri', Ro', A'v"}, {"index": 19, "filename": "FB_IMG_1792568238533.jpg", "category": "期中考 (Midterm) 111_1", "exam_type": "期中考", "year": "111學年度 第1學期 (111_1)", "type": "官方手寫解答", "page_info": "Page 8 / 題目4 (後半部)", "title": "題目4：OPAMP 串並回授放大器分析 (後半部)", "desc": "接續題目4。③ β = R1/(R1+R2)；④ 計算閉迴路參數 Af = A'/(1+A'β)、Rif、Rof；⑤ 計算電路整體輸入阻抗 Rin = Rif - Rs、輸出阻抗 Rout 及閉迴路電壓增益 Av = Vo/Vs = Avf。", "version_note": "111_1 期中考官方10頁詳解之第 8 頁，右下角標註頁碼 [8]。", "keywords": "β, Af, Rif, Rof, Rin, Rout, Av"}, {"index": 20, "filename": "FB_IMG_1792568240979.jpg", "category": "期中考 (Midterm) 111_1", "exam_type": "期中考", "year": "111學年度 第1學期 (111_1)", "type": "官方手寫解答", "page_info": "Page 9 / 題目5 (前半部)", "title": "題目5：三級 BJT 串串回授放大器分析 (前半部)", "desc": "Q1, Q2, Q3 三級 BJT 放大電路，由射極引出回授網路。判定為串串組態 (Series-Series, AG = Io/Vs)。推導開路 Ri'、Ro' 及跨導增益 A'G = Io'/Vs' 完整連乘式。", "version_note": "111_1 期中考官方10頁詳解之第 9 頁，右下角標註頁碼 [9]。", "keywords": "三級BJT, 串串, Series-Series, Ri', Ro', A'G"}, {"index": 21, "filename": "FB_IMG_1792568242361.jpg", "category": "期中考 (Midterm) 111_1", "exam_type": "期中考", "year": "111學年度 第1學期 (111_1)", "type": "官方手寫解答", "page_info": "Page 10 / 題目5 (後半部)", "title": "題目5：三級 BJT 串串回授放大器分析 (後半部)", "desc": "接續題目5。③ β 回授網路方程式；④ 閉迴路參數 Rif、Rof、Agf；⑤ 整體 Rin、Rout、電壓增益 Av = -Af*RL 及電流增益 AI = Af*(Rs + Rin)。", "version_note": "111_1 期中考官方10頁詳解之第 10 頁完結，右下角標註頁碼 [10]。", "keywords": "β, Rif, Rof, Agf, Rin, Rout, Av, AI"}, {"index": 22, "filename": "FB_IMG_1792568244246.jpg", "category": "第四次小考 (Quiz 4)", "exam_type": "第四次小考", "year": "111學年度 第1學期 (111_1)", "type": "官方手寫解答", "page_info": "Page 1 / 題目1", "title": "題目1：理想運算放大器 (OPAMP) 五大理想特性", "desc": "111_1 第四次小考題目1手寫解答：理想 OPAMP 模型圖與 5 大特性整理：(1) Rin = ∞、(2) Rout = 0、(3) 開路電壓增益 A = ∞、(4) 頻寬 BW = ∞、(5) 共模斥拒比 CMRR = ∞。", "version_note": "【跨年份版本】111_1 版第四次小考著重於 OPAMP 基礎與組態，與 113_1 版著重多級晶體回授不同。頁碼 [1]。", "keywords": "理想OPAMP, Rin=∞, Rout=0, A=∞, BW=∞, CMRR=∞"}, {"index": 23, "filename": "FB_IMG_1792568246552.jpg", "category": "第四次小考 (Quiz 4)", "exam_type": "第四次小考", "year": "111學年度 第1學期 (111_1)", "type": "官方手寫解答", "page_info": "Page 2 / 題目2", "title": "題目2：理想 OPAMP 非反相放大器分析", "desc": "非反相放大器電路分析。推導 (a) 輸入阻抗 Rin = ∞、(b) 輸出阻抗 Rout = 0、(c) 電壓增益 Vo/Vi = 1 + R2/R1 嚴謹推導過程。", "version_note": "111_1 版第四次小考第 2 頁，右下角標註頁碼 [2]。", "keywords": "OPAMP, 非反相放大器, Rin=∞, Rout=0, Vo/Vi = 1+R2/R1"}, {"index": 24, "filename": "FB_IMG_1792568248295.jpg", "category": "第四次小考 (Quiz 4)", "exam_type": "第四次小考", "year": "111學年度 第1學期 (111_1)", "type": "官方手寫解答", "page_info": "Page 3 / 題目3", "title": "題目3：理想 OPAMP T型回授網路反相放大器推導", "desc": "含 T 型電阻回授網路 (R2, R3, R4) 之反相放大器。利用虛擬接地推導 I1, Vx, I3, I4，求出電壓增益 Vo/Vi = -(R2/R1)[1 + R4/R3 + R4/R2]。", "version_note": "111_1 版第四次小考第 3 頁，右下角標註頁碼 [3]。", "keywords": "OPAMP, T型回授, 反相放大器, Vo/Vi"}, {"index": 25, "filename": "FB_IMG_1792568337420.jpg", "category": "第六次小考 (Quiz 6)", "exam_type": "第六次小考", "year": "113學年度 第1學期 (113_1) [原始版本]", "type": "官方手寫解答", "page_info": "Page 1 / 題目1 & 題目2", "title": "題目1：OPAMP 差動放大器平衡條件 & 題目2：T型網路反相放大器", "desc": "113_1 電子學(三)第六次小考解答：題目1 差動放大器平衡條件推導 R1/R2 = R3/R4；題目2 T型回授網路反相放大器步驟化推導 (1. I1 2. Vx 3. I2 4. Vo)。", "version_note": "【版本對照】113_1 原始手寫版本，題目與 114_1 (圖09) 一模一樣，此處保留原檔，頁碼 [1]。", "keywords": "OPAMP, 差動放大器, 平衡條件, T型回授, 113_1版"}, {"index": 26, "filename": "FB_IMG_1792568339050.jpg", "category": "第六次小考 (Quiz 6)", "exam_type": "第六次小考", "year": "113學年度 第1學期 (113_1) [原始版本]", "type": "官方手寫解答", "page_info": "Page 2 / 題目3", "title": "題目3：負阻抗轉換器 (NIC) 求輸入阻抗 Rin", "desc": "113_1 第六次小考題目3：NIC 電路分析，推導 Vt/It = -R3*(R1/R2) = Rin，當 R1=R2 時 Rin = -R3。", "version_note": "【版本對照】113_1 原始手寫版本，與 114_1 (圖10) 完全一致，頁碼 [2]。", "keywords": "NIC, 負阻抗轉換器, Rin = -R3, 113_1版"}, {"index": 27, "filename": "FB_IMG_1792568340599.jpg", "category": "第六次小考 (Quiz 6)", "exam_type": "第六次小考", "year": "113學年度 第1學期 (113_1) [原始版本]", "type": "官方手寫解答", "page_info": "Page 3 / 題目4", "title": "題目4：通用阻抗轉換器 (GIC) 求輸入阻抗 Zin", "desc": "113_1 第六次小考題目4：雙 OPAMP GIC 電路，分 6 大步驟逐步推導 Is, Vx, I3, Vy, It，求得 Zin = (Za*Zc*Ze)/(Zb*Zd)。", "version_note": "【版本對照】113_1 原始手寫版本，步驟列式極度清晰 (1~6步)，與 114_1 (圖11) 互為對照，頁碼 [3]。", "keywords": "GIC, 通用阻抗轉換器, Zin, 雙OPAMP, 113_1版"}, {"index": 28, "filename": "FB_IMG_1792568362467.jpg", "category": "小考練習題 (Quiz Practice)", "exam_type": "小考練習題", "year": "112學年度 第1學期 (112_1)", "type": "練習題解答", "page_info": "Page 1 / 題目1", "title": "題目1：三級 BJT 串串回授放大器練習 (前半部)", "desc": "標題「112_1 電子學小考練習解答 題目1」。Q1, Q2, Q3 三級 BJT 串串回授放大器分析，推導 Ri'、Ro' 及跨導增益 A'g。", "version_note": "【題源演變】此題為老師歷屆經典考題，於 112_1 為小考練習題1，於 113_1 成為正式第四次小考題目2 (圖03)。頁碼 [1]。", "keywords": "112_1, 小考練習, 三級BJT, 串串, Ri', Ro', A'g"}, {"index": 29, "filename": "FB_IMG_1792568364111.jpg", "category": "小考練習題 (Quiz Practice)", "exam_type": "小考練習題", "year": "112學年度 第1學期 (112_1)", "type": "練習題解答", "page_info": "Page 2 / 題目1 接續", "title": "題目1：三級 BJT 串串回授放大器練習 (後半部)", "desc": "接續題目1。(c) β 網路；(d)(e)(f) 閉迴路參數 Af、Rif、Rof；(g)(h)(i) 整體電路 Rin、Rout 及電壓增益 Av = -Af*RL。", "version_note": "與 113_1 第四次小考第4頁 (圖04) 內容完全一致，頁碼 [2]。", "keywords": "112_1, β, Af, Rif, Rof, Rin, Rout, Av"}, {"index": 30, "filename": "FB_IMG_1792568415949.jpg", "category": "回授專題複習 (Review Notes)", "exam_type": "經典複習題", "year": "經典題庫 (彩色精讀版)", "type": "彩色筆手寫詳解", "page_info": "Page 1", "title": "經典題：Q1(BJT) + Q2(MOSFET) 並串型回授放大器詳解 (前半部)", "desc": "彩筆標註詳解。電路包含 Q1 (BJT) 與 Q2 (MOSFET)，求 Rin、Rout、Av = Vo/Vs (ro1, ro2 ≠ ∞)。完整步驟：1. 並串 type 2. A' 開路迴路模型、Ri'、Ro'、A'z 3. β 網路推導。", "version_note": "彩色劃記重點與測試訊號方向，標註 p1，適合快速複習並串回授完整架構。", "keywords": "彩色筆, BJT+MOSFET, 並串, 開路模型, β, p1"}, {"index": 31, "filename": "FB_IMG_1792568417921.jpg", "category": "回授專題複習 (Review Notes)", "exam_type": "經典複習題", "year": "經典題庫 (彩色精讀版)", "type": "彩色筆手寫詳解", "page_info": "Page 2", "title": "經典題：Q1(BJT) + Q2(MOSFET) 並串型回授放大器詳解 (後半部)", "desc": "接續第1頁。步驟 4：計算閉迴路參數 Rif = Ri'/(1+A'z*β)、Rof = (1+A'z*β)*Ro'、Af = A'z/(1+A'z*β)；步驟 5：推導整體 Rin = Rs*Rif/(Rs-Rif)、Rout = RL // (Rof - RL)、Av = -Af*(RL/Rs)。", "version_note": "彩色標註 p2，結尾附推導完成符號 #。", "keywords": "Rif, Rof, Af, Rin, Rout, Av, p2"}, {"index": 32, "filename": "FB_IMG_1792568479216.jpg", "category": "課堂核心筆記 (Class Notes)", "exam_type": "課堂筆記", "year": "課程核心筆記", "type": "活頁筆記本手寫", "page_info": "Page 1", "title": "負回授特性筆記：1. 降低增益靈敏度 & 2. 頻寬展延", "desc": "筆記標題「Some Properties of Negative Feedback」。1. Gain Desensitivity (增益靈敏度)：微分推導 dAf/Af = [1/(1+Aβ)] * (dA/A)，證明加了負回授後增益波動縮小；2. Bandwidth Extension (頻寬展延)：高頻極點從 ωH 延伸至 ωH*(1+Am*β)，圖解增益頻寬乘積特性。", "version_note": "期中考必考名詞解釋與推導題，字跡工整。", "keywords": "Gain Desensitivity, 增益靈敏度, Bandwidth Extension, 頻寬展延"}, {"index": 33, "filename": "FB_IMG_1792568480677.jpg", "category": "課堂核心筆記 (Class Notes)", "exam_type": "課堂筆記", "year": "課程核心筆記", "type": "活頁筆記本手寫", "page_info": "Page 2", "title": "負回授特性筆記：3. 降低雜訊 & 4. 減少非線性失真 + 四大特性總結", "desc": "3. Noise Reduction：推導訊噪比 SNR 提高 A2 倍之雙級放大器模型；4. Reduction in nonlinear distortion：圖解傳遞特性曲線在加入負回授後線性度大幅改善。右側方框總結四大好處，並有備忘「上傳講義、TA借教室」。", "version_note": "與圖32合為完整的負回授四大特性複習重點。", "keywords": "Noise Reduction, 訊噪比, 非線性失真, 四大特性總結"}, {"index": 34, "filename": "FB_IMG_1792568483147.jpg", "category": "中原大學官方講義 (Official Slides)", "exam_type": "講義投影片", "year": "中原大學 EMC Lab 投影片", "type": "官方教材 PPT", "page_info": "Slide 1 (P.2)", "title": "四大理想回授組態：Series-Shunt (串並) 模型與 Driving Law 推導", "desc": "中原大學 Advanced Packaging and EMC Lab 官方投影片。講解 Series-Shunt (串並) 理想回授組態，使用 Driving Law (令 V 與 I 測試源) 分別推導 Af = Av/(1+βAv)、Rif = (1+Avβ)Ri (串聯阻抗增加)、Rof = Ro/(1+Avβ) (並聯阻抗降低)。", "version_note": "薛光華老師課堂授課投影片原檔截圖，頁碼 2。", "keywords": "CYCU, Series-Shunt, 串並, Driving Law, Rif, Rof, Af"}, {"index": 35, "filename": "FB_IMG_1792568484980.jpg", "category": "中原大學官方講義 (Official Slides)", "exam_type": "講義投影片", "year": "中原大學 EMC Lab 投影片", "type": "官方教材 PPT", "page_info": "Slide 2 (P.3)", "title": "四大理想回授組態：Series-Series (串串) 模型與 Driving Law 推導", "desc": "Series-Series (串串) 理想跨導回授組態。推導跨導增益 Af = Ag/(1+βAg)、輸入阻抗 Rif = (1+Agβ)Ri (串增)、輸出阻抗 Rof = (1+Agβ)Ro (串增)。", "version_note": "官方投影片第 3 頁，清晰標示串聯增加 (1+Aβ) 倍之規律。", "keywords": "CYCU, Series-Series, 串串, Driving Law, 跨導回授"}, {"index": 36, "filename": "FB_IMG_1792568486544.jpg", "category": "中原大學官方講義 (Official Slides)", "exam_type": "講義投影片", "year": "中原大學 EMC Lab 投影片", "type": "官方教材 PPT", "page_info": "Slide 3 (P.4)", "title": "四大理想回授組態：Shunt-Shunt (並並) 模型與 Driving Law 推導", "desc": "Shunt-Shunt (並並) 理想跨阻回授組態。推導跨阻增益 Af = Ar/(1+βAr)、輸入阻抗 Rif = Ri/(1+Arβ) (並減)、輸出阻抗 Rof = Ro/(1+Arβ) (並減)。", "version_note": "官方投影片第 4 頁，標示並聯除以 (1+Aβ) 倍之規律。", "keywords": "CYCU, Shunt-Shunt, 並並, Driving Law, 跨阻回授"}, {"index": 37, "filename": "FB_IMG_1792568488176.jpg", "category": "中原大學官方講義 (Official Slides)", "exam_type": "講義投影片", "year": "中原大學 EMC Lab 投影片", "type": "官方教材 PPT", "page_info": "Slide 4 (P.5)", "title": "四大理想回授組態：Shunt-Series (並串) 模型與 Driving Law 推導", "desc": "Shunt-Series (並串) 理想電流回授組態。推導電流增益 Af = Ai/(1+βAi)、輸入阻抗 Rif = Ri/(1+Aiβ) (並減)、輸出阻抗 Rof = (1+Aiβ)Ro (串增)。", "version_note": "官方投影片第 5 頁，四大回授組態完整全套。", "keywords": "CYCU, Shunt-Series, 並串, Driving Law, 電流回授"}, {"index": 38, "filename": "FB_IMG_1792568499656.jpg", "category": "期中考 (Midterm) 111_1", "exam_type": "期中考", "year": "111學年度 第1學期 (11/07 第1節)", "type": "官方試卷本體", "page_info": "Page 1 (共2頁之第1頁)", "title": "期中考試卷 (11/07 第1節)：第1題 ~ 第5題 試題", "desc": "中原大學考試命題紙，開課班級：電子三甲，教師：薛光華，代碼：EL255G。第1題：繪製理想回授模型 (Series-Shunt, Shunt-Series) (10%)；第2題：非理想模型與方程式 (Shunt-Shunt, Shunt-Series) (10%)；第3題：Fig.1 三級 MOSFET 回授 (20%)；第4題：Fig.2 雙級 MOSFET 回授 (20%)；第5題：Fig.3 雙級 BJT 回授 (20%)。", "version_note": "【對照關係】此即圖 12~21 官方手寫解答所對應之原始試卷！頁面註記「我們瞭解人人各有不同之稟賦...」。", "keywords": "試卷, 薛光華, 11/07, EL255G, 第1~5題"}, {"index": 39, "filename": "FB_IMG_1792568501057.jpg", "category": "期中考 (Midterm) 111_1", "exam_type": "期中考", "year": "111學年度 第1學期 (11/07 第1節)", "type": "官方試卷本體", "page_info": "Page 2 (共2頁之第2頁)", "title": "期中考試卷 (11/07 第1節)：第6題 試題", "desc": "試卷第 2 頁。第6題：For the circuit shown in Fig.4, (a) what type of the circuit? Please drive the (b) Av = Vo/Vs (c) Rin (d) Rout, if ro1, ro2, ro3 ≈ ∞ (20%)。電路為三級 BJT 射極回授放大器。", "version_note": "11/07 第1節期中考試卷完結頁，滿分 100 分。", "keywords": "試卷, Fig.4, 三級BJT, 第6題, 滿分100"}, {"index": 40, "filename": "FB_IMG_1792568530786.jpg", "category": "題庫試卷 (Question Bank)", "exam_type": "歷屆題庫卷", "year": "歷屆期中考題庫", "type": "官方試卷本體", "page_info": "Page 2 (共2頁之第2頁)", "title": "期中題庫試卷：第6題 ~ 第8題 試題", "desc": "本份試題共2頁之第2頁。第6題：雙級 BJT 帶回授求 Rin, Rout, Av (10%)；第7題：MOSFET 電路以 feedback method 求 Rin, Rout, Vo/Vi, Io/Vi (10%)；第8題：雙 BJT 差動/電流源電路求 Rin, Rout, Av (10%)。", "version_note": "歷屆考古題題庫卷第 2 頁，低解析度但題型珍貴，與圖41成對。", "keywords": "題庫, 考古題, 第6~8題, 雙級BJT, MOSFET feedback"}, {"index": 41, "filename": "FB_IMG_1792568533137.jpg", "category": "題庫試卷 (Question Bank)", "exam_type": "歷屆題庫卷", "year": "歷屆期中考題庫", "type": "官方試卷本體", "page_info": "Page 1 (共2頁之第1頁)", "title": "期中題庫試卷：第1題 ~ 第5題 試題", "desc": "中原大學考試命題紙。第1題：回授等效方塊圖推導 Avf = Xo/Xs (10%)；第2題：已知 gm, ro，以 (1) Miller's theorem 與 (2) Feedback method 兩種方法求解 Rin, Ro, Av 並比較兩者差異 (20%)；第3題：三級 BJT 電路 (10%)；第4題：雙 BJT 電路 (10%)；第5題：Fig.2 回授放大器推導 Rif, Rof, Af (10%)。", "version_note": "題庫卷第 1 頁，第2題的密勒定理 (Miller's theorem) 與回授法比較為極重要考點。", "keywords": "題庫, 密勒定理, Miller, 方塊圖推導, 第1~5題"}, {"index": 42, "filename": "FB_IMG_1792568553405.jpg", "category": "期中考 (Midterm) 11/08版", "exam_type": "期中考", "year": "111/112學年度 (11/08 第4節)", "type": "官方試卷本體", "page_info": "Page 1 (共2頁之第1頁)", "title": "期中考試卷 (11/08 第4節 第二版/另一班)：第1題 ~ 第5題 試題", "desc": "考試時間：11月08日 第4節，電子三甲，薛光華老師。第1題：理想 Series-Shunt 模型 (5%)；第2題：非理想 Shunt-Series 模型與方程 (5%)；第3題：Fig.1 三級 BJT 回授放大器 (25%)；第4題：Fig.2 雙級 MOSFET 回授放大器 (20%)；第5題：Fig.3 雙級 BJT 回授放大器 (20%)。", "version_note": "【版本差異】注意！此卷為 11/08 第4節版本，題目的順序與配分和 11/07 第1節卷 (圖38) 有所調換 (例如題3在11/07是MOSFET，此處變為BJT)！", "keywords": "11/08試卷, 電子三甲, 薛光華, 配分調整, 第1~5題"}, {"index": 43, "filename": "FB_IMG_1792568554970.jpg", "category": "期中考 (Midterm) 11/08版", "exam_type": "期中考", "year": "111/112學年度 (11/08 第4節)", "type": "官方試卷本體", "page_info": "Page 2 (共2頁之第2頁)", "title": "期中考試卷 (11/08 第4節 第二版/另一班)：第6題 試題", "desc": "本份試題共2頁之第2頁。第6題：For the circuit shown in Fig.4, (a) what type of the FB circuit? Please drive the (b) Av = Vo/Vs (c) Rin (d) Rout, if we know gm1, gm2, gm3, ro1, ro2, ro3 ≠ ∞ (25%)。電路為三級 MOSFET 回授放大器。", "version_note": "11/08 第4節試卷完結頁，與圖42成對。對應解答為圖44~49。", "keywords": "11/08試卷, Fig.4, 三級MOSFET, 第6題 (25%)"}, {"index": 44, "filename": "FB_IMG_1792568557131.jpg", "category": "期中考 (Midterm) 11/08版", "exam_type": "期中考", "year": "111/112學年度 (11/08 第4節)", "type": "官方手寫解答", "page_info": "解答 P.1 / 題1 & 題2", "title": "11/08 期中考解答：第1題 理想串並模型 & 第2題 非理想並串模型", "desc": "木桌拍攝之手寫解答。1. ideal 串並 (Series-Shunt) 回授模型與輸出入阻抗；2. non-ideal 並串 (Shunt-Series) g 參數雙埠模型與方程式 I1 = g11*V1 + g12*I2, V2 = g21*V1 + g22*I2。", "version_note": "【對照關係】對應 11/08 試卷 (圖42) 之第1題與第2題解答。", "keywords": "11/08解答, 理想串並, 非理想並串, g參數, 題1與題2"}, {"index": 45, "filename": "FB_IMG_1792568558674.jpg", "category": "期中考 (Midterm) 11/08版", "exam_type": "期中考", "year": "111/112學年度 (11/08 第4節)", "type": "官方手寫解答", "page_info": "解答 P.2 / 題3", "title": "11/08 期中考解答：第3題 三級 BJT 串並回授放大器完整分析", "desc": "對應 11/08 卷第3題。三級 BJT 電路分析：(a) 判定串並 (Series-Shunt)；求 Ri1, Ri2, Ri3, Ro', Rin', Rout'；推導開路增益 A'v；β = R1/(R1+R2)；求 Rif, Rof, Avf；(b) Av = Avf；(c) Rin = Rif - Rs；(d) Rout = RL*Rof/(RL-Rof)；(e) Ai = Avf * (Rif/RL)。", "version_note": "完整解答，各小題步驟齊全清晰。", "keywords": "三級BJT, 串並, A'v, β, Rif, Rof, Avf, Rin, Rout, Ai"}, {"index": 46, "filename": "FB_IMG_1792568560220.jpg", "category": "期中考 (Midterm) 11/08版", "exam_type": "期中考", "year": "111/112學年度 (11/08 第4節)", "type": "官方手寫解答", "page_info": "解答 P.3 / 題4", "title": "11/08 期中考解答：第4題 雙級 MOSFET 並串回授放大器完整分析", "desc": "對應 11/08 卷第4題。雙級 MOSFET (ro1, ro2 ≠ ∞)：(a) 判定並串 (2%)；求開路模型 A'z = Io'/Is' (4%)；求 β = -R1/(R1+R2) (1%)；求 Rif, Rof, AIf (3%)；(b) Av = -Azf*(RD2/Rs) (2%)；(c) Rin = Rs*Rif/(Rs-Rif) (2%)；(d) Rout = Rof - RD2 (2%)。", "version_note": "有詳細計分百分比註記，解法嚴密。", "keywords": "雙級MOSFET, 並串, A'z, β, Rif, Rof, Azf, Av, Rin, Rout"}, {"index": 47, "filename": "FB_IMG_1792568561851.jpg", "category": "期中考 (Midterm) 11/08版", "exam_type": "期中考", "year": "111/112學年度 (11/08 第4節)", "type": "官方手寫補充解答", "page_info": "解答 P.4 / 題4 另解", "title": "11/08 期中考解答：第4題 A'I 另解推導", "desc": "紅筆標註「第4題 A'I 另解」。先求電壓增益 A'v = (Vo'/Vg2)*(Vg2/Vg1)，再利用 A'I = -A'v * (Rin'/RD2) 進行轉換求解。", "version_note": "【教師補充更新】老師針對題目4提供的第二種思考解法 (另解)，避免複雜的電流分流計算。", "keywords": "另解, 題4另解, A'I, A'v轉換法"}, {"index": 48, "filename": "FB_IMG_1792568563003.jpg", "category": "期中考 (Midterm) 11/08版", "exam_type": "期中考", "year": "111/112學年度 (11/08 第4節)", "type": "官方手寫解答", "page_info": "解答 P.5 / 題5", "title": "11/08 期中考解答：第5題 雙級 BJT 並並回授放大器完整分析", "desc": "對應 11/08 卷第5題。Q1, Q2 雙級 BJT (ro1, ro2 ≠ ∞) 含 Rf 回授：(a) 判定並並 (Shunt-Shunt)；求 Ri', Ro', A'r = Vo'/Is'；β = -1/Rf；求 Rif, Rof, Arf；(b) Av = Arf * (1/Rs)；(c) Rin = Rif - Rs；(d) Rout = RL*Rof/(RL-Rof)；(e) Ai = Av*(Rs/RL)。", "version_note": "雙級 BJT 經典並並架構解答。", "keywords": "雙級BJT, 並並, Shunt-Shunt, A'r, β = -1/Rf, Rif, Rof, Arf"}, {"index": 49, "filename": "FB_IMG_1792568564549.jpg", "category": "期中考 (Midterm) 11/08版", "exam_type": "期中考", "year": "111/112學年度 (11/08 第4節)", "type": "官方手寫補充解答", "page_info": "解答 P.6 / 題5 另解", "title": "11/08 期中考解答：第5題 A'I 另解推導", "desc": "紅筆標註「第5題 A'I 另解」。先求兩級電壓增益 A'v = (Vo'/Vb2)*(Vb2/Vb1)，再以 A'I = A'v * Rin' 快速轉換求出開路跨阻與電流增益。", "version_note": "【教師補充更新】老師針對題目5提供的第二種思考解法 (另解)。", "keywords": "另解, 題5另解, A'I, A'v*Rin'"}, {"index": 50, "filename": "夸克扫描王_電子學(三)第一次小考姓名__001.jpg", "category": "第一次小考 (Quiz 1)", "exam_type": "第一次小考", "year": "113學年度 (學生作答原卷)", "type": "學生小考試卷", "page_info": "Page 1 / 題1 & 題2", "title": "電子學(三) 第一次小考：題1 & 題2 (學號 11326144，得分 67)", "desc": "中原大學電子學(三)第一次小考真實學生考卷。1. Please determine which feedback mode this circuit belongs to? (10%) Fig.1 (OPAMP電路，作答「串並」獲滿分)；2. Please determine which feedback mode this circuit belongs to? (10%) Fig.2 (雙BJT電路，作答「並串」獲滿分)。", "version_note": "夸克掃描王高解析度掃描件，保留老師紅筆批改勾選痕跡。", "keywords": "第一次小考, 學生考卷, 11326144, 串並, 並串, 評分67"}, {"index": 51, "filename": "夸克扫描王_電子學(三)第一次小考姓名__002.jpg", "category": "第一次小考 (Quiz 1)", "exam_type": "第一次小考", "year": "113學年度 (學生作答原卷)", "type": "學生小考試卷", "page_info": "Page 2 / 題3 & 題4", "title": "電子學(三) 第一次小考：題3 (理想回授模型推導) & 題4 (方塊圖增益推導)", "desc": "接續第一次小考第 2 頁。3. Please draw the ideal circuit model of feedback circuit and derive the Rif, Rof, Af (60%): (1) Series-Shunt (30%), (2) Shunt-Shunt (30%)；4. Please derive the Af (= Xo/Xs) of the Fig.3 (20%) 回授方塊圖增益閉迴路推導。", "version_note": "完整學生手寫推導與作答過程。", "keywords": "第一次小考, Series-Shunt, Shunt-Shunt, 理想模型, 方塊圖推導"}, {"index": 52, "filename": "夸克扫描王_電子學(三)第一次小考姓名__003.jpg", "category": "第二次小考 (Quiz 2)", "exam_type": "第二次小考", "year": "113學年度 (學生作答原卷)", "type": "學生小考試卷", "page_info": "Page 1 / 題1", "title": "電子學(三) 第二次小考：題1 非理想實用回授模型推導 (Series-Series / Shunt-Series)", "desc": "【特別注意：檔名雖被掃描軟體誤命名為第一次小考__003，但卷頭大字清楚印刷「電子學(三) 第二次小考」！】題目：1. Please draw the practical circuit model of feedback circuit and derive the equation for practical circuit model of feedback circuit (100%): (1) Series-Series (50%), (2) Shunt-Series (50%)。含學生繪製雙埠二端口等效電路與推導。", "version_note": "【檔名更正備註】此張實為「第二次小考」！考非理想/實用 (practical) 雙埠二端口模型 (Z參數/G參數)。", "keywords": "第二次小考, 檔名誤植修正, Series-Series, Shunt-Series, practical model"}];
-        const BASE_IMAGE_PATH = './Z62 FILE RECEIVER BOT/downloads/2026-10-21_154348 電子學三 EE3 考試題目 FB 整理/';
-        let currentFilteredData = [...rawData];
-        let currentIndex = 0;
-        let currentFilter = 'all';
+        const idxToPdf = {"50": "quiz1", "51": "quiz1", "52": "quiz2", "1": "quiz4_113", "2": "quiz4_113", "3": "quiz4_113", "4": "quiz4_113", "5": "quiz5_114", "6": "quiz5_114", "7": "quiz5_114", "8": "quiz5_114", "9": "quiz6_114", "10": "quiz6_114", "11": "quiz6_114", "22": "quiz4_111", "23": "quiz4_111", "24": "quiz4_111", "25": "quiz6_113", "26": "quiz6_113", "27": "quiz6_113", "28": "topics_feedback", "29": "topics_feedback", "30": "topics_feedback", "31": "topics_feedback", "32": "notes_slides", "33": "notes_slides", "34": "notes_slides", "35": "notes_slides", "36": "notes_slides", "37": "notes_slides", "38": "midterm_batchA", "39": "midterm_batchA", "12": "midterm_batchA", "13": "midterm_batchA", "14": "midterm_batchA", "15": "midterm_batchA", "16": "midterm_batchA", "17": "midterm_batchA", "18": "midterm_batchA", "19": "midterm_batchA", "20": "midterm_batchA", "21": "midterm_batchA", "40": "midterm_bank", "41": "midterm_bank", "42": "midterm_batchB", "43": "midterm_batchB", "44": "midterm_batchB", "45": "midterm_batchB", "46": "midterm_batchB", "47": "midterm_batchB", "48": "midterm_batchB", "49": "midterm_batchB"};
+        const enMap = {"all_recommended": {"sol_en": "00_EE3_Recommended_Exams_and_Solutions_Complete_Package_RECOMMENDED_ALL.pdf", "q_en": "00_EE3_Recommended_Exams_Blank_Worksheets_Complete_Package_QUESTIONS_ONLY.pdf"}, "quiz1": {"sol_en": "01_EE3_Quiz_01_AcademicYear113_Student_Exam_Paper.pdf", "q_en": "01_EE3_Quiz_01_AcademicYear113_Blank_Question_Paper.pdf"}, "quiz2": {"sol_en": "02_EE3_Quiz_02_AcademicYear113_TwoPort_Feedback_Student_Paper.pdf", "q_en": "02_EE3_Quiz_02_AcademicYear113_TwoPort_Feedback_Blank_Question_Paper.pdf"}, "quiz4_113": {"sol_en": "03_EE3_Quiz_04_113_1_Updated_MultiStage_BJT_Feedback_Solutions.pdf", "q_en": "03_EE3_Quiz_04_113_1_Updated_MultiStage_BJT_Feedback_Blank_Worksheet.pdf"}, "quiz4_111": {"sol_en": "04_EE3_Quiz_04_111_1_Legacy_OPAMP_Characteristics_and_Analysis.pdf", "q_en": "04_EE3_Quiz_04_111_1_Legacy_OPAMP_Blank_Worksheet.pdf"}, "quiz5_114": {"sol_en": "05_EE3_Quiz_05_114_2_MOSFET_Amplifier_and_Thevenin_Solutions.pdf", "q_en": "05_EE3_Quiz_05_114_2_MOSFET_Amplifier_and_Thevenin_Blank_Worksheet.pdf"}, "quiz6_114": {"sol_en": "06_EE3_Quiz_06_114_1_Teacher_Updated_OPAMP_Diff_NIC_and_GIC_Solutions.pdf", "q_en": "06_EE3_Quiz_06_114_1_Teacher_Updated_OPAMP_Diff_NIC_and_GIC_Blank_Worksheet.pdf"}, "quiz6_113": {"sol_en": "07_EE3_Quiz_06_113_1_Original_Handwritten_Version.pdf", "q_en": "07_EE3_Quiz_06_113_1_Original_Blank_Worksheet.pdf"}, "midterm_batchA": {"sol_en": "08_EE3_Midterm_BatchA_111_1_Exam_Paper_and_Official_10Pages_Solutions.pdf", "q_en": "08_EE3_Midterm_BatchA_111_1_Official_Blank_Exam_Paper.pdf"}, "midterm_batchB": {"sol_en": "09_EE3_Midterm_BatchB_Exam_Paper_and_Handwritten_Solutions_with_Alternative_Derivations.pdf", "q_en": "09_EE3_Midterm_BatchB_Official_Blank_Exam_Paper.pdf"}, "midterm_bank": {"sol_en": "10_EE3_Midterm_Question_Bank_Official_Blank_Exam_Paper.pdf", "q_en": "10_EE3_Midterm_Question_Bank_Blank_Worksheet.pdf"}, "topics_feedback": {"sol_en": "11_EE3_Feedback_Special_Topic_and_Quiz_Practice_Color_Solutions.pdf", "q_en": "11_EE3_Feedback_Special_Topic_and_Quiz_Practice_Blank_Worksheet.pdf"}, "notes_slides": {"sol_en": "12_EE3_Negative_Feedback_Core_Notes_and_Official_Slides.pdf", "q_en": "12_EE3_Negative_Feedback_Self_Test_Blank_Worksheet.pdf"}};
+        const GITHUB_DOWNLOAD_BASE = "https://github.com/stevenchu152587890625-tech/white-noise/releases/download/nothing/";
+
+        let globalViewerMode = 'solution'; // 'solution' or 'question'
+        let currentFilter = 'ALL';
+        let currentModalItem = null;
+        let currentModalMode = 'solution';
+
+        const cardModeOverrides = {};
+
+        function setViewerMode(mode) {
+            globalViewerMode = mode;
+            const btnSol = document.getElementById('btnViewSol');
+            const btnQ = document.getElementById('btnViewQ');
+            if (mode === 'question') {
+                btnSol.classList.remove('active');
+                btnQ.classList.add('active', 'q-active');
+            } else {
+                btnQ.classList.remove('active', 'q-active');
+                btnSol.classList.add('active');
+            }
+            renderGrid(getFilteredData());
+        }
+
+        function setFilter(cat) {
+            currentFilter = cat;
+            document.querySelectorAll('.filter-tabs .filter-btn').forEach(btn => btn.classList.remove('active'));
+            event.currentTarget.classList.add('active');
+            renderGrid(getFilteredData());
+        }
+
+        function getFilteredData() {
+            const kw = document.getElementById('searchInput').value.trim().toLowerCase();
+            return rawData.filter(item => {
+                if (currentFilter !== 'ALL') {
+                    if (currentFilter === '第一次小考' && !item.category.includes('第一次')) return false;
+                    if (currentFilter === '第二次小考' && !item.category.includes('第二次')) return false;
+                    if (currentFilter === '第四次小考' && !item.category.includes('第四次')) return false;
+                    if (currentFilter === '第五次小考' && !item.category.includes('第五次')) return false;
+                    if (currentFilter === '第六次小考' && !item.category.includes('第六次')) return false;
+                    if (currentFilter === '期中考' && !item.category.includes('期中') && !item.category.includes('題庫')) return false;
+                    if (currentFilter === '專題' && !item.category.includes('練習') && !item.category.includes('專題')) return false;
+                    if (currentFilter === '筆記' && !item.category.includes('筆記') && !item.category.includes('講義')) return false;
+                }
+                if (kw) {
+                    const full = (item.title + ' ' + item.desc + ' ' + item.category + ' ' + item.year).toLowerCase();
+                    if (!full.includes(kw)) return false;
+                }
+                return true;
+            });
+        }
+
+        function applyFilters() {
+            renderGrid(getFilteredData());
+        }
+
+        function toggleCardFlip(idx, e) {
+            e.stopPropagation();
+            const curr = cardModeOverrides[idx] || globalViewerMode;
+            cardModeOverrides[idx] = (curr === 'solution') ? 'question' : 'solution';
+            renderGrid(getFilteredData());
+        }
 
         function renderGrid(data) {
             const grid = document.getElementById('imageGrid');
             grid.innerHTML = '';
-            
-            if (data.length === 0) {
-                grid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 4rem; color: var(--text-secondary); font-size: 1.2rem;">找不到符合條件的考題或解答圖片</div>';
-                document.getElementById('statsBadge').innerText = `顯示 0 / ${rawData.length} 張`;
-                return;
-            }
 
-            document.getElementById('statsBadge').innerText = `顯示 ${data.length} / ${rawData.length} 張`;
+            data.forEach(item => {
+                const cardMode = cardModeOverrides[item.index] || globalViewerMode;
+                const folder = (cardMode === 'question') ? 'images_questions/' : 'images/';
+                const imgUrl = folder + encodeURIComponent(item.filename);
 
-            data.forEach((item, idx) => {
                 const card = document.createElement('div');
                 card.className = 'card';
-                card.onclick = () => openModal(item);
-
-                let badgeClass = 'badge-quiz';
-                if (item.category.includes('期中考')) badgeClass = 'badge-midterm';
-                if (item.category.includes('筆記') || item.category.includes('講義')) badgeClass = 'badge-notes';
-
-                const imgUrl = BASE_IMAGE_PATH + encodeURIComponent(item.filename);
+                card.onclick = () => openModal(item, cardMode);
 
                 card.innerHTML = `
                     <div class="card-thumb-container">
                         <img src="${imgUrl}" alt="${item.title}" class="card-thumb" loading="lazy">
                         <span class="card-badge-top-left">#${String(item.index).padStart(2, '0')}</span>
-                        <span class="card-badge-top-right ${badgeClass}">${item.exam_type}</span>
+                        <span class="card-badge-mode ${cardMode === 'question' ? 'badge-q' : 'badge-sol'}">${cardMode === 'question' ? '📝 僅題目版' : '📄 解答版'}</span>
+                        <button class="card-flip-btn" onclick="toggleCardFlip(${item.index}, event)">
+                            🔄 換看${cardMode === 'question' ? '解答' : '題目'}
+                        </button>
                     </div>
                     <div class="card-body">
                         <div class="card-meta-line">
-                            <span class="card-year">${item.year}</span>
-                            <span>•</span>
+                            <span>${item.year}</span>
                             <span>${item.page_info}</span>
                         </div>
-                        <div class="card-title">${item.title}</div>
-                        <div class="card-desc">${item.desc}</div>
-                        ${item.version_note ? `<div class="card-version-box">${item.version_note}</div>` : ''}
-                        <div class="card-footer">
-                            <span class="card-filename">${item.filename}</span>
-                            <span style="color: var(--accent); font-weight: 600;">點擊查看大圖 ↗</span>
-                        </div>
+                        <h3 class="card-title">${item.title}</h3>
+                        <p class="card-desc">${item.desc}</p>
+                        ${item.version_note ? `<div class="card-version-note">${item.version_note}</div>` : ''}
                     </div>
                 `;
                 grid.appendChild(card);
             });
         }
 
-        function applyFilters() {
-            const searchVal = document.getElementById('searchInput').value.trim().toLowerCase();
-            
-            currentFilteredData = rawData.filter(item => {
-                // Category filter
-                let matchesCategory = true;
-                if (currentFilter === 'all') {
-                    matchesCategory = true;
-                } else if (currentFilter === '版本更新') {
-                    matchesCategory = item.version_note.includes('更新') || item.version_note.includes('對照') || item.version_note.includes('另解') || item.version_note.includes('調換') || item.version_note.includes('一致');
-                } else if (currentFilter === '小考練習') {
-                    matchesCategory = item.category.includes('練習') || item.category.includes('複習');
-                } else if (currentFilter === '講義筆記') {
-                    matchesCategory = item.category.includes('筆記') || item.category.includes('講義');
-                } else {
-                    matchesCategory = item.category.includes(currentFilter);
-                }
-
-                // Search query
-                const matchesSearch = !searchVal || 
-                    item.title.toLowerCase().includes(searchVal) ||
-                    item.desc.toLowerCase().includes(searchVal) ||
-                    item.keywords.toLowerCase().includes(searchVal) ||
-                    item.year.toLowerCase().includes(searchVal) ||
-                    item.page_info.toLowerCase().includes(searchVal) ||
-                    item.version_note.toLowerCase().includes(searchVal) ||
-                    item.filename.toLowerCase().includes(searchVal);
-
-                return matchesCategory && matchesSearch;
-            });
-
-            renderGrid(currentFilteredData);
-        }
-
-        // Filter button clicks
-        document.querySelectorAll('.filter-btn').forEach(btn => {
-            btn.onclick = () => {
-                document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-                btn.classList.add('active');
-                currentFilter = btn.getAttribute('data-filter');
-                applyFilters();
-            };
-        });
-
-        // Search input
-        document.getElementById('searchInput').oninput = applyFilters;
-
-        // Modal Logic
-        function openModal(item) {
-            currentIndex = currentFilteredData.findIndex(x => x.index === item.index);
-            if (currentIndex === -1) currentIndex = 0;
-            updateModalContent(currentFilteredData[currentIndex]);
+        function openModal(item, mode) {
+            currentModalItem = item;
+            currentModalMode = mode || globalViewerMode;
+            updateModalUI();
             document.getElementById('imageModal').classList.add('active');
-            document.body.style.overflow = 'hidden';
         }
 
-        function updateModalContent(item) {
-            const imgUrl = BASE_IMAGE_PATH + encodeURIComponent(item.filename);
-            document.getElementById('modalTitle').innerText = `[#${String(item.index).padStart(2, '0')}] ${item.title}`;
-            document.getElementById('modalSubtitle').innerText = `${item.year} • ${item.page_info} • ${item.type}`;
-            document.getElementById('modalImg').src = imgUrl;
-            document.getElementById('modalExamInfo').innerText = `${item.category} (${item.year})`;
-            document.getElementById('modalPageInfo').innerText = `${item.page_info} | ${item.type}`;
-            document.getElementById('modalDesc').innerText = item.desc;
-            document.getElementById('modalVersionNote').innerText = item.version_note;
-            document.getElementById('modalFileInfo').innerText = `檔名: ${item.filename} (序號 ${item.index} / 52)`;
-            document.getElementById('modalKeywords').innerText = `關鍵字: ${item.keywords}`;
+        function updateModalUI() {
+            if (!currentModalItem) return;
+            const folder = (currentModalMode === 'question') ? 'images_questions/' : 'images/';
+            document.getElementById('modalImg').src = folder + encodeURIComponent(currentModalItem.filename);
+            document.getElementById('modalNumber').innerText = '#' + String(currentModalItem.index).padStart(2, '0');
+            document.getElementById('modalTitle').innerText = currentModalItem.title + (currentModalMode === 'question' ? ' (僅題目版)' : ' (解答版)');
+            document.getElementById('modalCategory').innerText = currentModalItem.category;
+            document.getElementById('modalYear').innerText = currentModalItem.year;
+            document.getElementById('modalDesc').innerText = currentModalItem.desc;
+            
+            const vNote = document.getElementById('modalVersionNote');
+            if (currentModalItem.version_note) {
+                vNote.style.display = 'block';
+                vNote.innerText = '版本演進說明：' + currentModalItem.version_note;
+            } else {
+                vNote.style.display = 'none';
+            }
+
+            document.getElementById('modalFlipBtn').innerText = (currentModalMode === 'question') ? '📄 切換看解答版' : '📝 切換看題目版';
+
+            // Set up download URL
+            const pdfId = idxToPdf[currentModalItem.index];
+            if (pdfId && enMap[pdfId]) {
+                const enFn = (currentModalMode === 'question') ? enMap[pdfId].q_en : enMap[pdfId].sol_en;
+                document.getElementById('modalDownloadBtn').href = GITHUB_DOWNLOAD_BASE + encodeURIComponent(enFn);
+                document.getElementById('modalDownloadBtn').innerHTML = `<span>⚡</span> 雲端下載本份${currentModalMode === 'question' ? '題目卷' : '解答'} PDF`;
+            }
+        }
+
+        function toggleModalFlip() {
+            currentModalMode = (currentModalMode === 'solution') ? 'question' : 'solution';
+            updateModalUI();
         }
 
         function closeModal() {
             document.getElementById('imageModal').classList.remove('active');
-            document.body.style.overflow = 'auto';
         }
 
         function closeModalOnBg(e) {
-            if (e.target.id === 'modalImg') return;
-            closeModal();
+            if (e.target.id === 'imageModal') closeModal();
         }
 
-        function navPrev() {
-            if (currentFilteredData.length === 0) return;
-            currentIndex = (currentIndex - 1 + currentFilteredData.length) % currentFilteredData.length;
-            updateModalContent(currentFilteredData[currentIndex]);
-        }
-
-        function navNext() {
-            if (currentFilteredData.length === 0) return;
-            currentIndex = (currentIndex + 1) % currentFilteredData.length;
-            updateModalContent(currentFilteredData[currentIndex]);
-        }
-
-        function openRawImage() {
-            const currentItem = currentFilteredData[currentIndex];
-            const imgUrl = BASE_IMAGE_PATH + encodeURIComponent(currentItem.filename);
-            window.open(imgUrl, '_blank');
-        }
-
-        // Keyboard navigation
-        window.addEventListener('keydown', (e) => {
-            const modal = document.getElementById('imageModal');
-            if (!modal.classList.contains('active')) return;
-            if (e.key === 'Escape') closeModal();
-            if (e.key === 'ArrowLeft') navPrev();
-            if (e.key === 'ArrowRight') navNext();
-        });
-
-        // Initialize
-        renderGrid(currentFilteredData);
+        renderGrid(rawData);
     </script>
 </body>
 </html>
