@@ -4,6 +4,40 @@
 收錄檔案總數：52 張完整圖檔 | 包含版本演進對照、手寫批改原卷、官方解答與課堂投影片
 ====================================================================================================
 
+
+====================================================================================================
+【新增特色：每個圖片專屬「僅題目空白練習版本」與「空白題目測驗卷 PDF」】
+====================================================================================================
+為滿足自我測驗、期中考刷題與模擬考需求，已為全套 52 張試卷特別製作專屬「僅題目版本」：
+1. 【去除解答，保留題旨與電路】：
+   - 學生考卷 (Quiz 1, 2)：完全抹除學生筆跡與紅筆批改，還原官方空白試卷排版，提供乾淨作答框。
+   - 手寫計算題 (Quiz 4, 5, 6, 期中考詳解)：精準保留題目題旨、電路圖與給定元件參數，
+     將下方手寫推導過程轉化為標準淡灰格線的【作答與計算區】，供學生親筆推導演練。
+   - 官方試卷 (期中考梯次A、梯次B、題庫卷)：100% 原始官方空白試題紙。
+   - 課堂核心筆記與投影片：轉換為填空自我測驗與主動回憶（Active Recall）卡片。
+
+2. 【目錄檔案結構新增】：
+   ├── images_questions/           <-- 收錄 52 張專屬「僅題目空白練習」高畫質圖檔
+   ├── PDFs_題目卷_空白測驗版/     <-- 收錄 13 份標準 A4 空白題目測驗 PDF (可直接列印刷題)
+   │   ├── 00_電子學三_【期中與小考完整必備】精華推薦空白題目卷_QUESTIONS_ONLY.pdf (28頁，雙面14張紙)
+   │   ├── 01_電子學三_第一次小考_空白題目卷.pdf
+   │   ├── 02_電子學三_第二次小考_空白題目卷.pdf
+   │   ├── 03_電子學三_第四次小考_113_1更新版_空白題目卷.pdf
+   │   ├── 04_電子學三_第四次小考_111_1舊版_空白題目卷.pdf
+   │   ├── 05_電子學三_第五次小考_114_2版_空白題目卷.pdf
+   │   ├── 06_電子學三_第六次小考_114_1更新版_空白題目卷.pdf
+   │   ├── 07_電子學三_第六次小考_113_1原始版_空白題目卷.pdf
+   │   ├── 08_電子學三_期中考_梯次A_官方空白試卷.pdf
+   │   ├── 09_電子學三_期中考_梯次B_官方空白試卷.pdf
+   │   ├── 10_電子學三_期中考_歷屆題庫空白卷.pdf
+   │   ├── 11_電子學三_回授專題與練習題_空白練習卷.pdf
+   │   └── 12_電子學三_負回授特性筆記_自我測驗空白卷.pdf
+   │
+3. 【網頁檢視器支援雙向即時切換】：
+   - index.html (列印指南)：頂部提供【📄 完整解答版】與【📝 僅題目測驗版】一鍵切換，直接下載對應 PDF。
+   - EE3_Exam_Viewer.html：每張圖片卡片均有「🔄 換看題目/換看解答」按鈕，點擊彈窗內亦可一鍵翻轉對照。
+====================================================================================================
+
 【目錄架構與分類導覽樹狀圖 (Tree Structure)】
 ┌─ [分類 1] 第一次小考 (Quiz 1)
 │   └─ 113學年度 學生作答原卷 (含紅筆批改、成績67分)
@@ -607,3 +641,40 @@
 │    版本/對照：【檔名更正備註】此張實為「第二次小考」！考非理想/實用 (practical) 雙埠二端口模型 (Z參數/G參數)。
 │    關鍵字詞：第二次小考, 檔名誤植修正, Series-Series, Shunt-Series, practical model
 └───────────────────────────────────────────────────────────────────────────────────
+
+
+
+====================================================================================================
+【English Version PDF Filenames Reference (英文標題版 PDF 對照清單)】
+====================================================================================================
+已全數複製一份並翻譯為標準英文標題，存放於專屬目錄，方便 CLI 操作、跨平台下載與國際學生瀏覽：
+├── PDFs_EN/ (13 Full Solution PDFs with English Filenames)
+│   ├── 00_EE3_Recommended_Exams_and_Solutions_Complete_Package_RECOMMENDED_ALL.pdf
+│   ├── 01_EE3_Quiz_01_AcademicYear113_Student_Exam_Paper.pdf
+│   ├── 02_EE3_Quiz_02_AcademicYear113_TwoPort_Feedback_Student_Paper.pdf
+│   ├── 03_EE3_Quiz_04_113_1_Updated_MultiStage_BJT_Feedback_Solutions.pdf
+│   ├── 04_EE3_Quiz_04_111_1_Legacy_OPAMP_Characteristics_and_Analysis.pdf
+│   ├── 05_EE3_Quiz_05_114_2_MOSFET_Amplifier_and_Thevenin_Solutions.pdf
+│   ├── 06_EE3_Quiz_06_114_1_Teacher_Updated_OPAMP_Diff_NIC_and_GIC_Solutions.pdf
+│   ├── 07_EE3_Quiz_06_113_1_Original_Handwritten_Version.pdf
+│   ├── 08_EE3_Midterm_BatchA_111_1_Exam_Paper_and_Official_10Pages_Solutions.pdf
+│   ├── 09_EE3_Midterm_BatchB_Exam_Paper_and_Handwritten_Solutions_with_Alternative_Derivations.pdf
+│   ├── 10_EE3_Midterm_Question_Bank_Official_Blank_Exam_Paper.pdf
+│   ├── 11_EE3_Feedback_Special_Topic_and_Quiz_Practice_Color_Solutions.pdf
+│   └── 12_EE3_Negative_Feedback_Core_Notes_and_Official_Slides.pdf
+│
+└── PDFs_Questions_EN/ (13 Blank Question Worksheets with English Filenames)
+    ├── 00_EE3_Recommended_Exams_Blank_Worksheets_Complete_Package_QUESTIONS_ONLY.pdf
+    ├── 01_EE3_Quiz_01_AcademicYear113_Blank_Question_Paper.pdf
+    ├── 02_EE3_Quiz_02_AcademicYear113_TwoPort_Feedback_Blank_Question_Paper.pdf
+    ├── 03_EE3_Quiz_04_113_1_Updated_MultiStage_BJT_Feedback_Blank_Worksheet.pdf
+    ├── 04_EE3_Quiz_04_111_1_Legacy_OPAMP_Blank_Worksheet.pdf
+    ├── 05_EE3_Quiz_05_114_2_MOSFET_Amplifier_and_Thevenin_Blank_Worksheet.pdf
+    ├── 06_EE3_Quiz_06_114_1_Teacher_Updated_OPAMP_Diff_NIC_and_GIC_Blank_Worksheet.pdf
+    ├── 07_EE3_Quiz_06_113_1_Original_Blank_Worksheet.pdf
+    ├── 08_EE3_Midterm_BatchA_111_1_Official_Blank_Exam_Paper.pdf
+    ├── 09_EE3_Midterm_BatchB_Official_Blank_Exam_Paper.pdf
+    ├── 10_EE3_Midterm_Question_Bank_Blank_Worksheet.pdf
+    ├── 11_EE3_Feedback_Special_Topic_and_Quiz_Practice_Blank_Worksheet.pdf
+    └── 12_EE3_Negative_Feedback_Self_Test_Blank_Worksheet.pdf
+====================================================================================================

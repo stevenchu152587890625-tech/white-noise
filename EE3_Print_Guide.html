@@ -2,600 +2,932 @@
 <html lang="zh-TW">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>《電子學(三) EE3》歷屆考試 PDF 列印決策指南 | 薛光華老師</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes, viewport-fit=cover">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="EE3 考卷速查">
+    <meta name="theme-color" content="#0b0f19">
+    <title>《電子學(三) EE3》歷屆考試速查與列印 App | 薛光華老師</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg-primary: #0b0f19;
+            --bg-base: #070a12;
+            --bg-app: #0b0f19;
             --bg-card: #131b2e;
             --bg-card-hover: #1a253e;
-            --border-color: #23314f;
-            --accent-blue: #3b82f6;
-            --accent-cyan: #06b6d4;
-            --accent-gold: #f59e0b;
-            --accent-green: #10b981;
-            --accent-purple: #a855f7;
-            --accent-red: #ef4444;
-            --text-main: #f1f5f9;
-            --text-muted: #94a3b8;
-            --font-family: 'Noto Sans TC', system-ui, -apple-system, sans-serif;
+            --border-subtle: #1e293b;
+            --border-accent: #2e4069;
+            --primary: #3b82f6;
+            --primary-hover: #2563eb;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --purple: #8b5cf6;
+            --danger: #ef4444;
+            --text-main: #f8fafc;
+            --text-sub: #94a3b8;
+            --font-main: 'Noto Sans TC', system-ui, -apple-system, sans-serif;
             --font-mono: 'JetBrains Mono', monospace;
+            --app-max-width: 480px;
         }
-        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            -webkit-tap-highlight-color: transparent;
+        }
+
         body {
-            background-color: var(--bg-primary);
+            background-color: var(--bg-base);
             color: var(--text-main);
-            font-family: var(--font-family);
-            line-height: 1.6;
-            padding-bottom: 120px;
-        }
-        header {
-            background: linear-gradient(180deg, #16203a 0%, #0b0f19 100%);
-            border-bottom: 1px solid var(--border-color);
-            padding: 32px 24px 22px;
-            text-align: center;
-            position: relative;
-        }
-        .badge-header {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            background: rgba(59, 130, 246, 0.15);
-            border: 1px solid rgba(59, 130, 246, 0.3);
-            color: #60a5fa;
-            padding: 4px 14px;
-            border-radius: 999px;
-            font-size: 13px;
-            font-weight: 600;
-            margin-bottom: 10px;
-        }
-        h1 {
-            font-size: 30px;
-            font-weight: 800;
-            letter-spacing: -0.5px;
-            margin-bottom: 6px;
-            background: linear-gradient(135deg, #ffffff 0%, #cbd5e1 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-        .subtitle {
-            color: var(--text-muted);
-            font-size: 14px;
-            max-width: 760px;
-            margin: 0 auto 14px;
-        }
-
-        /* GitHub CDN Banner */
-        .github-banner {
-            display: inline-flex;
-            align-items: center;
-            gap: 12px;
-            background: linear-gradient(135deg, rgba(16, 185, 129, 0.12) 0%, rgba(59, 130, 246, 0.15) 100%);
-            border: 1px solid rgba(16, 185, 129, 0.4);
-            border-radius: 12px;
-            padding: 10px 18px;
-            margin-bottom: 16px;
-            font-size: 13.5px;
-            color: #e2e8f0;
-            flex-wrap: wrap;
-            justify-content: center;
-        }
-        .github-banner strong { color: #34d399; }
-        .btn-gh-release {
-            background: #2563eb;
-            color: #fff;
-            padding: 4px 12px;
-            border-radius: 6px;
-            text-decoration: none;
-            font-size: 12px;
-            font-weight: 700;
-            transition: all 0.2s;
-        }
-        .btn-gh-release:hover { background: #3b82f6; }
-
-        /* MODE TOGGLE SWITCH (Solution vs Questions-Only) */
-        .mode-switch-wrapper {
-            display: inline-flex;
-            background: #090d16;
-            border: 2px solid #2a3b60;
-            border-radius: 999px;
-            padding: 4px;
-            gap: 4px;
-            margin: 8px 0 14px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.4);
-        }
-        .mode-btn {
-            background: transparent;
-            border: none;
-            color: #94a3b8;
-            padding: 8px 22px;
-            border-radius: 999px;
-            font-size: 14px;
-            font-weight: 700;
-            cursor: pointer;
-            transition: all 0.2s;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        .mode-btn:hover { color: #fff; }
-        .mode-btn.active {
-            background: linear-gradient(135deg, #2563eb, #1d4ed8);
-            color: #fff;
-            box-shadow: 0 2px 10px rgba(37, 99, 235, 0.4);
-        }
-        .mode-btn.active.question-mode {
-            background: linear-gradient(135deg, #f59e0b, #d97706);
-            box-shadow: 0 2px 10px rgba(245, 158, 11, 0.4);
-        }
-
-        .nav-links {
+            font-family: var(--font-main);
+            line-height: 1.5;
+            min-height: 100vh;
             display: flex;
             justify-content: center;
-            gap: 10px;
-            margin-top: 10px;
-            flex-wrap: wrap;
-        }
-        .nav-pill {
-            background: rgba(255, 255, 255, 0.08);
-            border: 1px solid rgba(255, 255, 255, 0.15);
-            color: #cbd5e1;
-            padding: 6px 14px;
-            border-radius: 8px;
-            text-decoration: none;
-            font-size: 13px;
-            font-weight: 600;
-            transition: all 0.2s;
-        }
-        .nav-pill:hover {
-            background: rgba(59, 130, 246, 0.25);
-            color: #fff;
-            border-color: var(--accent-blue);
+            align-items: flex-start;
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
         }
 
-        .container {
-            max-width: 1280px;
-            margin: 0 auto;
-            padding: 0 24px;
-        }
-
-        .scenarios-wrapper {
-            margin: 22px 0 26px;
-            background: rgba(19, 27, 46, 0.8);
-            border: 1px solid var(--border-color);
-            border-radius: 16px;
-            padding: 20px;
-            backdrop-filter: blur(12px);
-        }
-        .scenarios-title {
-            font-size: 15px;
-            font-weight: 700;
-            color: #e2e8f0;
-            margin-bottom: 14px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        .scenarios-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-            gap: 12px;
-        }
-        .scenario-btn {
-            background: #18223c;
-            border: 2px solid transparent;
-            color: var(--text-main);
-            padding: 14px 18px;
-            border-radius: 12px;
-            text-align: left;
-            cursor: pointer;
-            transition: all 0.2s ease;
+        /* DESKTOP-VS-APP CONTAINER WRAPPER */
+        .app-container {
+            width: 100%;
+            max-width: var(--app-max-width);
+            min-height: 100vh;
+            background: var(--bg-app);
             display: flex;
             flex-direction: column;
-            gap: 4px;
+            position: relative;
+            box-shadow: 0 0 50px rgba(0, 0, 0, 0.7);
+            border-left: 1px solid var(--border-subtle);
+            border-right: 1px solid var(--border-subtle);
+            padding-bottom: 96px; /* Space for bottom tab bar */
+            transition: max-width 0.3s cubic-bezier(0.16, 1, 0.3, 1);
         }
-        .scenario-btn:hover { background: #202d4f; transform: translateY(-2px); }
-        .scenario-btn.active {
-            background: rgba(59, 130, 246, 0.15);
-            border-color: var(--accent-blue);
-            box-shadow: 0 0 20px rgba(59, 130, 246, 0.25);
-        }
-        .scenario-btn .sc-badge { font-size: 11px; font-weight: 700; text-transform: uppercase; }
-        .scenario-btn .sc-name { font-size: 15px; font-weight: 700; }
-        .scenario-btn .sc-desc { font-size: 12px; color: var(--text-muted); line-height: 1.4; }
 
-        .controls-bar {
+        /* WIDE DESKTOP MODE (Optional toggle for PC users) */
+        body.wide-mode .app-container {
+            max-width: 1200px;
+        }
+
+        /* TOP APP BAR (Sticky) */
+        .app-bar {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: rgba(11, 15, 25, 0.94);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border-subtle);
+            padding: 12px 16px;
             display: flex;
-            flex-wrap: wrap;
             align-items: center;
             justify-content: space-between;
-            gap: 16px;
-            margin-bottom: 24px;
+            gap: 12px;
         }
-        .search-box { flex: 1; min-width: 240px; position: relative; }
-        .search-box input {
-            width: 100%;
-            background: #131b2e;
-            border: 1px solid var(--border-color);
-            color: #fff;
-            padding: 10px 16px 10px 38px;
+        .app-brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+            color: inherit;
+        }
+        .app-icon {
+            width: 36px;
+            height: 36px;
             border-radius: 10px;
-            font-size: 14px;
-            outline: none;
+            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.35);
+            flex-shrink: 0;
         }
-        .search-box input:focus { border-color: var(--accent-blue); }
-        .search-box svg {
-            position: absolute; left: 12px; top: 50%; transform: translateY(-50%);
-            width: 16px; height: 16px; color: var(--text-muted);
+        .app-title-group {
+            display: flex;
+            flex-direction: column;
         }
-        .quick-actions { display: flex; gap: 8px; flex-wrap: wrap; }
-        .btn-action {
-            background: #1a253e;
-            border: 1px solid var(--border-color);
+        .app-title {
+            font-size: 16px;
+            font-weight: 800;
+            letter-spacing: -0.3px;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .app-ver {
+            font-size: 10.5px;
+            color: var(--primary);
+            background: rgba(59, 130, 246, 0.15);
+            padding: 1px 6px;
+            border-radius: 4px;
+            font-weight: 700;
+        }
+        .app-subtitle {
+            font-size: 11px;
+            color: var(--text-sub);
+        }
+        .app-bar-actions {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .btn-app-action {
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid var(--border-subtle);
             color: #cbd5e1;
-            padding: 8px 14px;
+            padding: 6px 10px;
             border-radius: 8px;
-            font-size: 13px;
+            font-size: 12px;
             font-weight: 600;
             cursor: pointer;
             transition: all 0.2s;
             display: inline-flex;
             align-items: center;
+            gap: 4px;
+            text-decoration: none;
+        }
+        .btn-app-action:hover {
+            background: rgba(255, 255, 255, 0.15);
+            color: #fff;
+        }
+
+        /* SEGMENTED MODE SWITCHER (解答版 vs 題目卷) */
+        .app-segmented-tabs {
+            padding: 10px 16px 4px;
+            background: var(--bg-app);
+        }
+        .segmented-pill-wrapper {
+            background: #111827;
+            border: 1px solid #1f2937;
+            border-radius: 12px;
+            padding: 3px;
+            display: flex;
+            gap: 3px;
+        }
+        .segmented-btn {
+            flex: 1;
+            background: transparent;
+            border: none;
+            color: #9ca3af;
+            padding: 8px 12px;
+            border-radius: 9px;
+            font-size: 13px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             gap: 6px;
         }
-        .btn-action:hover { background: #253356; color: #fff; }
+        .segmented-btn.active {
+            background: #2563eb;
+            color: #fff;
+            box-shadow: 0 2px 8px rgba(37, 99, 235, 0.4);
+        }
+        .segmented-btn.active.question-mode {
+            background: #d97706;
+            box-shadow: 0 2px 8px rgba(217, 119, 6, 0.4);
+        }
 
-        .pdf-list { display: flex; flex-direction: column; gap: 20px; }
-        .pdf-card {
-            background: var(--bg-card);
-            border: 1px solid var(--border-color);
-            border-radius: 16px;
-            padding: 24px;
-            transition: all 0.25s ease;
+        /* APP SEARCH BAR */
+        .app-search-section {
+            padding: 8px 16px;
+        }
+        .app-search-box {
             position: relative;
-            display: grid;
-            grid-template-columns: auto 1fr auto;
-            gap: 20px;
-            align-items: start;
+            width: 100%;
         }
-        .pdf-card:hover {
-            background: var(--bg-card-hover);
-            border-color: #33446b;
-            box-shadow: 0 8px 24px rgba(0,0,0,0.3);
-        }
-        .pdf-card.featured {
-            border: 2px solid var(--accent-gold);
-            background: linear-gradient(135deg, rgba(245, 158, 11, 0.08) 0%, rgba(19, 27, 46, 0.95) 100%);
-            box-shadow: 0 0 30px rgba(245, 158, 11, 0.18);
-        }
-        .pdf-card.redundant {
-            opacity: 0.65;
-            background: rgba(19, 27, 46, 0.5);
-            border-style: dashed;
-        }
-        .pdf-card.redundant:hover { opacity: 1; }
-
-        .card-select { padding-top: 4px; }
-        .custom-checkbox {
-            appearance: none;
-            width: 24px;
-            height: 24px;
-            border: 2px solid #475569;
-            border-radius: 6px;
-            background: transparent;
-            cursor: pointer;
-            display: grid;
-            place-content: center;
+        .app-search-input {
+            width: 100%;
+            background: #131b2e;
+            border: 1px solid var(--border-subtle);
+            color: #fff;
+            padding: 10px 38px 10px 38px;
+            border-radius: 12px;
+            font-size: 13.5px;
+            outline: none;
             transition: all 0.2s;
         }
-        .custom-checkbox:checked {
-            background: var(--accent-blue);
-            border-color: var(--accent-blue);
+        .app-search-input:focus {
+            border-color: var(--primary);
+            background: #162038;
+            box-shadow: 0 0 12px rgba(59, 130, 246, 0.2);
         }
-        .custom-checkbox:checked::before {
-            content: "✓";
-            color: #fff;
-            font-size: 15px;
-            font-weight: 900;
+        .search-icon-left {
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 16px;
+            height: 16px;
+            color: #64748b;
+            pointer-events: none;
+        }
+        .search-clear-btn {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: #334155;
+            color: #cbd5e1;
+            border: none;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            font-size: 11px;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
         }
 
-        .card-main { display: flex; flex-direction: column; gap: 10px; }
-        .card-header-row { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
-        .pdf-number {
-            font-family: var(--font-mono);
-            font-size: 14px;
+        /* HORIZONTAL SCROLLING FILTER CHIPS */
+        .app-filter-chips {
+            display: flex;
+            gap: 8px;
+            padding: 6px 16px 10px;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
+        }
+        .app-filter-chips::-webkit-scrollbar {
+            display: none;
+        }
+        .filter-chip {
+            flex-shrink: 0;
+            background: #131b2e;
+            border: 1px solid var(--border-subtle);
+            color: #cbd5e1;
+            padding: 6px 14px;
+            border-radius: 999px;
+            font-size: 12.5px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .filter-chip:hover {
+            border-color: #3b82f6;
+            color: #fff;
+        }
+        .filter-chip.active {
+            background: rgba(59, 130, 246, 0.2);
+            border-color: var(--primary);
+            color: #60a5fa;
             font-weight: 700;
-            color: var(--accent-cyan);
+        }
+        .filter-chip.active.rec-chip {
+            background: rgba(245, 158, 11, 0.2);
+            border-color: var(--warning);
+            color: #fbbf24;
+        }
+
+        /* GITHUB CDN BANNER (App Style) */
+        .app-cloud-card {
+            margin: 6px 16px 10px;
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.15) 0%, rgba(59, 130, 246, 0.15) 100%);
+            border: 1px solid rgba(16, 185, 129, 0.35);
+            border-radius: 14px;
+            padding: 10px 14px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+        }
+        .cloud-card-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .cloud-badge-icon {
+            font-size: 22px;
+        }
+        .cloud-text-title {
+            font-size: 12.5px;
+            font-weight: 700;
+            color: #34d399;
+        }
+        .cloud-text-desc {
+            font-size: 11px;
+            color: #94a3b8;
+        }
+        .btn-cloud-visit {
+            background: #2563eb;
+            color: #fff;
+            padding: 5px 10px;
+            border-radius: 8px;
+            font-size: 11px;
+            font-weight: 700;
+            text-decoration: none;
+            white-space: nowrap;
+        }
+
+        /* CARDS STREAM CONTAINER */
+        .app-stream {
+            padding: 4px 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+        body.wide-mode .app-stream {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+            gap: 16px;
+        }
+
+        /* NATIVE APP EXAM CARD */
+        .app-exam-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-subtle);
+            border-radius: 18px;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+            position: relative;
+        }
+        .app-exam-card:hover {
+            border-color: var(--border-accent);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+        }
+        .app-exam-card.featured {
+            border: 1.5px solid var(--warning);
+            background: linear-gradient(180deg, rgba(245, 158, 11, 0.08) 0%, rgba(19, 27, 46, 0.95) 100%);
+            box-shadow: 0 4px 20px rgba(245, 158, 11, 0.12);
+        }
+        .app-exam-card.redundant {
+            opacity: 0.6;
+            border-style: dashed;
+        }
+        .app-exam-card.redundant:hover {
+            opacity: 1;
+        }
+
+        /* Card Header Row */
+        .card-top-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+        }
+        .card-tags-left {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+        .num-pill {
+            font-family: var(--font-mono);
+            font-size: 11.5px;
+            font-weight: 700;
+            color: #06b6d4;
             background: rgba(6, 182, 212, 0.12);
             padding: 2px 8px;
             border-radius: 6px;
         }
-        .card-title { font-size: 18px; font-weight: 700; color: #fff; }
-        .badge {
-            font-size: 12px; font-weight: 700; padding: 3px 10px;
-            border-radius: 999px; display: inline-flex; align-items: center; gap: 4px;
+        .rec-pill {
+            font-size: 11px;
+            font-weight: 700;
+            padding: 2px 8px;
+            border-radius: 999px;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
         }
-        .badge-aio {
+        .rec-aio {
             background: linear-gradient(135deg, #f59e0b, #ec4899);
             color: #fff;
-            box-shadow: 0 0 12px rgba(245, 158, 11, 0.4);
-            font-size: 13px;
-            padding: 4px 12px;
         }
-        .badge-must {
+        .rec-must {
             background: rgba(16, 185, 129, 0.15);
             border: 1px solid rgba(16, 185, 129, 0.4);
             color: #34d399;
         }
-        .badge-rec {
+        .rec-good {
             background: rgba(59, 130, 246, 0.15);
             border: 1px solid rgba(59, 130, 246, 0.4);
             color: #60a5fa;
         }
-        .badge-opt {
+        .rec-opt {
             background: rgba(168, 85, 247, 0.15);
             border: 1px solid rgba(168, 85, 247, 0.4);
             color: #c084fc;
         }
-        .badge-red {
+        .rec-skip {
             background: rgba(239, 68, 68, 0.15);
             border: 1px solid rgba(239, 68, 68, 0.4);
             color: #f87171;
         }
-        .advice-box {
-            background: rgba(15, 23, 42, 0.8);
-            border-left: 4px solid var(--accent-blue);
-            padding: 10px 14px;
-            border-radius: 0 8px 8px 0;
-            font-size: 13.5px;
-            line-height: 1.5;
-        }
-        .pdf-card.featured .advice-box {
-            border-left-color: var(--accent-gold);
-            background: rgba(30, 25, 15, 0.7);
-        }
-        .pdf-card.redundant .advice-box {
-            border-left-color: var(--accent-red);
-            color: #fca5a5;
-        }
-        .card-desc { color: #94a3b8; font-size: 13.5px; line-height: 1.5; }
-        .card-specs {
-            display: flex; flex-wrap: wrap; gap: 16px;
-            font-size: 13px; color: #cbd5e1; padding-top: 4px;
-        }
-        .spec-item { display: flex; align-items: center; gap: 6px; }
-        .spec-val { font-weight: 700; color: #fff; }
 
-        .thumb-strip {
-            display: flex; gap: 8px; margin-top: 10px;
-            overflow-x: auto; padding-bottom: 6px;
+        /* Card Bookmark / Select Checkbox */
+        .card-check-btn {
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            padding: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
-        .thumb-strip::-webkit-scrollbar { height: 6px; }
-        .thumb-strip::-webkit-scrollbar-thumb { background: #334155; border-radius: 3px; }
-        .thumb-item {
-            position: relative; flex-shrink: 0; width: 70px; height: 98px;
-            border-radius: 6px; overflow: hidden; border: 1px solid #334155;
-            cursor: pointer; transition: transform 0.2s, border-color 0.2s;
-            background: #0f172a;
+        .check-circle {
+            width: 22px;
+            height: 22px;
+            border: 2px solid #475569;
+            border-radius: 50%;
+            display: grid;
+            place-content: center;
+            transition: all 0.2s;
         }
-        .thumb-item:hover {
-            transform: scale(1.08); border-color: var(--accent-cyan); z-index: 10;
+        .check-circle.checked {
+            background: var(--primary);
+            border-color: var(--primary);
         }
-        .thumb-item img { width: 100%; height: 100%; object-fit: cover; }
-        .thumb-page {
-            position: absolute; bottom: 2px; right: 2px;
-            background: rgba(0,0,0,0.75); font-size: 9px; font-weight: 700;
-            padding: 1px 4px; border-radius: 3px; color: #e2e8f0;
+        .check-circle.checked::after {
+            content: "✓";
+            color: #fff;
+            font-size: 13px;
+            font-weight: 900;
         }
 
-        .card-actions {
+        /* Card Title & Content */
+        .card-body {
             display: flex;
             flex-direction: column;
+            gap: 6px;
+        }
+        .card-title-text {
+            font-size: 15.5px;
+            font-weight: 700;
+            color: #fff;
+            line-height: 1.4;
+        }
+        .card-advice-bubble {
+            background: rgba(15, 23, 42, 0.85);
+            border-left: 3px solid var(--primary);
+            padding: 8px 10px;
+            border-radius: 0 8px 8px 0;
+            font-size: 12px;
+            line-height: 1.45;
+            color: #cbd5e1;
+        }
+        .app-exam-card.featured .card-advice-bubble {
+            border-left-color: var(--warning);
+            background: rgba(30, 25, 15, 0.8);
+        }
+        .app-exam-card.redundant .card-advice-bubble {
+            border-left-color: var(--danger);
+            color: #fca5a5;
+        }
+
+        /* Card Meta Specs Row */
+        .card-specs-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 11.5px;
+            color: #94a3b8;
+            flex-wrap: wrap;
+        }
+        .spec-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            background: #111827;
+            padding: 3px 8px;
+            border-radius: 6px;
+        }
+        .spec-pill strong {
+            color: #fff;
+        }
+
+        /* Touch Swipeable Thumbnail Strip */
+        .card-thumb-carousel {
+            display: flex;
             gap: 8px;
-            min-width: 175px;
+            overflow-x: auto;
+            padding: 4px 0 6px;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: thin;
         }
-        .btn-gh-direct {
+        .card-thumb-carousel::-webkit-scrollbar {
+            height: 4px;
+        }
+        .card-thumb-carousel::-webkit-scrollbar-thumb {
+            background: #334155;
+            border-radius: 2px;
+        }
+        .app-thumb-box {
+            position: relative;
+            flex-shrink: 0;
+            width: 72px;
+            height: 100px;
+            border-radius: 8px;
+            overflow: hidden;
+            border: 1px solid #334155;
+            background: #0f172a;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        .app-thumb-box:active {
+            transform: scale(0.95);
+        }
+        .app-thumb-box img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .app-thumb-badge {
+            position: absolute;
+            bottom: 3px;
+            right: 3px;
+            background: rgba(0, 0, 0, 0.75);
+            font-size: 9px;
+            font-weight: 700;
+            color: #e2e8f0;
+            padding: 1px 4px;
+            border-radius: 3px;
+        }
+
+        /* Native App Touch Action Buttons */
+        .card-actions-app {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            margin-top: 4px;
+        }
+        .btn-native-dl {
+            grid-column: 1 / -1;
             background: linear-gradient(135deg, #10b981, #059669);
-            color: #fff; padding: 10px 14px; border-radius: 8px;
-            text-decoration: none; font-size: 13px; font-weight: 800;
-            display: flex; align-items: center; justify-content: center; gap: 6px;
-            transition: all 0.2s; box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+            color: #fff;
+            border: none;
+            padding: 11px 16px;
+            border-radius: 12px;
+            font-size: 13.5px;
+            font-weight: 700;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            box-shadow: 0 4px 14px rgba(16, 185, 129, 0.3);
+            transition: all 0.15s ease;
+            cursor: pointer;
         }
-        .btn-gh-direct:hover {
-            background: linear-gradient(135deg, #34d399, #10b981);
-            transform: translateY(-1px);
-            box-shadow: 0 6px 16px rgba(16, 185, 129, 0.45);
+        .btn-native-dl:active {
+            transform: scale(0.98);
+        }
+        .btn-native-preview {
+            background: #1e293b;
+            color: #cbd5e1;
+            border: 1px solid #334155;
+            padding: 9px 12px;
+            border-radius: 10px;
+            font-size: 12px;
+            font-weight: 600;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+            transition: all 0.15s;
+        }
+        .btn-native-preview:hover {
+            background: #27354f;
+            color: #fff;
+        }
+        .btn-native-cart {
+            background: #18223c;
+            color: #60a5fa;
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            padding: 9px 12px;
+            border-radius: 10px;
+            font-size: 12px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+        .btn-native-cart.added {
+            background: rgba(16, 185, 129, 0.15);
+            border-color: rgba(16, 185, 129, 0.5);
+            color: #34d399;
         }
 
-        .btn-open-pdf {
+        /* BOTTOM APP NAVIGATION BAR (Native iOS/Material Tab Bar) */
+        .bottom-nav-bar {
+            position: fixed;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100%;
+            max-width: var(--app-max-width);
+            height: 72px;
+            background: rgba(11, 15, 25, 0.95);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            border-top: 1px solid var(--border-subtle);
+            display: flex;
+            align-items: center;
+            justify-content: space-around;
+            z-index: 1000;
+            padding-bottom: env(safe-area-inset-bottom, 0px);
+        }
+        body.wide-mode .bottom-nav-bar {
+            max-width: 1200px;
+        }
+
+        .nav-tab-item {
+            flex: 1;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+            background: transparent;
+            border: none;
+            color: #64748b;
+            font-size: 11px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            position: relative;
+        }
+        .nav-tab-item:hover {
+            color: #94a3b8;
+        }
+        .nav-tab-item.active {
+            color: var(--primary);
+        }
+        .nav-tab-icon {
+            font-size: 20px;
+            line-height: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .nav-badge-count {
+            position: absolute;
+            top: 8px;
+            right: calc(50% - 20px);
+            background: #ef4444;
+            color: #fff;
+            font-size: 10px;
+            font-weight: 800;
+            padding: 1px 5px;
+            border-radius: 999px;
+            min-width: 16px;
+            text-align: center;
+        }
+
+        /* FLOATING PRINT SUMMARY SHEET / TOAST */
+        .floating-cart-summary {
+            position: fixed;
+            bottom: 78px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: calc(100% - 24px);
+            max-width: calc(var(--app-max-width) - 24px);
+            background: linear-gradient(135deg, #1e293b, #0f172a);
+            border: 1px solid #334155;
+            border-radius: 14px;
+            padding: 10px 14px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+            z-index: 999;
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        body.wide-mode .floating-cart-summary {
+            max-width: 1176px;
+        }
+        .cart-summary-stats {
+            display: flex;
+            align-items: baseline;
+            gap: 8px;
+            font-size: 12px;
+            color: #cbd5e1;
+        }
+        .cart-summary-highlight {
+            font-family: var(--font-mono);
+            font-size: 15px;
+            font-weight: 800;
+            color: #f59e0b;
+        }
+        .btn-cart-print-now {
             background: linear-gradient(135deg, #2563eb, #1d4ed8);
-            color: #fff; padding: 8px 14px; border-radius: 8px;
-            text-decoration: none; font-size: 12.5px; font-weight: 700;
-            display: flex; align-items: center; justify-content: center; gap: 6px;
-            transition: all 0.2s;
-        }
-        .btn-open-pdf:hover {
-            background: linear-gradient(135deg, #3b82f6, #2563eb);
-            transform: translateY(-1px);
+            color: #fff;
+            border: none;
+            padding: 7px 14px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 700;
+            cursor: pointer;
+            white-space: nowrap;
+            display: flex;
+            align-items: center;
+            gap: 5px;
         }
 
-        .btn-download-pdf {
-            background: #1e293b; border: 1px solid #334155;
-            color: #94a3b8; padding: 7px 12px; border-radius: 8px;
-            text-decoration: none; font-size: 11.5px; font-weight: 600;
-            display: flex; align-items: center; justify-content: center; gap: 5px;
-            transition: all 0.2s;
-        }
-        .btn-download-pdf:hover { background: #334155; color: #fff; }
-
-        .floating-bar {
-            position: fixed; bottom: 0; left: 0; right: 0;
-            background: rgba(15, 23, 42, 0.95);
-            border-top: 1px solid #334155;
-            backdrop-filter: blur(16px);
-            padding: 16px 24px;
-            box-shadow: 0 -8px 30px rgba(0, 0, 0, 0.5);
-            z-index: 99;
-        }
-        .floating-inner {
-            max-width: 1280px; margin: 0 auto;
-            display: flex; flex-wrap: wrap; align-items: center;
-            justify-content: space-between; gap: 16px;
-        }
-        .calc-stats { display: flex; align-items: center; gap: 20px; flex-wrap: wrap; }
-        .stat-group { display: flex; flex-direction: column; }
-        .stat-label { font-size: 11px; color: var(--text-muted); text-transform: uppercase; font-weight: 600; }
-        .stat-value { font-size: 20px; font-weight: 800; font-family: var(--font-mono); color: #fff; }
-        .stat-highlight { color: var(--accent-gold); }
-        .floating-actions { display: flex; align-items: center; gap: 10px; }
-
+        /* LIGHTBOX MODAL */
         .modal {
-            display: none; position: fixed; inset: 0;
-            background: rgba(0,0,0,0.85); backdrop-filter: blur(8px);
-            z-index: 999; align-items: center; justify-content: center; padding: 24px;
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.88);
+            backdrop-filter: blur(10px);
+            z-index: 99999;
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
         }
         .modal.show { display: flex; }
-        .modal-content { max-width: 90vw; max-height: 90vh; border-radius: 12px; object-fit: contain; }
-        .modal-close {
-            position: absolute; top: 20px; right: 24px;
-            background: #1e293b; color: #fff; border: none;
-            width: 40px; height: 40px; border-radius: 50%;
-            cursor: pointer; font-size: 20px; display: grid; place-content: center;
+        .modal-content {
+            max-width: 95vw;
+            max-height: 85vh;
+            border-radius: 12px;
+            object-fit: contain;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.8);
         }
+        .modal-close {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: #1e293b;
+            color: #fff;
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 20px;
+            display: grid;
+            place-content: center;
+        }
+
+        /* REAL MOBILE PHONES FULLSCREEN OPTIMIZATION */
         @media (max-width: 768px) {
-            .pdf-card { grid-template-columns: 1fr; }
-            .card-actions { flex-direction: row; }
-            .floating-inner { flex-direction: column; align-items: stretch; }
-            .calc-stats { justify-content: space-between; }
+            .app-container {
+                max-width: 100% !important;
+                border-left: none;
+                border-right: none;
+                box-shadow: none;
+            }
+            .bottom-nav-bar {
+                max-width: 100% !important;
+            }
+            .floating-cart-summary {
+                max-width: calc(100% - 24px) !important;
+            }
+            #btnDesktopToggle {
+                display: none;
+            }
         }
     </style>
 </head>
 <body>
-    <header>
-        <div class="badge-header">
-            <span>🎓</span> 中原大學 電子工程學系《電子學(三) EE3》
-        </div>
-        <h1>歷屆考試 PDF 列印決策指南</h1>
-        <p class="subtitle">
-            授課教師：薛光華 老師 | 整理時間：2026-10-22<br>
-            26 份標準 A4 PDF 已發布至 GitHub Releases！支援<strong>「點擊直接下載」</strong>與<strong>「線上即時預覽」</strong>！
-        </p>
 
-        <!-- GitHub Releases CDN Notice Banner -->
-        <div class="github-banner">
-            <span>⚡ <strong>GitHub 雲端 CDN 直接下載已啟用！</strong> 點擊下方卡片的綠色按鈕即可直接下載對應 PDF 檔案。</span>
-            <a href="https://github.com/stevenchu152587890625-tech/white-noise/releases/tag/nothing" target="_blank" class="btn-gh-release">🔗 前往 GitHub Release 頁面</a>
-        </div>
-
-        <!-- Mode Switcher -->
-        <div class="mode-switch-wrapper">
-            <button class="mode-btn active" id="btnModeSolution" onclick="setDocMode('solution')">
-                <span>📄</span> 完整解答版 (含手寫詳解)
-            </button>
-            <button class="mode-btn" id="btnModeQuestion" onclick="setDocMode('question')">
-                <span>📝</span> 僅題目測驗版 (空白練習卷)
-            </button>
-        </div>
-
-        <div class="nav-links">
-            <a href="EE3_Exam_Viewer.html" class="nav-pill">🖼️ 開啟逐題高畫質圖片檢視器 (支援題解切換)</a>
-            <a href="README.txt" target="_blank" class="nav-pill">📜 檢視詳細文字架構 (README.txt)</a>
-            <a href="PDFs/" target="_blank" class="nav-pill" id="navPdfsFolder">📁 瀏覽解答版 PDFs 資料夾</a>
-        </div>
-    </header>
-
-    <div class="container">
-        <!-- Scenarios Bar -->
-        <div class="scenarios-wrapper">
-            <div class="scenarios-title">
-                <span>🎯</span> 點選您的備考情境（自動切換推薦列印方案）：
+    <div class="app-container" id="appContainer">
+        
+        <!-- STICKY TOP APP BAR -->
+        <header class="app-bar">
+            <a href="index.html" class="app-brand">
+                <div class="app-icon">⚡</div>
+                <div class="app-title-group">
+                    <div class="app-title">
+                        EE3 考卷速查
+                        <span class="app-ver">App</span>
+                    </div>
+                    <div class="app-subtitle">中原電子 薛光華老師歷屆全集</div>
+                </div>
+            </a>
+            <div class="app-bar-actions">
+                <button class="btn-app-action" id="btnDesktopToggle" onclick="toggleDesktopMode()" title="在手機 App 視圖與電腦寬版之間切換">
+                    <span id="desktopToggleIcon">🖥️</span>
+                    <span id="desktopToggleText">寬版</span>
+                </button>
+                <a href="EE3_Exam_Viewer.html" class="btn-app-action" title="開啟互動雙向看圖器">
+                    <span>🖼️</span> 圖檢
+                </a>
             </div>
-            <div class="scenarios-grid">
-                <button class="scenario-btn active" onclick="setScenario('all_rec')">
-                    <span class="sc-badge" style="color: #f59e0b;">★ 最強推薦</span>
-                    <span class="sc-name">👑 全考卷最新精華 (零重複)</span>
-                    <span class="sc-desc">直接印 00 合輯或精華項，共 28 頁（雙面 14 張紙），囊括全套最新試卷！</span>
+        </header>
+
+        <!-- APP SEGMENTED TABS (Solution vs Question Sheets) -->
+        <div class="app-segmented-tabs">
+            <div class="segmented-pill-wrapper">
+                <button class="segmented-btn active" id="btnModeSolution" onclick="setDocMode('solution')">
+                    <span>📄</span> 完整解答卷
                 </button>
-                <button class="scenario-btn" onclick="setScenario('midterm')">
-                    <span class="sc-badge" style="color: #60a5fa;">🎯 考前衝刺</span>
-                    <span class="sc-name">期中考精準必勝包</span>
-                    <span class="sc-desc">梯次A試卷、梯次B試卷解答另解、回授專題彩色板。</span>
-                </button>
-                <button class="scenario-btn" onclick="setScenario('quiz')">
-                    <span class="sc-badge" style="color: #34d399;">📝 平時複習</span>
-                    <span class="sc-name">平時小考最新版精華</span>
-                    <span class="sc-desc">第1、2次小考、第4次113更新版、第5次114版、第6次114教師更新版。</span>
-                </button>
-                <button class="scenario-btn" onclick="setScenario('all')">
-                    <span class="sc-badge" style="color: #c084fc;">🔍 完整檢視</span>
-                    <span class="sc-name">全部 13 份 PDF 清單</span>
-                    <span class="sc-desc">顯示所有版本，包含 111 舊版、重複手寫版與 EMC Lab 投影片。</span>
+                <button class="segmented-btn" id="btnModeQuestion" onclick="setDocMode('question')">
+                    <span>📝</span> 僅題目測驗卷
                 </button>
             </div>
         </div>
 
-        <!-- Controls Bar -->
-        <div class="controls-bar">
-            <div class="search-box">
-                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <!-- SEARCH INPUT -->
+        <div class="app-search-section">
+            <div class="app-search-box">
+                <svg class="search-icon-left" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
                 </svg>
-                <input type="text" id="searchInput" placeholder="搜尋關鍵字（例如：MOSFET, 梯次A, NIC, GIC, 密勒...）" oninput="renderCards()">
-            </div>
-            <div class="quick-actions">
-                <button class="btn-action" onclick="selectRecommendedOnly()">
-                    <span>✨</span> 僅勾選推薦列印項
-                </button>
-                <button class="btn-action" onclick="selectAll(true)">
-                    <span>☑️</span> 全選
-                </button>
-                <button class="btn-action" onclick="selectAll(false)">
-                    <span>🔄</span> 清空
-                </button>
+                <input type="text" class="app-search-input" id="searchInput" placeholder="搜尋關鍵字（BJT, MOSFET, 梯次A, NIC...）" oninput="onSearchInput()">
+                <button class="search-clear-btn" id="searchClearBtn" onclick="clearSearch()">✕</button>
             </div>
         </div>
 
-        <!-- PDF Cards Container -->
-        <div class="pdf-list" id="pdfListContainer"></div>
-    </div>
-
-    <!-- Floating Sticky Bar -->
-    <div class="floating-bar">
-        <div class="floating-inner">
-            <div class="calc-stats">
-                <div class="stat-group">
-                    <span class="stat-label">目前模式</span>
-                    <span class="stat-value" id="statMode" style="color:#60a5fa;font-size:16px;">📄 完整解答版</span>
-                </div>
-                <div class="stat-group">
-                    <span class="stat-label">已勾選份數</span>
-                    <span class="stat-value" id="statPdfCount">0 <span style="font-size:13px;color:#94a3b8;">份</span></span>
-                </div>
-                <div class="stat-group">
-                    <span class="stat-label">總列印頁數</span>
-                    <span class="stat-value" id="statPageCount">0 <span style="font-size:13px;color:#94a3b8;">頁</span></span>
-                </div>
-                <div class="stat-group">
-                    <span class="stat-label">雙面列印用紙</span>
-                    <span class="stat-value stat-highlight" id="statSheetCount">0 <span style="font-size:13px;color:#f59e0b;">張 A4</span></span>
-                </div>
-                <div class="stat-group">
-                    <span class="stat-label">預估影印費用</span>
-                    <span class="stat-value" id="statCost">NT$ 0</span>
-                </div>
-            </div>
-            <div class="floating-actions">
-                <button class="btn-action" style="background:#2563eb;color:#fff;border:none;padding:10px 18px;" onclick="printSelected()">
-                    <span>🖨️</span> 列印已勾選檔案指南
-                </button>
-            </div>
+        <!-- HORIZONTAL SCROLLING FILTER CHIPS -->
+        <div class="app-filter-chips">
+            <button class="filter-chip active rec-chip" id="chip-all_rec" onclick="setScenario('all_rec')">
+                <span>🔥</span> 推薦必印 (8)
+            </button>
+            <button class="filter-chip" id="chip-all" onclick="setScenario('all')">
+                <span>📚</span> 全部考卷 (13)
+            </button>
+            <button class="filter-chip" id="chip-midterm" onclick="setScenario('midterm')">
+                <span>🎯</span> 期中衝刺 (3)
+            </button>
+            <button class="filter-chip" id="chip-quiz" onclick="setScenario('quiz')">
+                <span>📝</span> 平時小考 (7)
+            </button>
         </div>
+
+        <!-- GITHUB RELEASES CLOUD SYNC CARD -->
+        <div class="app-cloud-card">
+            <div class="cloud-card-info">
+                <span class="cloud-badge-icon">☁️</span>
+                <div>
+                    <div class="cloud-text-title">GitHub Releases CDN 高速下載</div>
+                    <div class="cloud-text-desc">26 份標準 A4 PDF 雲端直接下載</div>
+                </div>
+            </div>
+            <a href="https://github.com/stevenchu152587890625-tech/white-noise/releases/tag/nothing" target="_blank" class="btn-cloud-visit">
+                開啟 Releases ↗
+            </a>
+        </div>
+
+        <!-- APP CARDS STREAM -->
+        <main class="app-stream" id="appStreamContainer">
+            <!-- Cards will be populated by renderCards() -->
+        </main>
+
+        <!-- FLOATING PRINT CART SUMMARY SHEET -->
+        <div class="floating-cart-summary" id="floatingCartSheet">
+            <div class="cart-summary-stats">
+                <span>已選 <strong id="statPdfCount" style="color:#fff;">8</strong> 份</span>
+                <span>•</span>
+                <span class="cart-summary-highlight" id="statSheetCount">14 張 A4</span>
+                <span>(約 <span id="statCost">NT$ 56</span>)</span>
+            </div>
+            <button class="btn-cart-print-now" onclick="printSelected()">
+                <span>🖨️</span> 列印已選
+            </button>
+        </div>
+
+        <!-- BOTTOM APP TAB BAR -->
+        <nav class="bottom-nav-bar">
+            <button class="nav-tab-item active" id="tab-rec" onclick="selectNavTab('rec')">
+                <div class="nav-tab-icon">⭐</div>
+                <span>推薦必印</span>
+            </button>
+            <button class="nav-tab-item" id="tab-all" onclick="selectNavTab('all')">
+                <div class="nav-tab-icon">📚</div>
+                <span>考卷庫</span>
+            </button>
+            <button class="nav-tab-item" id="tab-quiz" onclick="selectNavTab('practice')">
+                <div class="nav-tab-icon">📝</div>
+                <span>空白測驗</span>
+            </button>
+            <button class="nav-tab-item" id="tab-cloud" onclick="selectNavTab('cloud')">
+                <div class="nav-tab-icon">☁️</div>
+                <span>雲端庫</span>
+            </button>
+            <button class="nav-tab-item" id="tab-cart" onclick="selectNavTab('cart')">
+                <div class="nav-tab-icon">🛒</div>
+                <span>列印清單</span>
+                <span class="nav-badge-count" id="cartBadgeCount">8</span>
+            </button>
+        </nav>
+
     </div>
 
-    <!-- Lightbox Modal -->
+    <!-- LIGHTBOX PREVIEW MODAL -->
     <div class="modal" id="imageModal" onclick="closeModal()">
         <button class="modal-close" onclick="closeModal()">✕</button>
         <img class="modal-content" id="modalImg" src="" alt="預覽大圖">
@@ -605,89 +937,90 @@
         const enPdfMapping = {"all_recommended": {"sol_en": "00_EE3_Recommended_Exams_and_Solutions_Complete_Package_RECOMMENDED_ALL.pdf", "q_en": "00_EE3_Recommended_Exams_Blank_Worksheets_Complete_Package_QUESTIONS_ONLY.pdf"}, "quiz1": {"sol_en": "01_EE3_Quiz_01_AcademicYear113_Student_Exam_Paper.pdf", "q_en": "01_EE3_Quiz_01_AcademicYear113_Blank_Question_Paper.pdf"}, "quiz2": {"sol_en": "02_EE3_Quiz_02_AcademicYear113_TwoPort_Feedback_Student_Paper.pdf", "q_en": "02_EE3_Quiz_02_AcademicYear113_TwoPort_Feedback_Blank_Question_Paper.pdf"}, "quiz4_113": {"sol_en": "03_EE3_Quiz_04_113_1_Updated_MultiStage_BJT_Feedback_Solutions.pdf", "q_en": "03_EE3_Quiz_04_113_1_Updated_MultiStage_BJT_Feedback_Blank_Worksheet.pdf"}, "quiz4_111": {"sol_en": "04_EE3_Quiz_04_111_1_Legacy_OPAMP_Characteristics_and_Analysis.pdf", "q_en": "04_EE3_Quiz_04_111_1_Legacy_OPAMP_Blank_Worksheet.pdf"}, "quiz5_114": {"sol_en": "05_EE3_Quiz_05_114_2_MOSFET_Amplifier_and_Thevenin_Solutions.pdf", "q_en": "05_EE3_Quiz_05_114_2_MOSFET_Amplifier_and_Thevenin_Blank_Worksheet.pdf"}, "quiz6_114": {"sol_en": "06_EE3_Quiz_06_114_1_Teacher_Updated_OPAMP_Diff_NIC_and_GIC_Solutions.pdf", "q_en": "06_EE3_Quiz_06_114_1_Teacher_Updated_OPAMP_Diff_NIC_and_GIC_Blank_Worksheet.pdf"}, "quiz6_113": {"sol_en": "07_EE3_Quiz_06_113_1_Original_Handwritten_Version.pdf", "q_en": "07_EE3_Quiz_06_113_1_Original_Blank_Worksheet.pdf"}, "midterm_batchA": {"sol_en": "08_EE3_Midterm_BatchA_111_1_Exam_Paper_and_Official_10Pages_Solutions.pdf", "q_en": "08_EE3_Midterm_BatchA_111_1_Official_Blank_Exam_Paper.pdf"}, "midterm_batchB": {"sol_en": "09_EE3_Midterm_BatchB_Exam_Paper_and_Handwritten_Solutions_with_Alternative_Derivations.pdf", "q_en": "09_EE3_Midterm_BatchB_Official_Blank_Exam_Paper.pdf"}, "midterm_bank": {"sol_en": "10_EE3_Midterm_Question_Bank_Official_Blank_Exam_Paper.pdf", "q_en": "10_EE3_Midterm_Question_Bank_Blank_Worksheet.pdf"}, "topics_feedback": {"sol_en": "11_EE3_Feedback_Special_Topic_and_Quiz_Practice_Color_Solutions.pdf", "q_en": "11_EE3_Feedback_Special_Topic_and_Quiz_Practice_Blank_Worksheet.pdf"}, "notes_slides": {"sol_en": "12_EE3_Negative_Feedback_Core_Notes_and_Official_Slides.pdf", "q_en": "12_EE3_Negative_Feedback_Self_Test_Blank_Worksheet.pdf"}};
         const pdfConfigs = [{"id": "all_recommended", "num": "00", "filename": "00_電子學三_【期中與小考完整必備】精華推薦列印合輯_RECOMMENDED_ALL.pdf", "indices": [50, 51, 52, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 38, 39, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 30, 31], "category": "一鍵合輯", "title": "★【期中與小考完整必備】精華推薦列印合輯 (零重複・最新版)", "priority": "all_in_one", "priority_label": "👑 影印店 / ibon 一鍵印完", "badge_class": "badge-aio", "pages": 28, "sheets": 14, "is_recommended": true, "scenario": ["all_rec", "quick_all"], "desc": "【最強推薦・懶人救星】自動剔除重複舊版，僅收錄所有「最新、最推薦、不可或缺」的精華試卷與解答！內含：第1次(2p) + 第2次(1p) + 第4次113更新版(4p) + 第5次(4p) + 第6次114教師更新版(3p) + 期中考梯次A試卷與10頁詳解(12p) + 回授彩色專題(2p)。", "print_advice": "【超商或影印店直接印這本】總共精華 28 頁，選擇「雙面列印」只需 14 張 A4 紙！不用再花時間挑檔案，整本印出來就是最完美的 EE3 備考寶典！", "color_advice": "黑白雙面列印即可 (經濟實惠)"}, {"id": "quiz1", "num": "01", "filename": "01_電子學三_第一次小考_113學年度學生作答原卷.pdf", "indices": [50, 51], "category": "第一次小考", "title": "第一次小考 (113學年度 學生作答原卷)", "priority": "recommended", "priority_label": "★ 推薦列印", "badge_class": "badge-rec", "pages": 2, "sheets": 1, "is_recommended": true, "scenario": ["quiz", "all_rec"], "desc": "收錄113學年度第1次小考學生實戰考卷（含紅筆評語批改，得分67分）。包含題1 OPAMP串並判定、題2 雙BJT並串判定、題3 理想回授模型推導、題4 方塊圖增益公式推導。", "print_advice": "【建議列印】題型為回授判定與推導基本功，卷面有紅筆標註常錯盲點，非常適合考前檢視答題規範。", "color_advice": "黑白即可 (若需看清楚紅筆批改可彩色)"}, {"id": "quiz2", "num": "02", "filename": "02_電子學三_第二次小考_113學年度學生作答原卷.pdf", "indices": [52], "category": "第二次小考", "title": "第二次小考 (113學年度 學生作答原卷)", "priority": "recommended", "priority_label": "★ 推薦列印", "badge_class": "badge-rec", "pages": 1, "sheets": 1, "is_recommended": true, "scenario": ["quiz", "all_rec"], "desc": "收錄113學年度第2次小考學生實戰考卷（注意：掃描原檔名誤植為第一次小考__003，卷頭實為第二次小考）。內容為實用雙埠非理想模型推導（Series-Series佔50%、Shunt-Series佔50%）。", "print_advice": "【建議列印】僅1頁，涵蓋實用非理想模型與方程式矩陣推導，為期中考必考第1題的大題題源。", "color_advice": "黑白即可"}, {"id": "quiz4_113", "num": "03", "filename": "03_電子學三_第四次小考_113_1學年度更新版_多級BJT回授.pdf", "indices": [1, 2, 3, 4], "category": "第四次小考", "title": "第四次小考 (113_1學年度 最新更新版解答)", "priority": "must_print", "priority_label": "★★★★★ 核心必印", "badge_class": "badge-must", "pages": 4, "sheets": 2, "is_recommended": true, "scenario": ["quiz", "midterm", "all_rec"], "desc": "薛老師最新出的第四次小考解答。題1：雙級BJT並串回授完整計算（開路A'z、Ri'、Ro'、β、閉迴路增益與輸入輸出電阻）；題2：三級BJT串串回授完整分析（A'g、Ri'、Ro'、β、Af、Rin、Rout）。", "print_advice": "【必印首選】這是老師目前使用的最新第四次小考題，題目難度與期中考大題完全對齊，必考重點！", "color_advice": "黑白即可"}, {"id": "quiz4_111", "num": "04", "filename": "04_電子學三_第四次小考_111_1學年度舊版_OPAMP特性與分析.pdf", "indices": [22, 23, 24], "category": "第四次小考", "title": "第四次小考 (111_1學年度 舊版手寫解答)", "priority": "optional", "priority_label": "選印 / 觀念補充", "badge_class": "badge-opt", "pages": 3, "sheets": 2, "is_recommended": false, "scenario": ["all"], "desc": "111_1學年度舊版第四次小考。題1：理想OPAMP五大特性（Rin=∞, Rout=0, A=∞, BW=∞, CMRR=∞）；題2：非反相放大器；題3：T型回授網路反相放大器增益推導。", "print_advice": "【選印・不需列入核心】若本學期第4次小考已進入回授放大器計算，請印113_1版即可；若需複習OPAMP五大特性才需印此份。", "color_advice": "黑白即可"}, {"id": "quiz5_114", "num": "05", "filename": "05_電子學三_第五次小考_114_2學年度_MOSFET放大器與戴維寧.pdf", "indices": [5, 6, 7, 8], "category": "第五次小考", "title": "第五次小考 (114_2學年度 最新手寫解答)", "priority": "must_print", "priority_label": "★★★★★ 核心必印", "badge_class": "badge-must", "pages": 4, "sheets": 2, "is_recommended": true, "scenario": ["quiz", "all_rec"], "desc": "最新第5次小考手寫解答。題1：NMOS共閘極CG放大器交流分析；題2：NMOS含源極電阻Rs且考慮ro之分析；題3：雙MOSFET疊接之戴維寧等效TEQs, TEQD；題4：三級MOSFET多級級聯增益計算。", "print_advice": "【必印首選】最新版小考題目，完整展示 MOSFET 多級放大與戴維寧簡化技巧，期中期末必備！", "color_advice": "黑白即可"}, {"id": "quiz6_114", "num": "06", "filename": "06_電子學三_第六次小考_114_1學年度教師更新版_OPAMP差動NIC與GIC.pdf", "indices": [9, 10, 11], "category": "第六次小考", "title": "第六次小考 (114_1學年度 教師更新重寫版)", "priority": "must_print", "priority_label": "★★★★★ 核心必印", "badge_class": "badge-must", "pages": 3, "sheets": 2, "is_recommended": true, "scenario": ["quiz", "all_rec"], "desc": "薛老師重新整理重寫的第6次小考解答。題1：OPAMP差動放大器平衡條件；題2：T型網路反相放大器；題3：負阻抗轉換器 NIC 求 Rin = -R3；題4：通用阻抗轉換器 GIC 推導 Zin = Z1*Z3*Z5 / (Z2*Z4)。", "print_advice": "【必印首選】題目與舊版完全一致，但此版字跡端正工整、節點電壓與步驟列式更清晰，印這份就夠了！", "color_advice": "黑白即可"}, {"id": "quiz6_113", "num": "07", "filename": "07_電子學三_第六次小考_113_1學年度原始手寫版.pdf", "indices": [25, 26, 27], "category": "第六次小考", "title": "第六次小考 (113_1學年度 原始手寫版)", "priority": "redundant", "priority_label": "⚠️ 免印 (重複內容)", "badge_class": "badge-red", "pages": 3, "sheets": 2, "is_recommended": false, "scenario": ["all"], "desc": "113_1學年度原始手寫版解答，題目內容與114_1版100%相同（題1 OPAMP差動, 題2 T型反相, 題3 NIC, 題4 GIC）。", "print_advice": "【強烈建議免印・省紙省錢】內容已被 114_1 教師更新版完全涵蓋，且 114_1 版更易閱讀，不需重複列印！", "color_advice": "免印"}, {"id": "midterm_batchA", "num": "08", "filename": "08_電子學三_期中考_梯次A_111_1學年度_試卷與官方10頁詳解.pdf", "indices": [38, 39, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21], "category": "期中考", "title": "期中考【梯次A】(111_1 11/07第1節 試卷與官方10頁詳解)", "priority": "must_print", "priority_label": "★★★★★ 期中必印首選", "badge_class": "badge-must", "pages": 12, "sheets": 6, "is_recommended": true, "scenario": ["midterm", "all_rec"], "desc": "最完整、最重要的期中考官方材料！包含官方命題試卷（2頁）與老師官方10頁手寫解答（涵蓋雙埠非理想模型、三級MOSFET並並回授、BJT+MOSFET並串回授、OPAMP串並回授、雙級BJT串串回授、密勒定理推導）。", "print_advice": "【期中考最高優先級必印】這是期中考最標準、解題步驟最完整的一份官方解答全集，每題雙埠、A'、β、閉迴路分步列出，期中考必背！", "color_advice": "黑白即可"}, {"id": "midterm_batchB", "num": "09", "filename": "09_電子學三_期中考_梯次B_試卷與學生手寫詳解含另解.pdf", "indices": [42, 43, 44, 45, 46, 47, 48, 49], "category": "期中考", "title": "期中考【梯次B】(11/08第4節 試卷與手寫6頁詳解含另解)", "priority": "recommended", "priority_label": "★ 期中推薦練習", "badge_class": "badge-rec", "pages": 8, "sheets": 4, "is_recommended": true, "scenario": ["midterm"], "desc": "期中考第二梯次考卷（題序調整、配分重配）與木桌手寫6頁完整解答。特色在於最後一頁補充了題4雙級BJT與題5並串回授之 A'I 另解，提供了不同的解題路徑。", "print_advice": "【推薦練習】適合做為第二份模擬試卷，或印出參考最後一頁的 A'I 另解思路，對加深理解回授增益非常有幫助。", "color_advice": "黑白即可"}, {"id": "midterm_bank", "num": "10", "filename": "10_電子學三_期中考_歷屆命題紙題庫.pdf", "indices": [41, 40], "category": "期中考", "title": "期中考【題庫卷】(歷屆命題紙原始試題)", "priority": "optional", "priority_label": "選印 / 自我測驗白卷", "badge_class": "badge-opt", "pages": 2, "sheets": 1, "is_recommended": false, "scenario": ["midterm", "all"], "desc": "期中考空白命題紙原始稿（共2頁6題），包含密勒定理比較、雙級BJT、三級BJT串串回授等經典題型。", "print_advice": "【自我測驗用】僅2頁（雙面1張紙），適合在考前遮住解答、作為模擬考的空白題目卷進行計時刷題。", "color_advice": "黑白即可"}, {"id": "topics_feedback", "num": "11", "filename": "11_電子學三_回授專題與練習題詳解_彩色板.pdf", "indices": [28, 29, 30, 31], "category": "專題與練習", "title": "回授專題與練習題手寫詳解 (含經典彩色板)", "priority": "recommended", "priority_label": "★ 推薦觀念複習", "badge_class": "badge-rec", "pages": 4, "sheets": 2, "is_recommended": true, "scenario": ["midterm", "all_rec"], "desc": "收錄112_1三級BJT串串回授小考練習題（為113_1第4次小考題2之題源），以及Q1(BJT)+Q2(MOSFET)並串回授經典彩色板手寫詳解（Ri', Ro', A'z, β 閉迴路全面分析）。", "print_advice": "【觀念複習推薦】彩色手寫板非常漂亮清楚，若手邊有彩色印表機可彩印，或直接放平板閱覽。", "color_advice": "建議彩色列印 (黑白亦可閱讀)"}, {"id": "notes_slides", "num": "12", "filename": "12_電子學三_負回授特性筆記與官方投影片.pdf", "indices": [32, 33, 34, 35, 36, 37], "category": "筆記與投影片", "title": "負回授特性重點筆記與官方投影片教材", "priority": "optional", "priority_label": "選印 / 考前觀念速讀", "badge_class": "badge-opt", "pages": 6, "sheets": 3, "is_recommended": false, "scenario": ["all"], "desc": "收錄負回授五大優點手寫筆記（失真、雜訊、靈敏度微分推導共2頁）與中原 EMC Lab 官方投影片（四大回授架構、Driving Law、雙埠負載效應共4頁橫式）。", "print_advice": "【選印】筆記前2頁直式適合考前背靈敏度推導；後4頁投影片為橫式，建議在電腦或平板上看，若要列印建議設定「2張合1」節省紙張。", "color_advice": "黑白或平板閱覽"}];
         const imagesMeta = [{"index": 1, "filename": "FB_IMG_1792568117636.jpg", "category": "第四次小考 (Quiz 4)", "exam_type": "第四次小考", "year": "113學年度 第1學期 (113_1)", "type": "官方手寫解答", "page_info": "Page 1 / 題目1", "title": "題目1：雙級 BJT 並串回授放大器交流分析 (前半部)", "desc": "Q1、Q2 BJT 電路分析。判定為並串組態 (Shunt-Series)。求開路迴路等效模型 (A')，計算 Ri'、Ro' 及 A'z = Io'/Is'。", "version_note": "113_1 最新版手寫解答，右下角標註頁碼 [1]。", "keywords": "BJT, 並串, Shunt-Series, 開路迴路, Ri', Ro', A'z"}, {"index": 2, "filename": "FB_IMG_1792568119359.jpg", "category": "第四次小考 (Quiz 4)", "exam_type": "第四次小考", "year": "113學年度 第1學期 (113_1)", "type": "官方手寫解答", "page_info": "Page 2 / 題目1 接續", "title": "題目1：雙級 BJT 並串回授放大器交流分析 (後半部)", "desc": "接續題目1。(c) 回授網路 β = I1/I2 = -R2/(R1+R2)；(d)(e)(f) 計算 Azf、Rif、Rof；(g)(h)(i) 計算整體輸入阻抗 Rin、輸出阻抗 Rout 及電壓增益 Av = Vo/Vs。", "version_note": "113_1 最新版手寫解答，右下角標註頁碼 [2]。", "keywords": "β, Azf, Rif, Rof, Rin, Rout, Av"}, {"index": 3, "filename": "FB_IMG_1792568120859.jpg", "category": "第四次小考 (Quiz 4)", "exam_type": "第四次小考", "year": "113學年度 第1學期 (113_1)", "type": "官方手寫解答", "page_info": "Page 3 / 題目2", "title": "題目2：三級 BJT 串串回授放大器交流分析 (前半部)", "desc": "Q1, Q2, Q3 三級 BJT 電路分析。判定為串串組態 (Series-Series)。求開路迴路等效模型，計算 Ri'、Ro' 及 A'g = Io'/Vs'。", "version_note": "本題與 112_1 小考練習解答題目1 (圖28) 電路完全一致，113_1 編為小考題目2。頁碼 [3]。", "keywords": "三級BJT, 串串, Series-Series, Ri', Ro', A'g"}, {"index": 4, "filename": "FB_IMG_1792568122476.jpg", "category": "第四次小考 (Quiz 4)", "exam_type": "第四次小考", "year": "113學年度 第1學期 (113_1)", "type": "官方手寫解答", "page_info": "Page 4 / 題目2 接續", "title": "題目2：三級 BJT 串串回授放大器交流分析 (後半部)", "desc": "接續題目2。(c) 回授網路 β；(d)(e)(f) 閉迴路參數 Af、Rif、Rof；(g)(h)(i) 整體電路 Rin、Rout、電壓增益 Av = -Af * RL。", "version_note": "與 112_1 小考練習解答第2頁 (圖29) 內容完全一致，頁碼 [4]。", "keywords": "β, Af, Rif, Rof, Rin, Rout, Av"}, {"index": 5, "filename": "FB_IMG_1792568134648.jpg", "category": "第五次小考 (Quiz 5)", "exam_type": "第五次小考", "year": "114學年度 第2學期 (114_2)", "type": "官方手寫解答", "page_info": "題目1", "title": "題目1：NMOS 共閘極 (CG) 放大器交流分析", "desc": "NMOS Common-Gate 放大器電路，含交流小訊號模型與驅動分析。推導 Rin = 1/gm (5%)、Rout = RD // RL (5%)、Av = Vo/Vi = (RD//RL)/(Rsig + 1/gm) (15%) 與兩級電壓比 (Vo/Vg)*(Vg/Vi)。", "version_note": "114_2 標記版本，右上角附完整計分配分標記。", "keywords": "NMOS, CG, Common Gate, Rin, Rout, Av"}, {"index": 6, "filename": "FB_IMG_1792568136115.jpg", "category": "第五次小考 (Quiz 5)", "exam_type": "第五次小考", "year": "114學年度 第2學期 (114_2)", "type": "官方手寫解答", "page_info": "題目2", "title": "題目2：NMOS 放大器 (含源極電阻 Rs, ro ≠ ∞) 交流分析", "desc": "考慮通道長度調變 ro ≠ ∞ 與源極電阻 Rs 之 NMOS 放大器。推導 Rin = R1 // R2 (5%)、Rout = RL // RD // [ro + (1+μ)Rs] (5%) 及整體增益 Av = Vo/Vsig 公式。", "version_note": "114_2 標記版本，詳細標註 μ = gm*ro 及各項配分。", "keywords": "NMOS, ro, Rs, μ=gm*ro, Rin, Rout, Av"}, {"index": 7, "filename": "FB_IMG_1792568137728.jpg", "category": "第五次小考 (Quiz 5)", "exam_type": "第五次小考", "year": "114學年度 第2學期 (114_2)", "type": "官方手寫解答", "page_info": "題目3", "title": "題目3：雙 MOSFET (Q1, Q2) 疊接戴維寧等效電路分析", "desc": "Q1 與 Q2 上下疊接 MOSFET 電路，分別從節點看入進行源極與汲極戴維寧等效 (TEQs, TEQD)。推導輸出電壓 Vo 之嚴謹公式 (25%)。", "version_note": "114_2 標記版本，戴維寧等效 (Thevenin Equivalent) 專題題型。", "keywords": "MOSFET, TEQs, TEQD, 戴維寧等效, Vo"}, {"index": 8, "filename": "FB_IMG_1792568139529.jpg", "category": "第五次小考 (Quiz 5)", "exam_type": "第五次小考", "year": "114學年度 第2學期 (114_2)", "type": "官方手寫解答", "page_info": "題目4", "title": "題目4：三級 MOSFET 放大器 (Q1, Q2, Q3) 交流多級增益分析", "desc": "Q1 (P-MOS/N-MOS), Q2, Q3 組成之三級多級放大器。推導輸入阻抗 Rin = Rs + R1//R2 (5%)、Rout = RL//R10//[ro3+(1+μ3)R9] (5%) 及多級級聯增益 Av = (Vo/Vg3)*(Vg3/Vg2)*(Vg2/Vg1)*(Vg1/Vs) (15%)。", "version_note": "114_2 標記版本，多級串接經典分析題。", "keywords": "三級MOSFET, 多級放大器, Rin, Rout, Av 級聯分解"}, {"index": 9, "filename": "FB_IMG_1792568171678.jpg", "category": "第六次小考 (Quiz 6)", "exam_type": "第六次小考", "year": "114學年度 第1學期 (114_1) [教師更新版]", "type": "官方手寫解答", "page_info": "Page 1 / 題目1 & 題目2", "title": "題目1：OPAMP 差動放大器平衡條件 & 題目2：T型回授網路反相放大器", "desc": "題目1：推導 OPAMP 差動放大器消除共模電壓的平衡條件 R1/R2 = R3/R4 及 Vo = (R2/R1)(V2-V1)；題目2：T 型回授電路 (Ra, Rb, Rc, Rd) 反相增益 Vo/Vi = -(Rb/Ra)[1 + Rd/Rc + Rd/Rb]。", "version_note": "【版本更新】114_1 更新版，與 113_1 (圖25) 題目完全相同，本版增益書寫更工整，頁碼 [1]。", "keywords": "OPAMP, 差動放大器, 平衡條件, T型回授網路, 反相放大器"}, {"index": 10, "filename": "FB_IMG_1792568173161.jpg", "category": "第六次小考 (Quiz 6)", "exam_type": "第六次小考", "year": "114學年度 第1學期 (114_1) [教師更新版]", "type": "官方手寫解答", "page_info": "Page 2 / 題目3", "title": "題目3：負阻抗轉換器 (NIC, Negative Impedance Converter)", "desc": "OPAMP 正負回授組合之負阻抗轉換電路。推導節點電壓 Vo = (1 + R2/R1)Vt、測試電流 It，求出等效輸入阻抗 Rin = Vt/It = -R3*(R1/R2)。若 R1=R2 則 Rin = -R3。", "version_note": "【版本更新】114_1 更新版，與 113_1 (圖26) 題目相同，頁碼 [2]。", "keywords": "NIC, 負阻抗轉換器, Rin = -R3*(R1/R2), OPAMP"}, {"index": 11, "filename": "FB_IMG_1792568174915.jpg", "category": "第六次小考 (Quiz 6)", "exam_type": "第六次小考", "year": "114學年度 第1學期 (114_1) [教師更新版]", "type": "官方手寫解答", "page_info": "Page 3 / 題目4", "title": "題目4：通用阻抗轉換器 (GIC, Generalized Impedance Converter)", "desc": "雙理想 OPAMP 與 5 個阻抗元件 (Za, Zb, Zc, Zd, Ze) 構成之 GIC 電路。推導各節點電壓 Vx, Vy 與各支路電流，證得輸入阻抗 Zin = Vt/It = (Za*Zc*Ze)/(Zb*Zd)。", "version_note": "【版本更新】114_1 更新版，與 113_1 (圖27) 題目相同，此題為濾波器實作必備考題，頁碼 [3]。", "keywords": "GIC, 通用阻抗轉換器, Zin = (Za*Zc*Ze)/(Zb*Zd), 雙OPAMP"}, {"index": 12, "filename": "FB_IMG_1792568226441.jpg", "category": "期中考 (Midterm) 111_1", "exam_type": "期中考", "year": "111學年度 第1學期 (111_1)", "type": "官方手寫解答", "page_info": "Page 1 / 題目1(a)", "title": "題目1(a)：Series-Shunt (串並) 理想與非理想模型推導", "desc": "薛光華老師期中考題目1解答(a)：繪製 Series-Shunt 回授放大器雙埠 h 參數等效電路，寫出 V1 = h11*I1 + h12*V2, I2 = h21*I1 + h22*V2 矩陣方程及簡化模型。", "version_note": "111_1 期中考官方10頁詳解之第 1 頁，右下角標註頁碼 [1]。", "keywords": "Series-Shunt, 串並, h參數, 雙埠網路, 理想與非理想模型"}, {"index": 13, "filename": "FB_IMG_1792568227713.jpg", "category": "期中考 (Midterm) 111_1", "exam_type": "期中考", "year": "111學年度 第1學期 (111_1)", "type": "官方手寫解答", "page_info": "Page 2 / 題目1(b)", "title": "題目1(b)：Shunt-Series (並串) 理想與非理想模型推導", "desc": "薛光華老師期中考題目1解答(b)：繪製 Shunt-Series 回授放大器雙埠 g 參數等效電路，寫出 I1 = g11*V1 + g12*I2, V2 = g21*V1 + g22*I2 方程式及等效圖。", "version_note": "111_1 期中考官方10頁詳解之第 2 頁，右下角標註頁碼 [2]。", "keywords": "Shunt-Series, 並串, g參數, 雙埠網路, 非理想模型"}, {"index": 14, "filename": "FB_IMG_1792568229069.jpg", "category": "期中考 (Midterm) 111_1", "exam_type": "期中考", "year": "111學年度 第1學期 (111_1)", "type": "官方手寫解答", "page_info": "Page 3 / 題目2 (前半部)", "title": "題目2：三級 MOSFET 並並回授放大器分析 (前半部)", "desc": "Q1, Q2, Q3 三級 MOSFET 放大器，外加 R5 回授。判定為並並 (Shunt-Shunt)。求開路迴路等效模型，計算 Ri'、Ro' 及跨阻增益 A'R = Vo'/Is'。", "version_note": "111_1 期中考官方10頁詳解之第 3 頁，右下角標註頁碼 [3]。", "keywords": "三級MOSFET, 並並, Shunt-Shunt, Ri', Ro', A'R"}, {"index": 15, "filename": "FB_IMG_1792568231299.jpg", "category": "期中考 (Midterm) 111_1", "exam_type": "期中考", "year": "111學年度 第1學期 (111_1)", "type": "官方手寫解答", "page_info": "Page 4 / 題目2 (後半部)", "title": "題目2：三級 MOSFET 並並回授放大器分析 (後半部)", "desc": "接續題目2。③ 求 β = I1/V2 = -1/R5；④ 計算 Rif、Rof、Af；⑤ 計算整體電路之輸入阻抗 Rin = Rs*Rif/(Rs-Rif)、Rout = Rof 及電壓增益 Av = Vo/Vs = Af*(1/Rs)。", "version_note": "111_1 期中考官方10頁詳解之第 4 頁，右下角標註頁碼 [4]。", "keywords": "β = -1/R5, Rif, Rof, Af, Rin, Rout, Av"}, {"index": 16, "filename": "FB_IMG_1792568233269.jpg", "category": "期中考 (Midterm) 111_1", "exam_type": "期中考", "year": "111學年度 第1學期 (111_1)", "type": "官方手寫解答", "page_info": "Page 5 / 題目3 (前半部)", "title": "題目3：Q1(BJT) + Q2(MOSFET) 並串回授放大器分析 (前半部)", "desc": "Q1 (BJT) 與 Q2 (MOSFET) 混合放大器。判定為並串組態 (Shunt-Series, AIf = Io/Is)。求解開路模型 Ri'、Ro' 及短路電流增益 A'I = Io'/Is'。", "version_note": "111_1 期中考官方10頁詳解之第 5 頁，右下角標註頁碼 [5]。", "keywords": "BJT+MOSFET, 並串, Shunt-Series, Ri', Ro', A'I"}, {"index": 17, "filename": "FB_IMG_1792568234918.jpg", "category": "期中考 (Midterm) 111_1", "exam_type": "期中考", "year": "111學年度 第1學期 (111_1)", "type": "官方手寫解答", "page_info": "Page 6 / 題目3 (後半部)", "title": "題目3：Q1(BJT) + Q2(MOSFET) 並串回授放大器分析 (後半部)", "desc": "接續題目3。③ β 網路推導；④ 閉迴路參數 Rif、Rof、AIf；⑤ 整體 Rin、Rout、AI = Io/Is 及電壓增益 Av = Vo/Vs = -AI*(RL/Rs)。", "version_note": "111_1 期中考官方10頁詳解之第 6 頁，右下角標註頁碼 [6]。", "keywords": "β, Rif, Rof, AIf, Rin, Rout, AI, Av"}, {"index": 18, "filename": "FB_IMG_1792568236556.jpg", "category": "期中考 (Midterm) 111_1", "exam_type": "期中考", "year": "111學年度 第1學期 (111_1)", "type": "官方手寫解答", "page_info": "Page 7 / 題目4 (前半部)", "title": "題目4：OPAMP 串並回授放大器分析 (含非理想 Rid, ro, μVid) (前半部)", "desc": "OPAMP 內部非理想模型 (Rid, ro, μVid) 與外接電阻 R1, R2, R3。判定為串並 (Series-Shunt, Avf = Vo/Vs)。推導開路迴路 Ri'、Ro' 與電壓增益 A'v = Vo'/Vi'。", "version_note": "111_1 期中考官方10頁詳解之第 7 頁，右下角標註頁碼 [7]。", "keywords": "OPAMP, 串並, Series-Shunt, Rid, ro, μVid, Ri', Ro', A'v"}, {"index": 19, "filename": "FB_IMG_1792568238533.jpg", "category": "期中考 (Midterm) 111_1", "exam_type": "期中考", "year": "111學年度 第1學期 (111_1)", "type": "官方手寫解答", "page_info": "Page 8 / 題目4 (後半部)", "title": "題目4：OPAMP 串並回授放大器分析 (後半部)", "desc": "接續題目4。③ β = R1/(R1+R2)；④ 計算閉迴路參數 Af = A'/(1+A'β)、Rif、Rof；⑤ 計算電路整體輸入阻抗 Rin = Rif - Rs、輸出阻抗 Rout 及閉迴路電壓增益 Av = Vo/Vs = Avf。", "version_note": "111_1 期中考官方10頁詳解之第 8 頁，右下角標註頁碼 [8]。", "keywords": "β, Af, Rif, Rof, Rin, Rout, Av"}, {"index": 20, "filename": "FB_IMG_1792568240979.jpg", "category": "期中考 (Midterm) 111_1", "exam_type": "期中考", "year": "111學年度 第1學期 (111_1)", "type": "官方手寫解答", "page_info": "Page 9 / 題目5 (前半部)", "title": "題目5：三級 BJT 串串回授放大器分析 (前半部)", "desc": "Q1, Q2, Q3 三級 BJT 放大電路，由射極引出回授網路。判定為串串組態 (Series-Series, AG = Io/Vs)。推導開路 Ri'、Ro' 及跨導增益 A'G = Io'/Vs' 完整連乘式。", "version_note": "111_1 期中考官方10頁詳解之第 9 頁，右下角標註頁碼 [9]。", "keywords": "三級BJT, 串串, Series-Series, Ri', Ro', A'G"}, {"index": 21, "filename": "FB_IMG_1792568242361.jpg", "category": "期中考 (Midterm) 111_1", "exam_type": "期中考", "year": "111學年度 第1學期 (111_1)", "type": "官方手寫解答", "page_info": "Page 10 / 題目5 (後半部)", "title": "題目5：三級 BJT 串串回授放大器分析 (後半部)", "desc": "接續題目5。③ β 回授網路方程式；④ 閉迴路參數 Rif、Rof、Agf；⑤ 整體 Rin、Rout、電壓增益 Av = -Af*RL 及電流增益 AI = Af*(Rs + Rin)。", "version_note": "111_1 期中考官方10頁詳解之第 10 頁完結，右下角標註頁碼 [10]。", "keywords": "β, Rif, Rof, Agf, Rin, Rout, Av, AI"}, {"index": 22, "filename": "FB_IMG_1792568244246.jpg", "category": "第四次小考 (Quiz 4)", "exam_type": "第四次小考", "year": "111學年度 第1學期 (111_1)", "type": "官方手寫解答", "page_info": "Page 1 / 題目1", "title": "題目1：理想運算放大器 (OPAMP) 五大理想特性", "desc": "111_1 第四次小考題目1手寫解答：理想 OPAMP 模型圖與 5 大特性整理：(1) Rin = ∞、(2) Rout = 0、(3) 開路電壓增益 A = ∞、(4) 頻寬 BW = ∞、(5) 共模斥拒比 CMRR = ∞。", "version_note": "【跨年份版本】111_1 版第四次小考著重於 OPAMP 基礎與組態，與 113_1 版著重多級晶體回授不同。頁碼 [1]。", "keywords": "理想OPAMP, Rin=∞, Rout=0, A=∞, BW=∞, CMRR=∞"}, {"index": 23, "filename": "FB_IMG_1792568246552.jpg", "category": "第四次小考 (Quiz 4)", "exam_type": "第四次小考", "year": "111學年度 第1學期 (111_1)", "type": "官方手寫解答", "page_info": "Page 2 / 題目2", "title": "題目2：理想 OPAMP 非反相放大器分析", "desc": "非反相放大器電路分析。推導 (a) 輸入阻抗 Rin = ∞、(b) 輸出阻抗 Rout = 0、(c) 電壓增益 Vo/Vi = 1 + R2/R1 嚴謹推導過程。", "version_note": "111_1 版第四次小考第 2 頁，右下角標註頁碼 [2]。", "keywords": "OPAMP, 非反相放大器, Rin=∞, Rout=0, Vo/Vi = 1+R2/R1"}, {"index": 24, "filename": "FB_IMG_1792568248295.jpg", "category": "第四次小考 (Quiz 4)", "exam_type": "第四次小考", "year": "111學年度 第1學期 (111_1)", "type": "官方手寫解答", "page_info": "Page 3 / 題目3", "title": "題目3：理想 OPAMP T型回授網路反相放大器推導", "desc": "含 T 型電阻回授網路 (R2, R3, R4) 之反相放大器。利用虛擬接地推導 I1, Vx, I3, I4，求出電壓增益 Vo/Vi = -(R2/R1)[1 + R4/R3 + R4/R2]。", "version_note": "111_1 版第四次小考第 3 頁，右下角標註頁碼 [3]。", "keywords": "OPAMP, T型回授, 反相放大器, Vo/Vi"}, {"index": 25, "filename": "FB_IMG_1792568337420.jpg", "category": "第六次小考 (Quiz 6)", "exam_type": "第六次小考", "year": "113學年度 第1學期 (113_1) [原始版本]", "type": "官方手寫解答", "page_info": "Page 1 / 題目1 & 題目2", "title": "題目1：OPAMP 差動放大器平衡條件 & 題目2：T型網路反相放大器", "desc": "113_1 電子學(三)第六次小考解答：題目1 差動放大器平衡條件推導 R1/R2 = R3/R4；題目2 T型回授網路反相放大器步驟化推導 (1. I1 2. Vx 3. I2 4. Vo)。", "version_note": "【版本對照】113_1 原始手寫版本，題目與 114_1 (圖09) 一模一樣，此處保留原檔，頁碼 [1]。", "keywords": "OPAMP, 差動放大器, 平衡條件, T型回授, 113_1版"}, {"index": 26, "filename": "FB_IMG_1792568339050.jpg", "category": "第六次小考 (Quiz 6)", "exam_type": "第六次小考", "year": "113學年度 第1學期 (113_1) [原始版本]", "type": "官方手寫解答", "page_info": "Page 2 / 題目3", "title": "題目3：負阻抗轉換器 (NIC) 求輸入阻抗 Rin", "desc": "113_1 第六次小考題目3：NIC 電路分析，推導 Vt/It = -R3*(R1/R2) = Rin，當 R1=R2 時 Rin = -R3。", "version_note": "【版本對照】113_1 原始手寫版本，與 114_1 (圖10) 完全一致，頁碼 [2]。", "keywords": "NIC, 負阻抗轉換器, Rin = -R3, 113_1版"}, {"index": 27, "filename": "FB_IMG_1792568340599.jpg", "category": "第六次小考 (Quiz 6)", "exam_type": "第六次小考", "year": "113學年度 第1學期 (113_1) [原始版本]", "type": "官方手寫解答", "page_info": "Page 3 / 題目4", "title": "題目4：通用阻抗轉換器 (GIC) 求輸入阻抗 Zin", "desc": "113_1 第六次小考題目4：雙 OPAMP GIC 電路，分 6 大步驟逐步推導 Is, Vx, I3, Vy, It，求得 Zin = (Za*Zc*Ze)/(Zb*Zd)。", "version_note": "【版本對照】113_1 原始手寫版本，步驟列式極度清晰 (1~6步)，與 114_1 (圖11) 互為對照，頁碼 [3]。", "keywords": "GIC, 通用阻抗轉換器, Zin, 雙OPAMP, 113_1版"}, {"index": 28, "filename": "FB_IMG_1792568362467.jpg", "category": "小考練習題 (Quiz Practice)", "exam_type": "小考練習題", "year": "112學年度 第1學期 (112_1)", "type": "練習題解答", "page_info": "Page 1 / 題目1", "title": "題目1：三級 BJT 串串回授放大器練習 (前半部)", "desc": "標題「112_1 電子學小考練習解答 題目1」。Q1, Q2, Q3 三級 BJT 串串回授放大器分析，推導 Ri'、Ro' 及跨導增益 A'g。", "version_note": "【題源演變】此題為老師歷屆經典考題，於 112_1 為小考練習題1，於 113_1 成為正式第四次小考題目2 (圖03)。頁碼 [1]。", "keywords": "112_1, 小考練習, 三級BJT, 串串, Ri', Ro', A'g"}, {"index": 29, "filename": "FB_IMG_1792568364111.jpg", "category": "小考練習題 (Quiz Practice)", "exam_type": "小考練習題", "year": "112學年度 第1學期 (112_1)", "type": "練習題解答", "page_info": "Page 2 / 題目1 接續", "title": "題目1：三級 BJT 串串回授放大器練習 (後半部)", "desc": "接續題目1。(c) β 網路；(d)(e)(f) 閉迴路參數 Af、Rif、Rof；(g)(h)(i) 整體電路 Rin、Rout 及電壓增益 Av = -Af*RL。", "version_note": "與 113_1 第四次小考第4頁 (圖04) 內容完全一致，頁碼 [2]。", "keywords": "112_1, β, Af, Rif, Rof, Rin, Rout, Av"}, {"index": 30, "filename": "FB_IMG_1792568415949.jpg", "category": "回授專題複習 (Review Notes)", "exam_type": "經典複習題", "year": "經典題庫 (彩色精讀版)", "type": "彩色筆手寫詳解", "page_info": "Page 1", "title": "經典題：Q1(BJT) + Q2(MOSFET) 並串型回授放大器詳解 (前半部)", "desc": "彩筆標註詳解。電路包含 Q1 (BJT) 與 Q2 (MOSFET)，求 Rin、Rout、Av = Vo/Vs (ro1, ro2 ≠ ∞)。完整步驟：1. 並串 type 2. A' 開路迴路模型、Ri'、Ro'、A'z 3. β 網路推導。", "version_note": "彩色劃記重點與測試訊號方向，標註 p1，適合快速複習並串回授完整架構。", "keywords": "彩色筆, BJT+MOSFET, 並串, 開路模型, β, p1"}, {"index": 31, "filename": "FB_IMG_1792568417921.jpg", "category": "回授專題複習 (Review Notes)", "exam_type": "經典複習題", "year": "經典題庫 (彩色精讀版)", "type": "彩色筆手寫詳解", "page_info": "Page 2", "title": "經典題：Q1(BJT) + Q2(MOSFET) 並串型回授放大器詳解 (後半部)", "desc": "接續第1頁。步驟 4：計算閉迴路參數 Rif = Ri'/(1+A'z*β)、Rof = (1+A'z*β)*Ro'、Af = A'z/(1+A'z*β)；步驟 5：推導整體 Rin = Rs*Rif/(Rs-Rif)、Rout = RL // (Rof - RL)、Av = -Af*(RL/Rs)。", "version_note": "彩色標註 p2，結尾附推導完成符號 #。", "keywords": "Rif, Rof, Af, Rin, Rout, Av, p2"}, {"index": 32, "filename": "FB_IMG_1792568479216.jpg", "category": "課堂核心筆記 (Class Notes)", "exam_type": "課堂筆記", "year": "課程核心筆記", "type": "活頁筆記本手寫", "page_info": "Page 1", "title": "負回授特性筆記：1. 降低增益靈敏度 & 2. 頻寬展延", "desc": "筆記標題「Some Properties of Negative Feedback」。1. Gain Desensitivity (增益靈敏度)：微分推導 dAf/Af = [1/(1+Aβ)] * (dA/A)，證明加了負回授後增益波動縮小；2. Bandwidth Extension (頻寬展延)：高頻極點從 ωH 延伸至 ωH*(1+Am*β)，圖解增益頻寬乘積特性。", "version_note": "期中考必考名詞解釋與推導題，字跡工整。", "keywords": "Gain Desensitivity, 增益靈敏度, Bandwidth Extension, 頻寬展延"}, {"index": 33, "filename": "FB_IMG_1792568480677.jpg", "category": "課堂核心筆記 (Class Notes)", "exam_type": "課堂筆記", "year": "課程核心筆記", "type": "活頁筆記本手寫", "page_info": "Page 2", "title": "負回授特性筆記：3. 降低雜訊 & 4. 減少非線性失真 + 四大特性總結", "desc": "3. Noise Reduction：推導訊噪比 SNR 提高 A2 倍之雙級放大器模型；4. Reduction in nonlinear distortion：圖解傳遞特性曲線在加入負回授後線性度大幅改善。右側方框總結四大好處，並有備忘「上傳講義、TA借教室」。", "version_note": "與圖32合為完整的負回授四大特性複習重點。", "keywords": "Noise Reduction, 訊噪比, 非線性失真, 四大特性總結"}, {"index": 34, "filename": "FB_IMG_1792568483147.jpg", "category": "中原大學官方講義 (Official Slides)", "exam_type": "講義投影片", "year": "中原大學 EMC Lab 投影片", "type": "官方教材 PPT", "page_info": "Slide 1 (P.2)", "title": "四大理想回授組態：Series-Shunt (串並) 模型與 Driving Law 推導", "desc": "中原大學 Advanced Packaging and EMC Lab 官方投影片。講解 Series-Shunt (串並) 理想回授組態，使用 Driving Law (令 V 與 I 測試源) 分別推導 Af = Av/(1+βAv)、Rif = (1+Avβ)Ri (串聯阻抗增加)、Rof = Ro/(1+Avβ) (並聯阻抗降低)。", "version_note": "薛光華老師課堂授課投影片原檔截圖，頁碼 2。", "keywords": "CYCU, Series-Shunt, 串並, Driving Law, Rif, Rof, Af"}, {"index": 35, "filename": "FB_IMG_1792568484980.jpg", "category": "中原大學官方講義 (Official Slides)", "exam_type": "講義投影片", "year": "中原大學 EMC Lab 投影片", "type": "官方教材 PPT", "page_info": "Slide 2 (P.3)", "title": "四大理想回授組態：Series-Series (串串) 模型與 Driving Law 推導", "desc": "Series-Series (串串) 理想跨導回授組態。推導跨導增益 Af = Ag/(1+βAg)、輸入阻抗 Rif = (1+Agβ)Ri (串增)、輸出阻抗 Rof = (1+Agβ)Ro (串增)。", "version_note": "官方投影片第 3 頁，清晰標示串聯增加 (1+Aβ) 倍之規律。", "keywords": "CYCU, Series-Series, 串串, Driving Law, 跨導回授"}, {"index": 36, "filename": "FB_IMG_1792568486544.jpg", "category": "中原大學官方講義 (Official Slides)", "exam_type": "講義投影片", "year": "中原大學 EMC Lab 投影片", "type": "官方教材 PPT", "page_info": "Slide 3 (P.4)", "title": "四大理想回授組態：Shunt-Shunt (並並) 模型與 Driving Law 推導", "desc": "Shunt-Shunt (並並) 理想跨阻回授組態。推導跨阻增益 Af = Ar/(1+βAr)、輸入阻抗 Rif = Ri/(1+Arβ) (並減)、輸出阻抗 Rof = Ro/(1+Arβ) (並減)。", "version_note": "官方投影片第 4 頁，標示並聯除以 (1+Aβ) 倍之規律。", "keywords": "CYCU, Shunt-Shunt, 並並, Driving Law, 跨阻回授"}, {"index": 37, "filename": "FB_IMG_1792568488176.jpg", "category": "中原大學官方講義 (Official Slides)", "exam_type": "講義投影片", "year": "中原大學 EMC Lab 投影片", "type": "官方教材 PPT", "page_info": "Slide 4 (P.5)", "title": "四大理想回授組態：Shunt-Series (並串) 模型與 Driving Law 推導", "desc": "Shunt-Series (並串) 理想電流回授組態。推導電流增益 Af = Ai/(1+βAi)、輸入阻抗 Rif = Ri/(1+Aiβ) (並減)、輸出阻抗 Rof = (1+Aiβ)Ro (串增)。", "version_note": "官方投影片第 5 頁，四大回授組態完整全套。", "keywords": "CYCU, Shunt-Series, 並串, Driving Law, 電流回授"}, {"index": 38, "filename": "FB_IMG_1792568499656.jpg", "category": "期中考 (Midterm) 111_1", "exam_type": "期中考", "year": "111學年度 第1學期 (11/07 第1節)", "type": "官方試卷本體", "page_info": "Page 1 (共2頁之第1頁)", "title": "期中考試卷 (11/07 第1節)：第1題 ~ 第5題 試題", "desc": "中原大學考試命題紙，開課班級：電子三甲，教師：薛光華，代碼：EL255G。第1題：繪製理想回授模型 (Series-Shunt, Shunt-Series) (10%)；第2題：非理想模型與方程式 (Shunt-Shunt, Shunt-Series) (10%)；第3題：Fig.1 三級 MOSFET 回授 (20%)；第4題：Fig.2 雙級 MOSFET 回授 (20%)；第5題：Fig.3 雙級 BJT 回授 (20%)。", "version_note": "【對照關係】此即圖 12~21 官方手寫解答所對應之原始試卷！頁面註記「我們瞭解人人各有不同之稟賦...」。", "keywords": "試卷, 薛光華, 11/07, EL255G, 第1~5題"}, {"index": 39, "filename": "FB_IMG_1792568501057.jpg", "category": "期中考 (Midterm) 111_1", "exam_type": "期中考", "year": "111學年度 第1學期 (11/07 第1節)", "type": "官方試卷本體", "page_info": "Page 2 (共2頁之第2頁)", "title": "期中考試卷 (11/07 第1節)：第6題 試題", "desc": "試卷第 2 頁。第6題：For the circuit shown in Fig.4, (a) what type of the circuit? Please drive the (b) Av = Vo/Vs (c) Rin (d) Rout, if ro1, ro2, ro3 ≈ ∞ (20%)。電路為三級 BJT 射極回授放大器。", "version_note": "11/07 第1節期中考試卷完結頁，滿分 100 分。", "keywords": "試卷, Fig.4, 三級BJT, 第6題, 滿分100"}, {"index": 40, "filename": "FB_IMG_1792568530786.jpg", "category": "題庫試卷 (Question Bank)", "exam_type": "歷屆題庫卷", "year": "歷屆期中考題庫", "type": "官方試卷本體", "page_info": "Page 2 (共2頁之第2頁)", "title": "期中題庫試卷：第6題 ~ 第8題 試題", "desc": "本份試題共2頁之第2頁。第6題：雙級 BJT 帶回授求 Rin, Rout, Av (10%)；第7題：MOSFET 電路以 feedback method 求 Rin, Rout, Vo/Vi, Io/Vi (10%)；第8題：雙 BJT 差動/電流源電路求 Rin, Rout, Av (10%)。", "version_note": "歷屆考古題題庫卷第 2 頁，低解析度但題型珍貴，與圖41成對。", "keywords": "題庫, 考古題, 第6~8題, 雙級BJT, MOSFET feedback"}, {"index": 41, "filename": "FB_IMG_1792568533137.jpg", "category": "題庫試卷 (Question Bank)", "exam_type": "歷屆題庫卷", "year": "歷屆期中考題庫", "type": "官方試卷本體", "page_info": "Page 1 (共2頁之第1頁)", "title": "期中題庫試卷：第1題 ~ 第5題 試題", "desc": "中原大學考試命題紙。第1題：回授等效方塊圖推導 Avf = Xo/Xs (10%)；第2題：已知 gm, ro，以 (1) Miller's theorem 與 (2) Feedback method 兩種方法求解 Rin, Ro, Av 並比較兩者差異 (20%)；第3題：三級 BJT 電路 (10%)；第4題：雙 BJT 電路 (10%)；第5題：Fig.2 回授放大器推導 Rif, Rof, Af (10%)。", "version_note": "題庫卷第 1 頁，第2題的密勒定理 (Miller's theorem) 與回授法比較為極重要考點。", "keywords": "題庫, 密勒定理, Miller, 方塊圖推導, 第1~5題"}, {"index": 42, "filename": "FB_IMG_1792568553405.jpg", "category": "期中考 (Midterm) 11/08版", "exam_type": "期中考", "year": "111/112學年度 (11/08 第4節)", "type": "官方試卷本體", "page_info": "Page 1 (共2頁之第1頁)", "title": "期中考試卷 (11/08 第4節 第二版/另一班)：第1題 ~ 第5題 試題", "desc": "考試時間：11月08日 第4節，電子三甲，薛光華老師。第1題：理想 Series-Shunt 模型 (5%)；第2題：非理想 Shunt-Series 模型與方程 (5%)；第3題：Fig.1 三級 BJT 回授放大器 (25%)；第4題：Fig.2 雙級 MOSFET 回授放大器 (20%)；第5題：Fig.3 雙級 BJT 回授放大器 (20%)。", "version_note": "【版本差異】注意！此卷為 11/08 第4節版本，題目的順序與配分和 11/07 第1節卷 (圖38) 有所調換 (例如題3在11/07是MOSFET，此處變為BJT)！", "keywords": "11/08試卷, 電子三甲, 薛光華, 配分調整, 第1~5題"}, {"index": 43, "filename": "FB_IMG_1792568554970.jpg", "category": "期中考 (Midterm) 11/08版", "exam_type": "期中考", "year": "111/112學年度 (11/08 第4節)", "type": "官方試卷本體", "page_info": "Page 2 (共2頁之第2頁)", "title": "期中考試卷 (11/08 第4節 第二版/另一班)：第6題 試題", "desc": "本份試題共2頁之第2頁。第6題：For the circuit shown in Fig.4, (a) what type of the FB circuit? Please drive the (b) Av = Vo/Vs (c) Rin (d) Rout, if we know gm1, gm2, gm3, ro1, ro2, ro3 ≠ ∞ (25%)。電路為三級 MOSFET 回授放大器。", "version_note": "11/08 第4節試卷完結頁，與圖42成對。對應解答為圖44~49。", "keywords": "11/08試卷, Fig.4, 三級MOSFET, 第6題 (25%)"}, {"index": 44, "filename": "FB_IMG_1792568557131.jpg", "category": "期中考 (Midterm) 11/08版", "exam_type": "期中考", "year": "111/112學年度 (11/08 第4節)", "type": "官方手寫解答", "page_info": "解答 P.1 / 題1 & 題2", "title": "11/08 期中考解答：第1題 理想串並模型 & 第2題 非理想並串模型", "desc": "木桌拍攝之手寫解答。1. ideal 串並 (Series-Shunt) 回授模型與輸出入阻抗；2. non-ideal 並串 (Shunt-Series) g 參數雙埠模型與方程式 I1 = g11*V1 + g12*I2, V2 = g21*V1 + g22*I2。", "version_note": "【對照關係】對應 11/08 試卷 (圖42) 之第1題與第2題解答。", "keywords": "11/08解答, 理想串並, 非理想並串, g參數, 題1與題2"}, {"index": 45, "filename": "FB_IMG_1792568558674.jpg", "category": "期中考 (Midterm) 11/08版", "exam_type": "期中考", "year": "111/112學年度 (11/08 第4節)", "type": "官方手寫解答", "page_info": "解答 P.2 / 題3", "title": "11/08 期中考解答：第3題 三級 BJT 串並回授放大器完整分析", "desc": "對應 11/08 卷第3題。三級 BJT 電路分析：(a) 判定串並 (Series-Shunt)；求 Ri1, Ri2, Ri3, Ro', Rin', Rout'；推導開路增益 A'v；β = R1/(R1+R2)；求 Rif, Rof, Avf；(b) Av = Avf；(c) Rin = Rif - Rs；(d) Rout = RL*Rof/(RL-Rof)；(e) Ai = Avf * (Rif/RL)。", "version_note": "完整解答，各小題步驟齊全清晰。", "keywords": "三級BJT, 串並, A'v, β, Rif, Rof, Avf, Rin, Rout, Ai"}, {"index": 46, "filename": "FB_IMG_1792568560220.jpg", "category": "期中考 (Midterm) 11/08版", "exam_type": "期中考", "year": "111/112學年度 (11/08 第4節)", "type": "官方手寫解答", "page_info": "解答 P.3 / 題4", "title": "11/08 期中考解答：第4題 雙級 MOSFET 並串回授放大器完整分析", "desc": "對應 11/08 卷第4題。雙級 MOSFET (ro1, ro2 ≠ ∞)：(a) 判定並串 (2%)；求開路模型 A'z = Io'/Is' (4%)；求 β = -R1/(R1+R2) (1%)；求 Rif, Rof, AIf (3%)；(b) Av = -Azf*(RD2/Rs) (2%)；(c) Rin = Rs*Rif/(Rs-Rif) (2%)；(d) Rout = Rof - RD2 (2%)。", "version_note": "有詳細計分百分比註記，解法嚴密。", "keywords": "雙級MOSFET, 並串, A'z, β, Rif, Rof, Azf, Av, Rin, Rout"}, {"index": 47, "filename": "FB_IMG_1792568561851.jpg", "category": "期中考 (Midterm) 11/08版", "exam_type": "期中考", "year": "111/112學年度 (11/08 第4節)", "type": "官方手寫補充解答", "page_info": "解答 P.4 / 題4 另解", "title": "11/08 期中考解答：第4題 A'I 另解推導", "desc": "紅筆標註「第4題 A'I 另解」。先求電壓增益 A'v = (Vo'/Vg2)*(Vg2/Vg1)，再利用 A'I = -A'v * (Rin'/RD2) 進行轉換求解。", "version_note": "【教師補充更新】老師針對題目4提供的第二種思考解法 (另解)，避免複雜的電流分流計算。", "keywords": "另解, 題4另解, A'I, A'v轉換法"}, {"index": 48, "filename": "FB_IMG_1792568563003.jpg", "category": "期中考 (Midterm) 11/08版", "exam_type": "期中考", "year": "111/112學年度 (11/08 第4節)", "type": "官方手寫解答", "page_info": "解答 P.5 / 題5", "title": "11/08 期中考解答：第5題 雙級 BJT 並並回授放大器完整分析", "desc": "對應 11/08 卷第5題。Q1, Q2 雙級 BJT (ro1, ro2 ≠ ∞) 含 Rf 回授：(a) 判定並並 (Shunt-Shunt)；求 Ri', Ro', A'r = Vo'/Is'；β = -1/Rf；求 Rif, Rof, Arf；(b) Av = Arf * (1/Rs)；(c) Rin = Rif - Rs；(d) Rout = RL*Rof/(RL-Rof)；(e) Ai = Av*(Rs/RL)。", "version_note": "雙級 BJT 經典並並架構解答。", "keywords": "雙級BJT, 並並, Shunt-Shunt, A'r, β = -1/Rf, Rif, Rof, Arf"}, {"index": 49, "filename": "FB_IMG_1792568564549.jpg", "category": "期中考 (Midterm) 11/08版", "exam_type": "期中考", "year": "111/112學年度 (11/08 第4節)", "type": "官方手寫補充解答", "page_info": "解答 P.6 / 題5 另解", "title": "11/08 期中考解答：第5題 A'I 另解推導", "desc": "紅筆標註「第5題 A'I 另解」。先求兩級電壓增益 A'v = (Vo'/Vb2)*(Vb2/Vb1)，再以 A'I = A'v * Rin' 快速轉換求出開路跨阻與電流增益。", "version_note": "【教師補充更新】老師針對題目5提供的第二種思考解法 (另解)。", "keywords": "另解, 題5另解, A'I, A'v*Rin'"}, {"index": 50, "filename": "夸克扫描王_電子學(三)第一次小考姓名__001.jpg", "category": "第一次小考 (Quiz 1)", "exam_type": "第一次小考", "year": "113學年度 (學生作答原卷)", "type": "學生小考試卷", "page_info": "Page 1 / 題1 & 題2", "title": "電子學(三) 第一次小考：題1 & 題2 (學號 11326144，得分 67)", "desc": "中原大學電子學(三)第一次小考真實學生考卷。1. Please determine which feedback mode this circuit belongs to? (10%) Fig.1 (OPAMP電路，作答「串並」獲滿分)；2. Please determine which feedback mode this circuit belongs to? (10%) Fig.2 (雙BJT電路，作答「並串」獲滿分)。", "version_note": "夸克掃描王高解析度掃描件，保留老師紅筆批改勾選痕跡。", "keywords": "第一次小考, 學生考卷, 11326144, 串並, 並串, 評分67"}, {"index": 51, "filename": "夸克扫描王_電子學(三)第一次小考姓名__002.jpg", "category": "第一次小考 (Quiz 1)", "exam_type": "第一次小考", "year": "113學年度 (學生作答原卷)", "type": "學生小考試卷", "page_info": "Page 2 / 題3 & 題4", "title": "電子學(三) 第一次小考：題3 (理想回授模型推導) & 題4 (方塊圖增益推導)", "desc": "接續第一次小考第 2 頁。3. Please draw the ideal circuit model of feedback circuit and derive the Rif, Rof, Af (60%): (1) Series-Shunt (30%), (2) Shunt-Shunt (30%)；4. Please derive the Af (= Xo/Xs) of the Fig.3 (20%) 回授方塊圖增益閉迴路推導。", "version_note": "完整學生手寫推導與作答過程。", "keywords": "第一次小考, Series-Shunt, Shunt-Shunt, 理想模型, 方塊圖推導"}, {"index": 52, "filename": "夸克扫描王_電子學(三)第一次小考姓名__003.jpg", "category": "第二次小考 (Quiz 2)", "exam_type": "第二次小考", "year": "113學年度 (學生作答原卷)", "type": "學生小考試卷", "page_info": "Page 1 / 題1", "title": "電子學(三) 第二次小考：題1 非理想實用回授模型推導 (Series-Series / Shunt-Series)", "desc": "【特別注意：檔名雖被掃描軟體誤命名為第一次小考__003，但卷頭大字清楚印刷「電子學(三) 第二次小考」！】題目：1. Please draw the practical circuit model of feedback circuit and derive the equation for practical circuit model of feedback circuit (100%): (1) Series-Series (50%), (2) Shunt-Series (50%)。含學生繪製雙埠二端口等效電路與推導。", "version_note": "【檔名更正備註】此張實為「第二次小考」！考非理想/實用 (practical) 雙埠二端口模型 (Z參數/G參數)。", "keywords": "第二次小考, 檔名誤植修正, Series-Series, Shunt-Series, practical model"}];
-        const metaByIdx = {};
-        imagesMeta.forEach(item => metaByIdx[item.index] = item);
 
         const GITHUB_DOWNLOAD_BASE = "https://github.com/stevenchu152587890625-tech/white-noise/releases/download/nothing/";
+
+        const metaByIdx = {};
+        imagesMeta.forEach(m => { metaByIdx[m.index] = m; });
 
         let currentDocMode = 'solution'; // 'solution' or 'question'
         let currentScenario = 'all_rec';
         let selectedPdfs = new Set();
 
+        // Initialize default recommended PDFs
+        pdfConfigs.forEach(c => {
+            if (c.is_recommended && c.id !== 'all_recommended') selectedPdfs.add(c.id);
+        });
+
         function getPdfFolder() {
             return currentDocMode === 'question' ? 'PDFs_題目卷_空白測驗版/' : 'PDFs/';
         }
-
         function getImageFolder() {
             return currentDocMode === 'question' ? 'images_questions/' : 'images/';
         }
-
         function getPdfFilename(cfg) {
-            if (currentDocMode === 'solution') return cfg.filename;
-            let fn = cfg.filename.replace("解答", "空白題目卷").replace("詳解", "空白題目卷").replace("RECOMMENDED_ALL", "QUESTIONS_ONLY");
-            if (!fn.includes("空白題目卷") && !fn.includes("QUESTIONS_ONLY")) {
-                fn = fn.replace(".pdf", "_空白題目卷.pdf");
+            if (currentDocMode === 'question') {
+                return cfg.filename.replace("解答", "題目卷_空白測驗版").replace("詳解", "題目卷_空白測驗版");
             }
-            return fn;
+            return cfg.filename;
         }
-
         function getEnglishFilename(cfg) {
-            const m = enPdfMapping[cfg.id];
-            return (currentDocMode === 'question') ? m.q_en : m.sol_en;
+            const map = enPdfMapping[cfg.id];
+            if (!map) return cfg.filename;
+            return currentDocMode === 'question' ? map.q_en : map.sol_en;
         }
 
         function setDocMode(mode) {
             currentDocMode = mode;
             const btnSol = document.getElementById('btnModeSolution');
             const btnQ = document.getElementById('btnModeQuestion');
-            const statMode = document.getElementById('statMode');
-            const navFolder = document.getElementById('navPdfsFolder');
-
-            if (mode === 'question') {
-                btnSol.classList.remove('active');
-                btnQ.classList.add('active', 'question-mode');
-                statMode.innerHTML = '📝 僅題目測驗版';
-                statMode.style.color = '#f59e0b';
-                navFolder.href = 'PDFs_題目卷_空白測驗版/';
-                navFolder.innerText = '📁 瀏覽題目卷 PDFs 資料夾';
+            if (mode === 'solution') {
+                btnSol.className = 'segmented-btn active';
+                btnQ.className = 'segmented-btn';
             } else {
-                btnQ.classList.remove('active', 'question-mode');
-                btnSol.classList.add('active');
-                statMode.innerHTML = '📄 完整解答版';
-                statMode.style.color = '#60a5fa';
-                navFolder.href = 'PDFs/';
-                navFolder.innerText = '📁 瀏覽解答版 PDFs 資料夾';
+                btnSol.className = 'segmented-btn';
+                btnQ.className = 'segmented-btn active question-mode';
             }
             renderCards();
             updateStats();
         }
 
-        pdfConfigs.forEach(cfg => {
-            if (cfg.id !== 'all_recommended' && cfg.is_recommended) {
-                selectedPdfs.add(cfg.id);
-            }
-        });
+        function setScenario(scenarioKey) {
+            currentScenario = scenarioKey;
+            document.querySelectorAll('.filter-chip').forEach(ch => ch.classList.remove('active'));
+            const targetChip = document.getElementById('chip-' + scenarioKey);
+            if (targetChip) targetChip.classList.add('active');
 
-        function setScenario(scenario) {
-            currentScenario = scenario;
-            document.querySelectorAll('.scenario-btn').forEach(btn => btn.classList.remove('active'));
-            event.currentTarget.classList.add('active');
-
-            if (scenario === 'all_rec') {
-                selectedPdfs.clear();
-                pdfConfigs.forEach(cfg => {
-                    if (cfg.is_recommended && cfg.id !== 'all_recommended') selectedPdfs.add(cfg.id);
-                });
-            } else if (scenario === 'midterm') {
-                selectedPdfs.clear();
-                ['midterm_batchA', 'midterm_batchB', 'topics_feedback'].forEach(id => selectedPdfs.add(id));
-            } else if (scenario === 'quiz') {
-                selectedPdfs.clear();
-                ['quiz1', 'quiz2', 'quiz4_113', 'quiz5_114', 'quiz6_114'].forEach(id => selectedPdfs.add(id));
+            // Update bottom nav active state accordingly
+            document.querySelectorAll('.nav-tab-item').forEach(t => t.classList.remove('active'));
+            if (scenarioKey === 'all_rec') {
+                const recTab = document.getElementById('tab-rec');
+                if (recTab) recTab.classList.add('active');
+            } else if (scenarioKey === 'all') {
+                const allTab = document.getElementById('tab-all');
+                if (allTab) allTab.classList.add('active');
             }
 
             renderCards();
-            updateStats();
+        }
+
+        function selectNavTab(tabName) {
+            document.querySelectorAll('.nav-tab-item').forEach(t => t.classList.remove('active'));
+            const activeTab = document.getElementById('tab-' + tabName);
+            if (activeTab) activeTab.classList.add('active');
+
+            if (tabName === 'rec') {
+                setScenario('all_rec');
+            } else if (tabName === 'all') {
+                setScenario('all');
+            } else if (tabName === 'practice') {
+                setDocMode('question');
+                setScenario('all_rec');
+            } else if (tabName === 'cloud') {
+                window.open('https://github.com/stevenchu152587890625-tech/white-noise/releases/tag/nothing', '_blank');
+            } else if (tabName === 'cart') {
+                printSelected();
+            }
         }
 
         function toggleSelect(id) {
@@ -697,31 +1030,7 @@
                 selectedPdfs.add(id);
             }
             updateStats();
-        }
-
-        function selectAll(state) {
-            if (state) {
-                pdfConfigs.forEach(c => selectedPdfs.add(c.id));
-            } else {
-                selectedPdfs.clear();
-            }
-            document.querySelectorAll('.custom-checkbox').forEach(cb => {
-                const id = cb.getAttribute('data-id');
-                cb.checked = selectedPdfs.has(id);
-            });
-            updateStats();
-        }
-
-        function selectRecommendedOnly() {
-            selectedPdfs.clear();
-            pdfConfigs.forEach(c => {
-                if (c.is_recommended && c.id !== 'all_recommended') selectedPdfs.add(c.id);
-            });
-            document.querySelectorAll('.custom-checkbox').forEach(cb => {
-                const id = cb.getAttribute('data-id');
-                cb.checked = selectedPdfs.has(id);
-            });
-            updateStats();
+            renderCards();
         }
 
         function updateStats() {
@@ -735,15 +1044,43 @@
             });
             const totalSheets = Math.ceil(totalPages / 2);
             const costMin = totalPages * 2;
-            document.getElementById('statPdfCount').innerHTML = `${pdfCount} <span style="font-size:13px;color:#94a3b8;">份</span>`;
-            document.getElementById('statPageCount').innerHTML = `${totalPages} <span style="font-size:13px;color:#94a3b8;">頁</span>`;
-            document.getElementById('statSheetCount').innerHTML = `${totalSheets} <span style="font-size:13px;color:#f59e0b;">張 A4</span>`;
+
+            document.getElementById('statPdfCount').innerText = pdfCount;
+            document.getElementById('statSheetCount').innerText = `${totalSheets} 張 A4`;
             document.getElementById('statCost').innerText = `NT$ ${costMin}`;
+            document.getElementById('cartBadgeCount').innerText = pdfCount;
+
+            const summarySheet = document.getElementById('floatingCartSheet');
+            if (pdfCount === 0) {
+                summarySheet.style.display = 'none';
+            } else {
+                summarySheet.style.display = 'flex';
+            }
+        }
+
+        function onSearchInput() {
+            const val = document.getElementById('searchInput').value.trim();
+            document.getElementById('searchClearBtn').style.display = val ? 'flex' : 'none';
+            renderCards();
+        }
+
+        function clearSearch() {
+            document.getElementById('searchInput').value = '';
+            document.getElementById('searchClearBtn').style.display = 'none';
+            renderCards();
+        }
+
+        function toggleDesktopMode() {
+            const body = document.body;
+            body.classList.toggle('wide-mode');
+            const isWide = body.classList.contains('wide-mode');
+            document.getElementById('desktopToggleIcon').innerText = isWide ? '📱' : '🖥️';
+            document.getElementById('desktopToggleText').innerText = isWide ? 'App' : '寬版';
         }
 
         function renderCards() {
             const searchKeyword = document.getElementById('searchInput').value.trim().toLowerCase();
-            const container = document.getElementById('pdfListContainer');
+            const container = document.getElementById('appStreamContainer');
             container.innerHTML = '';
 
             const pdfFolder = getPdfFolder();
@@ -778,57 +1115,59 @@
                     if (item) {
                         const imgUrl = imgFolder + encodeURIComponent(item.filename);
                         thumbsHtml += `
-                            <div class="thumb-item" onclick="openModal('${imgUrl}')" title="點擊放大: ${item.title} (${currentDocMode === 'question' ? '僅題目版' : '解答版'})">
+                            <div class="app-thumb-box" onclick="openModal('${imgUrl}')" title="點擊放大: ${item.title}">
                                 <img src="${imgUrl}" alt="P.${pNum+1}" loading="lazy">
-                                <span class="thumb-page">P.${pNum+1}</span>
+                                <span class="app-thumb-badge">P.${pNum+1}</span>
                             </div>
                         `;
                     }
                 });
 
+                let recPillClass = 'rec-good';
+                if (cfg.priority === 'all_in_one') recPillClass = 'rec-aio';
+                else if (cfg.priority === 'must_print') recPillClass = 'rec-must';
+                else if (cfg.priority === 'optional') recPillClass = 'rec-opt';
+                else if (cfg.priority === 'redundant') recPillClass = 'rec-skip';
+
                 const card = document.createElement('div');
-                card.className = `pdf-card ${isFeatured ? 'featured' : ''} ${isRedundant ? 'redundant' : ''}`;
+                card.className = `app-exam-card ${isFeatured ? 'featured' : ''} ${isRedundant ? 'redundant' : ''}`;
                 card.innerHTML = `
-                    <div class="card-select">
-                        <input type="checkbox" class="custom-checkbox" data-id="${cfg.id}" ${isChecked ? 'checked' : ''} onchange="toggleSelect('${cfg.id}')">
+                    <div class="card-top-row">
+                        <div class="card-tags-left">
+                            <span class="num-pill">#${cfg.num}</span>
+                            <span class="rec-pill ${recPillClass}">${cfg.priority_label}</span>
+                            <span class="rec-pill" style="background:#1e293b;color:#cbd5e1;">${cfg.category}</span>
+                        </div>
+                        <button class="card-check-btn" onclick="toggleSelect('${cfg.id}')" title="加入或取消列印清單">
+                            <div class="check-circle ${isChecked ? 'checked' : ''}"></div>
+                        </button>
                     </div>
-                    <div class="card-main">
-                        <div class="card-header-row">
-                            <span class="pdf-number">PDF #${cfg.num}</span>
-                            <span class="badge ${cfg.badge_class}">${cfg.priority_label}</span>
-                            <span class="badge" style="background:${currentDocMode === 'question' ? 'rgba(245, 158, 11, 0.2)' : 'rgba(59, 130, 246, 0.2)'};color:${currentDocMode === 'question' ? '#fbbf24' : '#60a5fa'};">${currentDocMode === 'question' ? '📝 空白題目卷' : '📄 完整詳解版'}</span>
-                            <h2 class="card-title">${displayTitle}</h2>
+
+                    <div class="card-body">
+                        <h2 class="card-title-text">${displayTitle}</h2>
+                        <div class="card-advice-bubble">
+                            <strong>💡 建議：</strong>${cfg.print_advice}
                         </div>
-                        <div class="advice-box">
-                            <strong>💡 列印決策：</strong>${cfg.print_advice}
+                        <div class="card-specs-row">
+                            <div class="spec-pill">📄 <strong>${cfg.pages} 頁</strong></div>
+                            <div class="spec-pill">📑 雙面 <strong>${cfg.sheets} 張</strong></div>
+                            <div class="spec-pill">🎨 <strong>${cfg.color_advice}</strong></div>
                         </div>
-                        <p class="card-desc">${cfg.desc}</p>
-                        <div class="card-specs">
-                            <div class="spec-item">📄 總頁數：<span class="spec-val">${cfg.pages} 頁</span></div>
-                            <div class="spec-item">📑 雙面列印：<span class="spec-val">${cfg.sheets} 張 A4</span></div>
-                            <div class="spec-item">🎨 色彩建議：<span class="spec-val">${cfg.color_advice}</span></div>
-                            <div class="spec-item">🏷️ 類別：<span class="spec-val">${cfg.category}</span></div>
-                        </div>
-                        <div style="margin-top: 8px;">
-                            <span style="font-size: 11.5px; color: #64748b; font-weight: 600;">各頁縮圖預覽（點擊放大檢視${currentDocMode === 'question' ? '僅題目版' : '解答版'}）：</span>
-                            <div class="thumb-strip">${thumbsHtml}</div>
+                        <div style="margin-top:4px;">
+                            <div class="card-thumb-carousel">${thumbsHtml}</div>
                         </div>
                     </div>
-                    <div class="card-actions">
-                        <a href="${githubDownloadUrl}" download="${enFileName}" class="btn-gh-direct" title="直接自 GitHub Releases CDN 下載此檔案">
-                            <span>⚡</span> 雲端直接下載
+
+                    <div class="card-actions-app">
+                        <a href="${githubDownloadUrl}" download="${enFileName}" class="btn-native-dl">
+                            <span>⚡</span> 雲端直接下載 (CDN)
                         </a>
-                        <a href="${pdfFolder + encodeURIComponent(actualPdfName)}" target="_blank" class="btn-open-pdf" title="在瀏覽器新分頁開啟閱讀">
-                            <span>📄</span> 線上預覽 PDF
+                        <a href="${pdfFolder + encodeURIComponent(actualPdfName)}" target="_blank" class="btn-native-preview">
+                            <span>👁️</span> 預覽 PDF
                         </a>
-                        <div style="display:flex;gap:4px;width:100%;">
-                            <a href="${pdfFolder + encodeURIComponent(actualPdfName)}" download="${actualPdfName}" class="btn-download-pdf" style="flex:1;" title="下載中文命名本地檔案">
-                                <span>⬇️</span> 中文檔名
-                            </a>
-                            <a href="${(currentDocMode === 'question' ? 'PDFs_Questions_EN/' : 'PDFs_EN/') + encodeURIComponent(enFileName)}" download="${enFileName}" class="btn-download-pdf" style="flex:1;border-color:#3b82f6;color:#60a5fa;" title="下載英文命名本地檔案">
-                                <span>🌐</span> English
-                            </a>
-                        </div>
+                        <button class="btn-native-cart ${isChecked ? 'added' : ''}" onclick="toggleSelect('${cfg.id}')">
+                            <span>${isChecked ? '✓ 已加入' : '➕ 加至清單'}</span>
+                        </button>
                     </div>
                 `;
                 container.appendChild(card);
@@ -850,10 +1189,15 @@
                 if (selectedPdfs.has(c.id)) list.push(getPdfFilename(c));
             });
             if (list.length === 0) {
-                alert('請先勾選至少一份要列印的 PDF 檔案！');
+                alert('請先勾選至少一份要列印的考卷！');
                 return;
             }
-            let msg = `【您已選取 ${list.length} 份 ${currentDocMode === 'question' ? '空白題目練習卷' : '解答版'} PDF 檔案準備列印】：\n\n` + list.map((f, i) => `${i+1}. ${f}`).join('\n') + `\n\n建議列印設定：A4尺寸、雙面列印（長邊翻頁）、配合紙張大小 (Fit)。`;
+            let msg = `【已選取 ${list.length} 份 ${currentDocMode === 'question' ? '空白測驗卷' : '解答卷'}】：
+
+` + list.map((f, i) => `${i+1}. ${f}`).join('
+') + `
+
+建議列印設定：A4尺寸、雙面列印（長邊翻頁）、配合紙張大小 (Fit)。`;
             alert(msg);
         }
 
